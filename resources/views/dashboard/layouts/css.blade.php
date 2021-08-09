@@ -10,11 +10,11 @@
 <!-- Bootstrap core CSS-->
 <link href="{{ asset("dashboard/css/bootstrap.min.css") }}" rel="stylesheet"/>
 <!-- animate CSS-->
-<link href="{{ asset("dashboard/css/animate.css") }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset("dashboard/css/animate.min.css") }}" rel="stylesheet" type="text/css"/>
 <!-- Icons CSS-->
-<link href="{{ asset("dashboard/css/icons.css") }}" rel="stylesheet" type="text/css"/>
+<link href="{{ asset("dashboard/css/icons.min.css") }}" rel="stylesheet" type="text/css"/>
 <!-- Sidebar CSS-->
-<link href="{{ asset("dashboard/css/sidebar-menu.css") }}" rel="stylesheet"/>
+<link href="{{ asset("dashboard/css/sidebar-menu.min.css") }}" rel="stylesheet"/>
 <!-- Custom Style-->
-<link href="{{ asset("dashboard/css/app-style.css") }}" rel="stylesheet"/>
+<link href="{{ asset("dashboard/css/app-style.min.css") }}" rel="stylesheet"/>
 @stack('css')
