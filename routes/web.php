@@ -17,10 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix" => 'customer'], function () {
     Route::get('/', function () {
         return view('customer/index');
-    });
-    Route::get('home', function () {
-        return view('customer/index');
-    });
+    })->name("customer.home");
 });
 
 // admin
