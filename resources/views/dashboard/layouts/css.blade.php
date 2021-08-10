@@ -1,6 +1,6 @@
 <!-- loader-->
-<link href="{{ asset("dashboard/css/pace.min.css") }}" rel="stylesheet"/>
-<script src="{{ asset("dashboard/js/pace.min.js") }}"></script>
+{{-- <link href="{{ asset("dashboard/css/pace.min.css") }}" rel="stylesheet"/>
+<script src="{{ asset("dashboard/js/pace.min.js") }}"></script> --}}
 <!--favicon-->
 <link rel="icon" href="{{ asset("dashboard/images/favicon.ico") }}" type="image/x-icon">
 {{-- <!-- Vector CSS -->
@@ -17,4 +17,5 @@
 <link href="{{ asset("dashboard/css/sidebar-menu.min.css") }}" rel="stylesheet"/>
 <!-- Custom Style-->
 <link href="{{ asset("dashboard/css/app-style.min.css") }}" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="{{ asset("dashboard/css/datatable.min.css") }}">
 @stack('css')

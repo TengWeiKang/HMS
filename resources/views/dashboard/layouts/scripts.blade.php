@@ -2,6 +2,7 @@
 <script src="{{ asset("dashboard/js/jquery.min.js") }}"></script>
 <script src="{{ asset("dashboard/js/popper.min.js") }}"></script>
 <script src="{{ asset("dashboard/js/bootstrap.min.js") }}"></script>
+<script src="{{ asset("dashboard/js/datatable.min.js") }}"></script>
 
 {{-- <!-- simplebar js -->
 <script src="{{ asset("dashboard/plugins/simplebar/js/simplebar.js") }}"></script> --}}

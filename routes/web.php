@@ -28,5 +28,8 @@ Route::group(["prefix" => 'dashboard'], function () {
     Route::get('test', function () {
         return view('dashboard/test');
     });
+    Route::get('test2', function () {
+        return view('dashboard/test2');
+    });
 });
 

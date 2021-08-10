@@ -12,10 +12,7 @@
         @else
             @include('customer.layouts.breadcrumb')
         @endif
-
         @yield('content')
-
-        <!--================ Accomodation Area  =================-->
         @include('customer.layouts.scripts')
     </body>
 </html>
