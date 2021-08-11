@@ -12,7 +12,11 @@
         @else
             @include('customer.layouts.breadcrumb')
         @endif
-        @yield('content')
+        <div class="container">
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        </div>
         @include('customer.layouts.scripts')
     </body>
 </html>

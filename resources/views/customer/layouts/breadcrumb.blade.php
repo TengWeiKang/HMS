@@ -3,10 +3,10 @@
     <div class="container">
         <div class="page-cover text-center">
             <h2 class="page-cover-tittle">@yield('title2')</h2>
-            <ol class="breadcrumb">
+            {{-- <ol class="breadcrumb">
                 <li><a href="index.html">Home</a></li>
                 <li class="active">About</li>
-            </ol>
+            </ol> --}}
         </div>
     </div>
 </section>

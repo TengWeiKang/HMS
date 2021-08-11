@@ -9,4 +9,5 @@
 <!-- main css -->
 <link rel="stylesheet" href="{{ asset("customer/css/style.min.css") }}">
 <link rel="stylesheet" href="{{ asset("customer/css/responsive.min.css") }}">
+<link rel="stylesheet" href="{{ asset("customer/css/custom.css") }}">
 @stack('css')
