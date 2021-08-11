@@ -23,23 +23,48 @@
                     @csrf
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" class="form-control form-control-rounded" name="username" placeholder="Enter Your Username">
+                        <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username">
+                        @error("username")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control form-control-rounded" name="email" placeholder="Enter Your Email Address">
+                        <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Enter Your Email Address">
+                        @error("email")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone number</label>
-                        <input type="text" class="form-control form-control-rounded" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)">
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)">
+                        @error("phone")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control form-control-rounded" name="password" placeholder="Enter Password">
+                        <input type="password" class="form-control form-control-rounded @error("password") border-danger @enderror" name="password" placeholder="Enter Password">
+                        @error("password")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm Password</label>
-                        <input type="password" class="form-control form-control-rounded" name="password_confirmation" placeholder="Confirm Password">
+                        <input type="password" class="form-control form-control-rounded @error("password_confirmation") border-danger @enderror" name="password_confirmation" placeholder="Confirm Password">
+                        @error("password_confirmation")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     {{-- <div class="form-group py-2">
                         <div class="icheck-material-white">
@@ -47,7 +72,7 @@
                             <label for="user-checkbox2">Remember me</label>
                         </div>
                     </div> --}}
-                    <div class="form-group">
+                    <div class="form-group mt-5">
                         <button type="submit" class="btn btn-light btn-round px-5 w-100"><i class="icon-lock"></i> Register</button>
                     </div>
                 </form>
@@ -55,10 +80,6 @@
         </div>
     </div>
 </div><!--End Row-->
-@endsection
-
-@section("title")
-
 @endsection
 
 @push("script")
