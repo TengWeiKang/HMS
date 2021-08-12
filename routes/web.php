@@ -43,7 +43,7 @@ Route::group(["prefix" => 'dashboard'], function () {
         Route::get("/{employee}", [EmployeeController::class, "show"])->name("dashboard.employee.view");
         Route::get("/{employee}/edit", [EmployeeController::class, "edit"])->name("dashboard.employee.edit");
         Route::put("/{employee}/edit", [EmployeeController::class, "update"]);
-        Route::delete("/{employee}/delete", [EmployeeController::class, "delete"]);
+        Route::delete("/{employee}", [EmployeeController::class, "destroy"]);
     });
 });
 

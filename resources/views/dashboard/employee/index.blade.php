@@ -75,7 +75,7 @@
                                         <a href="{{ route("dashboard.employee.edit", ["employee" => $employee]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
                                         </a>
-                                        <a href="#">
+                                        <a class="deleteEmployee" data-id="{{ $employee->id }}" data-username="{{ $employee->username }}" style="cursor: pointer">
                                             <i class="zmdi zmdi-delete text-white"></i>
                                         </a>
                                         <a href="{{ route("dashboard.employee.view", ["employee" => $employee]) }}">
@@ -101,6 +101,40 @@
                     "targets": 6,
                     "orderable": false
                 }]
+            });
+            $(".deleteEmployee").on("click", function () {
+                var empId = $(this).data("id");
+                var empUsername = $(this).data("username");
+                Swal.fire({
+                    title: "Delete Employee",
+                    text: "Username: " + empUsername,
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonColor: "#E00",
+                    confirmButtonColor: "#00E",
+                    confirmButtonText: "Yes"
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: "/dashboard/employee/" + empId,
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function (response){
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: response["success"],
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                }).then(() => {
+                                    window.location.href = "{{ route("dashboard.employee") }}";
+                                });
+                            }
+                        });
+                    }
+                })
             });
         });
     </script>
