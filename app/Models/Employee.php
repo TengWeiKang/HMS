@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class Customer extends Authenticatable
+class Employee extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    public $table = 'customer';
+    public $table = 'employee';
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +23,7 @@ class Customer extends Authenticatable
         'email',
         'phone',
         'password',
+        'role',
     ];
 
     /**
@@ -39,4 +40,16 @@ class Customer extends Authenticatable
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function isAdmin() {
+        return ($this->role == 0) ? true : false;
+    }
+
+    public function isStaff() {
+        return ($this->role == 1) ? true : false;
+    }
+
+    public function isHousekeeper() {
+        return ($this->role == 2) ? true : false;
+    }
 }

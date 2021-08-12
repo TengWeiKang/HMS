@@ -3,20 +3,27 @@
     <div class="brand-logo">
         <a href="index.html">
             <img src="{{ asset("dashboard/images/logo-icon.png") }}" class="logo-icon" alt="logo icon">
-            <h5 class="logo-text">Dashtreme Admin</h5>
+            <h5 class="logo-text">Dashboard</h5>
         </a>
     </div>
     <ul class="sidebar-menu do-nicescrol">
-        <li class="sidebar-header">MAIN NAVIGATION</li>
+        {{-- <li class="sidebar-header">MAIN NAVIGATION</li> --}}
         <li>
-            <a href="index.html">
+            <a href="{{ route("dashboard.home") }}">
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
             </a>
         </li>
         <li>
-            <a href="icons.html">
-                <i class="zmdi zmdi-invert-colors"></i> <span>UI Icons</span>
+            <a href="#">
+                <i class="fa fa-angle-left"></i><span style="margin-left: 10px">Employees</span>
             </a>
+            <ul class="sidebar-submenu">
+                <li><a href="{{ route("dashboard.employee.create") }}"><i class="zmdi zmdi-account-add"></i><span>New Employee</span></a></li>
+                <li><a href="{{ route("dashboard.employee", ["role" => 0]) }}"><i class="zmdi zmdi-accounts"></i><span>Admin</span></a></li>
+                <li><a href="{{ route("dashboard.employee", ["role" => 1]) }}"><i class="zmdi zmdi-accounts"></i><span>Staff</span></a></li>
+                <li><a href="{{ route("dashboard.employee", ["role" => 2]) }}"><i class="zmdi zmdi-accounts"></i><span>Housekeeper</span></a></li>
+                <li><a href="{{ route("dashboard.employee") }}"><i class="zmdi zmdi-accounts"></i><span>All Employees</span></a></li>
+            </ul>
         </li>
         <li>
             <a href="forms.html">

@@ -23,7 +23,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username">
+                        <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username" value="{{ old("username") }}">
                         @error("username")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -32,7 +32,7 @@
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Enter Your Email Address">
+                        <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Enter Your Email Address" value="{{ old("username") }}">
                         @error("email")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -41,7 +41,7 @@
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone number</label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)">
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)" value="{{ old("username") }}">
                         @error("phone")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -50,7 +50,7 @@
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" class="form-control form-control-rounded @error("password") border-danger @enderror" name="password" placeholder="Enter Password">
+                        <input type="password" class="form-control form-control-rounded @error("password") border-danger @enderror" name="password" placeholder="Enter Password" autocomplete="off">
                         @error("password")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -59,7 +59,7 @@
                     </div>
                     <div class="form-group">
                         <label for="password_confirmation">Confirm Password</label>
-                        <input type="password" class="form-control form-control-rounded @error("password_confirmation") border-danger @enderror" name="password_confirmation" placeholder="Confirm Password">
+                        <input type="password" class="form-control form-control-rounded @error("password_confirmation") border-danger @enderror" name="password_confirmation" placeholder="Confirm Password" autocomplete="off">
                         @error("password_confirmation")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}

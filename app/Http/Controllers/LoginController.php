@@ -27,6 +27,10 @@ class LoginController extends Controller
             return redirect()->route('customer.home');
         }
 
+        if (Auth::guard('staff')->attempt($request->only('username', 'password'), $request->remember)) {
+            return redirect()->route('dashboard.home');
+        }
+
         return redirect()->route("login")->withInput()->with("status", "Invalid login details");
     }
 }

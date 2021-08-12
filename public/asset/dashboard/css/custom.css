@@ -1,0 +1,7 @@
+table td, table th {
+    font-size: 16px;
+}
+
+table td.action-col {
+    font-size: 20px
+}

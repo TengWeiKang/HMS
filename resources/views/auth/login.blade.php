@@ -29,7 +29,7 @@
                     @csrf
                     <div class="form-group mt-3">
                         <label for="username">Username</label>
-                        <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username">
+                        <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username" value="{{ old("username") }}">
                         @error("username")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}

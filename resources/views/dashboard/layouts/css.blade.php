@@ -17,5 +17,6 @@
 <link href="{{ asset("dashboard/css/sidebar-menu.min.css") }}" rel="stylesheet"/>
 <!-- Custom Style-->
 <link href="{{ asset("dashboard/css/app-style.min.css") }}" rel="stylesheet"/>
+<link href="{{ asset("dashboard/css/custom.css") }}" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="{{ asset("dashboard/css/datatable.min.css") }}">
 @stack('css')
