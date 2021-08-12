@@ -107,7 +107,7 @@
                 var empUsername = $(this).data("username");
                 Swal.fire({
                     title: "Delete Employee",
-                    text: "Username: " + empUsername,
+                    text: "Are you sure you want to remove " + empUsername + "?",
                     icon: "warning",
                     showCancelButton: true,
                     cancelButtonColor: "#E00",
