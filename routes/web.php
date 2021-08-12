@@ -40,6 +40,10 @@ Route::group(["prefix" => 'dashboard'], function () {
         Route::get("/", [EmployeeController::class, "index"])->name("dashboard.employee");
         Route::get("/create-form", [EmployeeController::class, "create"])->name("dashboard.employee.create");
         Route::post("/create-form", [EmployeeController::class, "store"]);
+        Route::get("/{employee}", [EmployeeController::class, "show"])->name("dashboard.employee.view");
+        Route::get("/{employee}/edit", [EmployeeController::class, "edit"])->name("dashboard.employee.edit");
+        Route::put("/{employee}/edit", [EmployeeController::class, "update"]);
+        Route::delete("/{employee}/delete", [EmployeeController::class, "delete"]);
     });
 });
 

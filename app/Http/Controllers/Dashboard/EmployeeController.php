@@ -77,7 +77,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        //
+        return view('dashboard/employee/view', ['employee' => $employee]);
     }
 
     /**
@@ -88,7 +88,7 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        //
+        return view("dashboard/employee/edit-form", ["employee" => $employee]);
     }
 
     /**
@@ -100,7 +100,19 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
-        //
+        $this->validate($request, [
+            'username' => 'required|max:255|unique:customer,username|unique:employee,username,'.$employee->id,
+            'email' => 'required|email|max:255|unique:customer,email|unique:employee,email,'.$employee->id,
+            'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14',
+            'role' => 'required',
+        ]);
+        $employee->username = $request->username;
+        $employee->email = $request->email;
+        $employee->phone = $request->phone;
+        $employee->role = $request->role;
+        $employee->save();
+
+        return redirect()->route('dashboard.employee.edit', ['employee' => $employee])->with("message", "The employee has successfully updated");
     }
 
     /**
@@ -111,6 +123,7 @@ class EmployeeController extends Controller
      */
     public function destroy(Employee $employee)
     {
-        //
+        Employee::destroy($employee->id);
+        return redirect()->route('dashboard.employee');
     }
 }

@@ -70,13 +70,16 @@
                                             @break
                                         @default
                                     @endswitch
-                                    <td>{{ $employee->created_at->format("Y-m-d") }}</td>
+                                    <td>{{ $employee->created_at->format("d M Y") }}</td>
                                     <td class="text-center action-col">
-                                        <a href="#">
+                                        <a href="{{ route("dashboard.employee.edit", ["employee" => $employee]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
                                         </a>
                                         <a href="#">
                                             <i class="zmdi zmdi-delete text-white"></i>
+                                        </a>
+                                        <a href="{{ route("dashboard.employee.view", ["employee" => $employee]) }}">
+                                            <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -99,7 +102,6 @@
                     "orderable": false
                 }]
             });
-
         });
     </script>
 @endpush

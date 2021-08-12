@@ -41,6 +41,15 @@ class Employee extends Authenticatable
         'updated_at' => 'datetime',
     ];
 
+    public function role() {
+        if ($this->isAdmin())
+            return "Admin";
+        else if ($this->isStaff())
+            return "Staff";
+        else if ($this->isHousekeeper())
+            return "Housekeeper";
+    }
+
     public function isAdmin() {
         return ($this->role == 0) ? true : false;
     }
