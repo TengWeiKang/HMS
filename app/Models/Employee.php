@@ -14,6 +14,12 @@ class Employee extends Authenticatable
     public $table = 'employee';
     protected $guard = "employee";
 
+    const ROLES = [
+        0 => "Admin",
+        1 => "Staff",
+        2 => "Housekeeper"
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -43,12 +49,7 @@ class Employee extends Authenticatable
     ];
 
     public function role() {
-        if ($this->isAdmin())
-            return "Admin";
-        else if ($this->isStaff())
-            return "Staff";
-        else if ($this->isHousekeeper())
-            return "Housekeeper";
+        return self::ROLES[$this->role];
     }
 
     public function isAdmin() {

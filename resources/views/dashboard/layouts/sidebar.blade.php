@@ -13,6 +13,7 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
             </a>
         </li>
+        @if(Auth::guard('employee')->user()->isAdmin())
         <li>
             <a href="#">
                 <i class="fa fa-angle-left"></i><span style="margin-left: 10px">Employees</span>
@@ -25,47 +26,14 @@
                 <li><a href="{{ route("dashboard.employee") }}"><i class="zmdi zmdi-accounts"></i><span>All Employees</span></a></li>
             </ul>
         </li>
+        @endif
+        @if(Auth::guard('employee')->user()->isAdmin())
         <li>
-            <a href="forms.html">
-                <i class="zmdi zmdi-format-list-bulleted"></i> <span>Forms</span>
+            <a href="{{ route("dashboard.facility") }}">
+                <i class="fa fa-wifi"></i><span style="margin-left: 10px">Facilities</span>
             </a>
         </li>
-
-        <li>
-            <a href="tables.html">
-                <i class="zmdi zmdi-grid"></i> <span>Tables</span>
-            </a>
-        </li>
-
-        <li>
-            <a href="calendar.html">
-                <i class="zmdi zmdi-calendar-check"></i> <span>Calendar</span>
-                <small class="badge float-right badge-light">New</small>
-            </a>
-        </li>
-
-        <li>
-            <a href="profile.html">
-                <i class="zmdi zmdi-face"></i> <span>Profile</span>
-            </a>
-        </li>
-
-        <li>
-            <a href="login.html" target="_blank">
-                <i class="zmdi zmdi-lock"></i> <span>Login</span>
-            </a>
-        </li>
-
-        <li>
-            <a href="register.html" target="_blank">
-                <i class="zmdi zmdi-account-circle"></i> <span>Registration</span>
-            </a>
-        </li>
-
-        <li class="sidebar-header">LABELS</li>
-        <li><a href="javaScript:void();"><i class="zmdi zmdi-coffee text-danger"></i> <span>Important</span></a></li>
-        <li><a href="javaScript:void();"><i class="zmdi zmdi-chart-donut text-success"></i> <span>Warning</span></a></li>
-        <li><a href="javaScript:void();"><i class="zmdi zmdi-share text-info"></i> <span>Information</span></a></li>
+        @endif
     </ul>
 </div>
 <!--End sidebar-wrapper-->

@@ -20,7 +20,7 @@
                 <hr>
                 <form action="{{ route("dashboard.employee.edit", ["employee" => $employee]) }}" method="POST">
                     @csrf
-                    @method("put")
+                    @method("PUT")
                     <div class="form-group">
                         <label for="username">Username</label>
                         <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Username" value="{{ old("username", $employee->username) }}">

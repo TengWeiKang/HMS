@@ -5,8 +5,8 @@
 <script src="{{ asset("dashboard/js/datatable.min.js") }}"></script>
 <script src="{{ asset("dashboard/js/sweetalert2.min.js") }}"></script>
 
-{{-- <!-- simplebar js -->
-<script src="{{ asset("dashboard/plugins/simplebar/js/simplebar.js") }}"></script> --}}
+<!-- simplebar js -->
+<script src="{{ asset("dashboard/plugins/simplebar/js/simplebar.js") }}"></script>
 <!-- sidebar-menu js -->
 <script src="{{ asset("dashboard/js/sidebar-menu.min.js") }}"></script>
 {{-- <!-- loader scripts -->

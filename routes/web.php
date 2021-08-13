@@ -3,6 +3,7 @@
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Dashboard\EmployeeController;
+use App\Http\Controllers\Dashboard\FacilityController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -25,26 +26,29 @@ Route::group(["prefix" => 'customer'], function () {
 });
 
 // admin
-Route::group(["prefix" => 'dashboard'], function () {
-    Route::get('/', function () {
-        return view('dashboard/dashboard');
-    })->name("dashboard.home");
-    Route::get('test', function () {
-        return view('dashboard/test');
-    });
-    Route::get('test2', function () {
-        return view('dashboard/test2');
-    });
+Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function () {
+    Route::view('/', "dashboard/dashboard")->name("dashboard.home");
 
     //employee management
     Route::group(["prefix" => "employee"], function() {
         Route::get("/", [EmployeeController::class, "index"])->name("dashboard.employee");
-        Route::get("/create-form", [EmployeeController::class, "create"])->name("dashboard.employee.create");
-        Route::post("/create-form", [EmployeeController::class, "store"]);
+        Route::get("/create", [EmployeeController::class, "create"])->name("dashboard.employee.create");
+        Route::post("/create", [EmployeeController::class, "store"]);
         Route::get("/{employee}", [EmployeeController::class, "show"])->name("dashboard.employee.view");
         Route::get("/{employee}/edit", [EmployeeController::class, "edit"])->name("dashboard.employee.edit");
         Route::put("/{employee}/edit", [EmployeeController::class, "update"]);
         Route::delete("/{employee}", [EmployeeController::class, "destroy"]);
+    });
+
+    //facility management
+    Route::group(["prefix" => "facility"], function() {
+        Route::get("/", [FacilityController::class, "index"])->name("dashboard.facility");
+        Route::get("/create", [FacilityController::class, "create"])->name("dashboard.facility.create");
+        Route::post("/create", [FacilityController::class, "store"]);
+        // Route::get("/{facility}", [FacilityController::class, "show"])->name("dashboard.facility.view");
+        Route::get("/{facility}/edit", [FacilityController::class, "edit"])->name("dashboard.facility.edit");
+        Route::put("/{facility}/edit", [FacilityController::class, "update"]);
+        Route::delete("/{facility}", [FacilityController::class, "destroy"]);
     });
 });
 
