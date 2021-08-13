@@ -12,6 +12,7 @@ class Employee extends Authenticatable
     use HasFactory, Notifiable;
 
     public $table = 'employee';
+    protected $guard = "employee";
 
     /**
      * The attributes that are mass assignable.

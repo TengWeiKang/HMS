@@ -27,7 +27,7 @@ class LoginController extends Controller
             return redirect()->route('customer.home');
         }
 
-        if (Auth::guard('staff')->attempt($request->only('username', 'password'), $request->remember)) {
+        if (Auth::guard('employee')->attempt($request->only('username', 'password'), $request->remember)) {
             return redirect()->route('dashboard.home');
         }
 

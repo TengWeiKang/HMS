@@ -1,7 +1,7 @@
 @extends('customer.layouts.template')
 
 @section('title')
-    test
+    Hotel Booking
 @endsection
 
 @section('content')

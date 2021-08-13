@@ -1,7 +1,7 @@
 @media (max-width: 1480px){
     .navbar .menu_nav .nav-item.submenu ul{
         left: auto;
-        right: 0;
+        right: -25px;
     }
 }
 @media(max-width: 1199px){

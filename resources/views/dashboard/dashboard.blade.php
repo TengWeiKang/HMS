@@ -1,7 +1,7 @@
 @extends('dashboard.layouts.template')
 
 @section('title')
-    test title
+    Dashboard
 @endsection
 
 @section('content')

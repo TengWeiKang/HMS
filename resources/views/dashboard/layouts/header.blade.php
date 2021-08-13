@@ -36,7 +36,7 @@
             <li class="nav-item">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
                     <span class="user-profile">
-                        test
+                        {{ Auth::guard("employee")->user()->username }}
                         {{-- <img src="https://via.placeholder.com/110x110" class="img-circle" alt="user avatar"> --}}
                     </span>
                 </a>
@@ -53,13 +53,13 @@
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
-                    <li class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</li>
+                    <a href="#" class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</a>
                     <li class="dropdown-divider"></li>
-                    <li class="dropdown-item"><i class="icon-wallet mr-2"></i> Account</li>
+                    <a href="#" class="dropdown-item"><i class="icon-wallet mr-2"></i> Account</a>
                     <li class="dropdown-divider"></li>
-                    <li class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</li>
+                    <a href="#" class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</a>
                     <li class="dropdown-divider"></li>
-                    <li class="dropdown-item"><i class="icon-power mr-2"></i> Logout</li>
+                    <a href="{{ route("logout") }}" class="dropdown-item"><i class="icon-power mr-2"></i> Logout</a>
                 </ul>
             </li>
         </ul>

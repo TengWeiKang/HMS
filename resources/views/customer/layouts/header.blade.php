@@ -28,6 +28,7 @@
                     <li class="nav-item"><a class="nav-link" href="{{ route("login") }}">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route("register") }}">Register</a></li>
                     @endguest
+
                     @auth("customer")
                         <li class="nav-item submenu dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ Auth::user()->username }}</a>

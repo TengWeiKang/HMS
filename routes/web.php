@@ -36,7 +36,7 @@ Route::group(["prefix" => 'dashboard'], function () {
     });
 
     //employee management
-    Route::group(["prefix" => 'employee'], function() {
+    Route::group(["prefix" => "employee"], function() {
         Route::get("/", [EmployeeController::class, "index"])->name("dashboard.employee");
         Route::get("/create-form", [EmployeeController::class, "create"])->name("dashboard.employee.create");
         Route::post("/create-form", [EmployeeController::class, "store"]);
