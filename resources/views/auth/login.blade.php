@@ -50,6 +50,11 @@
                         <input type="checkbox" name="remember" checked=""/>
                         <label for="remember">Remember me</label>
                     </div>
+
+                    <div class="form-group">
+                        <a href="{{ route("password.forget") }}">Forgotten Password? Click Here</a>
+                    </div>
+
                     <div class="form-group mt-5">
                         <button type="submit" class="btn btn-light btn-round px-5 w-100"><i class="icon-lock"></i> Login</button>
                     </div>
