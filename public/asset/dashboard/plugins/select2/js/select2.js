@@ -5627,12 +5627,6 @@ S2.define('select2/core',[
 
   Select2.prototype._placeContainer = function ($container) {
     $container.insertAfter(this.$element);
-
-    var width = this._resolveWidth(this.$element, this.options.get('width'));
-
-    if (width != null) {
-      $container.css('width', width);
-    }
   };
 
   Select2.prototype._resolveWidth = function ($element, method) {
