@@ -11,6 +11,8 @@
 <link href="{{ asset("dashboard/css/bootstrap.min.css") }}" rel="stylesheet"/>
 <!-- Sweet Alert CSS-->
 <link href="{{ asset("dashboard/css/sweetalert2.min.css") }}" rel="stylesheet"/>
+<!-- Select2 CSS-->
+<link href="{{ asset("dashboard/plugins/select2/css/select2.min.css") }}" rel="stylesheet"/>
 <!-- animate CSS-->
 <link href="{{ asset("dashboard/css/animate.min.css") }}" rel="stylesheet" type="text/css"/>
 <!-- Icons CSS-->
