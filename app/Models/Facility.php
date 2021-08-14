@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Room;
 
 class Facility extends Model
 {
@@ -15,4 +16,9 @@ class Facility extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function rooms(): BelongsToMany
+    {
+        return $this->belongsToMany(Room::class, "room_facility", "facility", "room_id");;
+    }
 }

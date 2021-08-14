@@ -44,7 +44,7 @@
     box-sizing: border-box;
     border: none;
     font-size: 100%;
-    margin-top: 5px;
+    margin-top: 10px;
     margin-left: 5px;
     padding: 0;
     max-width: 100%;
@@ -226,6 +226,7 @@
     vertical-align: bottom;
     white-space: nowrap; }
   .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    color: black;
     cursor: default;
     padding-left: 2px;
     padding-right: 5px; }

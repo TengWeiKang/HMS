@@ -34,6 +34,13 @@
             </a>
         </li>
         @endif
+        @if(Auth::guard('employee')->user()->isAdmin())
+        <li>
+            <a href="{{ route("dashboard.facility") }}">
+                <i class="fa fa-hotel"></i><span style="margin-left: 10px">Rooms</span>
+            </a>
+        </li>
+        @endif
     </ul>
 </div>
 <!--End sidebar-wrapper-->

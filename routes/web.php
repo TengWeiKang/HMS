@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
 use App\Http\Controllers\Dashboard\EmployeeChangePasswordController;
+use App\Http\Controllers\Dashboard\RoomController;
 use App\Http\Controllers\Dashboard\FacilityController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
@@ -60,6 +61,17 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::put("/edit", [EmployeeProfileController::class, "update"]);
         Route::get("/change-password", [EmployeeChangePasswordController::class, "edit"])->name("dashboard.profile.password");
         Route::put("/change-password", [EmployeeChangePasswordController::class, "update"]);
+    });
+
+    //room management
+    Route::group(["prefix" => "room"], function() {
+        Route::get("/", [RoomController::class, "index"])->name("dashboard.room");
+        Route::get("/create", [RoomController::class, "create"])->name("dashboard.room.create");
+        Route::post("/create", [RoomController::class, "store"]);
+        Route::get("/{room}", [RoomController::class, "show"])->name("dashboard.room.view");
+        Route::get("/{room}/edit", [RoomController::class, "edit"])->name("dashboard.room.edit");
+        Route::put("/{room}/edit", [RoomController::class, "update"]);
+        Route::delete("/{room}", [RoomController::class, "destroy"]);
     });
 });
 
