@@ -5,3 +5,7 @@ table td, table th {
 table td.action-col {
     font-size: 20px
 }
+
+.form-select-multiple {
+    height: auto;
+}
