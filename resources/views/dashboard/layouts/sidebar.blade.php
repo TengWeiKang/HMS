@@ -15,7 +15,7 @@
         </li>
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
-            <a href="#">
+            <a style="cursor: pointer">
                 <i class="fa fa-angle-left"></i><span style="margin-left: 10px">Employees</span>
             </a>
             <ul class="sidebar-submenu">

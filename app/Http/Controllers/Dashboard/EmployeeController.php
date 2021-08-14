@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Notifications\EmployeeCreatedNotification;
 
@@ -24,11 +25,11 @@ class EmployeeController extends Controller
     {
         if ($request->has('role')) {
             $role = $request->role;
-            $employees = Employee::where("role", $role)->get();
+            $employees = Employee::where("role", $role)->where("id", "!=", Auth::guard('employee')->user()->id)->get();
             return view("dashboard/employee/index", ["employees" => $employees, "role" => $role]);
         }
         else {
-            $employees = Employee::all();
+            $employees = Employee::all()->except(Auth::guard('employee')->user()->id);
             return view("dashboard/employee/index", ["employees" => $employees]);
         }
     }

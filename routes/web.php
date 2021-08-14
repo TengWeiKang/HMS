@@ -3,6 +3,8 @@
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Dashboard\EmployeeController;
+use App\Http\Controllers\Dashboard\EmployeeProfileController;
+use App\Http\Controllers\Dashboard\EmployeeChangePasswordController;
 use App\Http\Controllers\Dashboard\FacilityController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
@@ -49,6 +51,15 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{facility}/edit", [FacilityController::class, "edit"])->name("dashboard.facility.edit");
         Route::put("/{facility}/edit", [FacilityController::class, "update"]);
         Route::delete("/{facility}", [FacilityController::class, "destroy"]);
+    });
+
+    //profile
+    Route::group(["prefix" => "profile"], function() {
+        Route::get("/", [EmployeeProfileController::class, "show"])->name("dashboard.profile.view");
+        Route::get("/edit", [EmployeeProfileController::class, "edit"])->name("dashboard.profile.edit");
+        Route::put("/edit", [EmployeeProfileController::class, "update"]);
+        Route::get("/change-password", [EmployeeChangePasswordController::class, "edit"])->name("dashboard.profile.password");
+        Route::put("/change-password", [EmployeeChangePasswordController::class, "update"]);
     });
 });
 

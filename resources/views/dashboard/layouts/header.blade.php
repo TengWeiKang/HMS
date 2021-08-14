@@ -44,20 +44,18 @@
                     <li class="dropdown-item user-details">
                     <a href="javaScript:void();">
                         <div class="media">
-                            <div class="avatar"><img class="align-self-start mr-3" src="https://via.placeholder.com/110x110" alt="user avatar"></div>
+                            {{-- <div class="avatar"><img class="align-self-start mr-3" src="https://via.placeholder.com/110x110" alt="user avatar"></div> --}}
                             <div class="media-body">
-                                <h6 class="mt-2 user-title">Sarajhon Mccoy</h6>
-                                <p class="user-subtitle">mccoy@example.com</p>
+                                <h6 class="mt-2 user-title">{{ Auth::guard('employee')->user()->username }}</h6>
+                                <p class="user-subtitle">{{ Auth::guard('employee')->user()->email }}</p>
                             </div>
                         </div>
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
-                    <a href="#" class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</a>
+                    <a href="{{ route("dashboard.profile.view") }}" class="dropdown-item"><i class="zmdi zmdi-account mr-2"></i> Account</a>
                     <li class="dropdown-divider"></li>
-                    <a href="#" class="dropdown-item"><i class="icon-wallet mr-2"></i> Account</a>
-                    <li class="dropdown-divider"></li>
-                    <a href="#" class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</a>
+                    <a href="{{ route("dashboard.profile.password") }}" class="dropdown-item"><i class="zmdi zmdi-key mr-2"></i> Change Password</a>
                     <li class="dropdown-divider"></li>
                     <a href="{{ route("logout") }}" class="dropdown-item"><i class="icon-power mr-2"></i> Logout</a>
                 </ul>
