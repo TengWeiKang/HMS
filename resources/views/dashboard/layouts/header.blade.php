@@ -42,7 +42,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li class="dropdown-item user-details">
-                    <a href="javaScript:void();">
+                    <a href="{{ route("dashboard.profile.view") }}">
                         <div class="media">
                             {{-- <div class="avatar"><img class="align-self-start mr-3" src="https://via.placeholder.com/110x110" alt="user avatar"></div> --}}
                             <div class="media-body">
