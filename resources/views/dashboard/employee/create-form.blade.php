@@ -55,7 +55,9 @@
                             <option value="2" @if (isset($role) && $role == 2) selected @endif>Housekeeper</option>
                         </select>
                     </div>
-                    <span class="text-warning">Password will be randomly generated and send to the email</span>
+                    <div class="form-group mt-5">
+                        <span class="text-warning">Password will be randomly generated and send to the new employee</span>
+                    </div>
                     <div class="form-group mt-3">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
                     </div>
