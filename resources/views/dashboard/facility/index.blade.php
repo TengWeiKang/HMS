@@ -58,12 +58,12 @@
                 "columnDefs": [{
                     "targets": 0,
                     "width": "7%",
-                    "orderable": false
                 },
                 {
                     "targets": 2,
                     "width": "15%",
-                    "orderable": false
+                    "orderable": false,
+                    "searchable": false
                 }]
             });
             $(".deleteFacility").on("click", function () {

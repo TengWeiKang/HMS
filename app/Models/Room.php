@@ -10,23 +10,39 @@ class Room extends Model
 {
     use HasFactory;
 
+    const STATUS = [
+        -1 => ["status" => "Disabled", "color" => "#F00"],
+        0 => ["status" => "Available", "color" => "#0F0"],
+        1 => ["status" => "Closed", "color" => "#111"]
+    ];
+
     public $table = "room";
 
     public $timestamps = ["created_at"];
     const UPDATED_AT = null;
 
     protected $fillable = [
+        'room_id',
         'name',
         'price',
         'single_bed',
         'double_bed',
         'image_type',
         'room_image',
+        'status',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
     ];
+
+    public function status() {
+        return self::STATUS[$this->status]["status"];
+    }
+
+    public function statusColor() {
+        return self::STATUS[$this->status]["color"];
+    }
 
     /**
      * The facilities that belong to the Room

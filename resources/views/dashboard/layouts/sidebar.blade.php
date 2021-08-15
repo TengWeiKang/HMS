@@ -36,7 +36,7 @@
         @endif
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
-            <a href="{{ route("dashboard.facility") }}">
+            <a href="{{ route("dashboard.room") }}">
                 <i class="fa fa-hotel"></i><span style="margin-left: 10px">Rooms</span>
             </a>
         </li>

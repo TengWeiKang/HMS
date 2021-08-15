@@ -99,7 +99,8 @@
             $("#table").DataTable({
                 "columnDefs": [{
                     "targets": 6,
-                    "orderable": false
+                    "orderable": false,
+                    "searchable": false
                 }]
             });
             $(".deleteEmployee").on("click", function () {

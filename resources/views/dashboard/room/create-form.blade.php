@@ -21,6 +21,15 @@
                 <form action="{{ route("dashboard.room.create") }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group row mx-2">
+                        <label for="roomId">Room ID</label>
+                        <input type="text" class="form-control form-control-rounded @error("roomId") border-danger @enderror" name="roomId" placeholder="Room ID" value="{{ old("roomId") }}">
+                        @error("roomId")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
+                    <div class="form-group row mx-2">
                         <label for="name">Room Name</label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="Room Name" value="{{ old("name") }}">
                         @error("name")
@@ -58,7 +67,7 @@
                             @enderror
                         </div>
                         <div class="col-lg-6 pr-0">
-                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("double") }}">
+                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}">
                             @error("doubleBed")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}

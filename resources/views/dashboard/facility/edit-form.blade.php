@@ -31,7 +31,7 @@
                         @enderror
                     </div>
                     <div class="form-group mt-4">
-                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Update</button>
+                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
                     </div>
                 </form>
             </div>
