@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\EmployeeProfileController;
 use App\Http\Controllers\Dashboard\EmployeeChangePasswordController;
 use App\Http\Controllers\Dashboard\RoomController;
 use App\Http\Controllers\Dashboard\FacilityController;
+use App\Http\Controllers\Dashboard\ServiceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -40,7 +41,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{employee}", [EmployeeController::class, "show"])->name("dashboard.employee.view");
         Route::get("/{employee}/edit", [EmployeeController::class, "edit"])->name("dashboard.employee.edit");
         Route::put("/{employee}/edit", [EmployeeController::class, "update"]);
-        Route::delete("/{employee}", [EmployeeController::class, "destroy"]);
+        Route::delete("/{employee}", [EmployeeController::class, "destroy"])->name("dashboard.employee.destroy");
     });
 
     //facility management
@@ -51,7 +52,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         // Route::get("/{facility}", [FacilityController::class, "show"])->name("dashboard.facility.view");
         Route::get("/{facility}/edit", [FacilityController::class, "edit"])->name("dashboard.facility.edit");
         Route::put("/{facility}/edit", [FacilityController::class, "update"]);
-        Route::delete("/{facility}", [FacilityController::class, "destroy"]);
+        Route::delete("/{facility}", [FacilityController::class, "destroy"])->name("dashboard.facility.destroy");
     });
 
     //profile
@@ -71,7 +72,18 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{room}", [RoomController::class, "show"])->name("dashboard.room.view");
         Route::get("/{room}/edit", [RoomController::class, "edit"])->name("dashboard.room.edit");
         Route::put("/{room}/edit", [RoomController::class, "update"]);
-        Route::delete("/{room}", [RoomController::class, "destroy"]);
+        Route::delete("/{room}", [RoomController::class, "destroy"])->name("dashboard.room.destroy");
+    });
+
+    //room service management
+    Route::group(["prefix" => "service"], function() {
+        Route::get("/", [ServiceController::class, "index"])->name("dashboard.service");
+        Route::get("/create", [ServiceController::class, "create"])->name("dashboard.service.create");
+        Route::post("/create", [ServiceController::class, "store"]);
+        // Route::get("/{service}", [ServiceController::class, "show"])->name("dashboard.service.view");
+        Route::get("/{service}/edit", [ServiceController::class, "edit"])->name("dashboard.service.edit");
+        Route::put("/{service}/edit", [ServiceController::class, "update"]);
+        Route::delete("/{service}", [ServiceController::class, "destroy"])->name("dashboard.service.destroy");
     });
 });
 

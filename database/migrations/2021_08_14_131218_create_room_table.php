@@ -24,7 +24,6 @@ class CreateRoomTable extends Migration
             $table->integer("status")->default(0);
             $table->timestamp('created_at')->nullable();
         });
-
         DB::statement("ALTER TABLE room ADD room_image LONGBLOB NOT NULL AFTER double_bed");
     }
 

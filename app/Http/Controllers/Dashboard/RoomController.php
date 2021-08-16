@@ -10,6 +10,10 @@ use Illuminate\Support\Arr;
 
 class RoomController extends Controller
 {
+    public function __construct() {
+        $this->middleware("employee:admin");
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -54,12 +58,7 @@ class RoomController extends Controller
 
         $file = $request->file('image');
         $mimeType = $file->getMimeType();
-        // $facilities = [];
-        // if (isset($request->facilities)){
-        //     foreach ($request->facilities as $value) {
-        //         $facilities[] = ["facility_id" => $value];
-        //     }
-        // }
+
         $room = Room::create([
             "room_id" => $request->roomId,
             "name" => $request->name,
@@ -80,6 +79,7 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
+        return view('dashboard/room/view', ['room' => $room]);
     }
 
     /**
@@ -140,6 +140,8 @@ class RoomController extends Controller
      */
     public function destroy(Room $room)
     {
-        //
+        $room->facilities()->detach();
+        $room->delete();
+        return response()->json(['success' => "The room has been removed"]);;
     }
 }

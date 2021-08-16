@@ -5,16 +5,16 @@
 @endpush
 
 @section("title")
-    Dashboard | Rooms
+    Dashboard | Room Services
 @endsection
 
 @section("content")
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
-            <div class="card-header">All Rooms
+            <div class="card-header">All Room Services
                 <div class="card-action">
-                    <a href="{{ route("dashboard.room.create") }}"><u><span>Create New Room</span></u></a>
+                    <a href="{{ route("dashboard.service.create") }}"><u><span>Create New Service</span></u></a>
                 </div>
             </div>
             <div class="card-body">
@@ -23,30 +23,23 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Room ID</th>
-                                <th>Room Name</th>
-                                <th>Price Per Night</th>
-                                <th>Status</th>
+                                <th>Service Name</th>
+                                <th>Service Price</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($rooms as $room)
+                            @foreach ($services as $service)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $room->room_id }}</td>
-                                    <td>{{ $room->name }}</td>
-                                    <td>RM {{ number_format($room->price, 2) }}</td>
-                                    <td style="color: {{ $room->statusColor() }};">{{ $room->status() }}</td>
+                                    <td>{{ $service->name }}</td>
+                                    <td>RM {{ number_format($service->price, 2) }}</td>
                                     <td class="text-center action-col">
-                                        <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}">
+                                        <a href="{{ route("dashboard.service.edit", ["service" => $service]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
                                         </a>
-                                        <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer">
+                                        <a class="deleteRoomService" data-id="{{ $service->id }}" data-name="{{ $service->name }}" style="cursor: pointer">
                                             <i class="zmdi zmdi-delete text-white"></i>
-                                        </a>
-                                        <a href="{{ route("dashboard.room.view", ["room" => $room]) }}">
-                                            <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -66,20 +59,20 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 5,
+                    "targets": 2,
                     "width": "10%",
                     "orderable": false,
                     "searchable": false
                 }]
             });
-            $(".deleteRoom").on("click", function () {
-                const DELETE_URL = "{{ route('dashboard.room.destroy', ':id') }}";
-                var roomId = $(this).data("id");
-                var roomName = $(this).data("name");
-                var url = DELETE_URL.replace(":id", roomId);
+            $(".deleteRoomService").on("click", function () {
+                const DELETE_URL = "{{ route('dashboard.service.destroy', ':id') }}";
+                var serviceID = $(this).data("id");
+                var serviceName = $(this).data("name");
+                var url = DELETE_URL.replace(":id", serviceID);
                 Swal.fire({
                     title: "Delete Room",
-                    text: "Are you sure you want to remove " + roomName + "?",
+                    text: "Are you sure you want to remove " + serviceName + "?",
                     icon: "warning",
                     showCancelButton: true,
                     cancelButtonColor: "#E00",
@@ -101,7 +94,7 @@
                                     showConfirmButton: false,
                                     timer: 1000,
                                 }).then(() => {
-                                    window.location.href = "{{ route("dashboard.room") }}";
+                                    window.location.href = "{{ route("dashboard.service") }}";
                                 });
                             }
                         });

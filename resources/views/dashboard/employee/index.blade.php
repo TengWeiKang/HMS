@@ -104,8 +104,10 @@
                 }]
             });
             $(".deleteEmployee").on("click", function () {
+                const DELETE_URL = "{{ route('dashboard.employee.destroy', ':id') }}";
                 var empId = $(this).data("id");
                 var empUsername = $(this).data("username");
+                var url = DELETE_URL.replace(":id", empId);
                 Swal.fire({
                     title: "Delete Employee",
                     text: "Are you sure you want to remove " + empUsername + "?",
@@ -118,7 +120,7 @@
                     if (result.value) {
                         $.ajax({
                             type: "DELETE",
-                            url: "/dashboard/employee/" + empId,
+                            url: url,
                             data: {
                                 "_token": "{{ csrf_token() }}"
                             },

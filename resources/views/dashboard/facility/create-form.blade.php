@@ -22,7 +22,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="facility">Facility</label>
-                        <input type="text" class="form-control form-control-rounded @error("facility") border-danger @enderror" name="facility" placeholder="New Facility" value="{{ old("facility") }}">
+                        <input type="text" class="form-control form-control-rounded @error("facility") border-danger @enderror" name="facility" placeholder="New Facility Name" value="{{ old("facility") }}">
                         @error("facility")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}

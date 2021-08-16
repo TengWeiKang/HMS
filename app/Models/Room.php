@@ -11,7 +11,6 @@ class Room extends Model
     use HasFactory;
 
     const STATUS = [
-        -1 => ["status" => "Disabled", "color" => "#F00"],
         0 => ["status" => "Available", "color" => "#0F0"],
         1 => ["status" => "Closed", "color" => "#111"]
     ];

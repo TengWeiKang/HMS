@@ -5,7 +5,7 @@
 @endpush
 
 @section("title")
-    Dashboard | Update Facility
+    Dashboard | {{ $facility->name }}
 @endsection
 
 @section("content")
@@ -23,7 +23,7 @@
                     @method("PUT")
                     <div class="form-group">
                         <label for="facility">Facility</label>
-                        <input type="text" class="form-control form-control-rounded @error("facility") border-danger @enderror" name="facility" placeholder="New Facility" value="{{ old("facility", $facility->name) }}">
+                        <input type="text" class="form-control form-control-rounded @error("facility") border-danger @enderror" name="facility" placeholder="Facility Name" value="{{ old("facility", $facility->name) }}">
                         @error("facility")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}

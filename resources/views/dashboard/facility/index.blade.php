@@ -69,6 +69,8 @@
             $(".deleteFacility").on("click", function () {
                 var facilityId = $(this).data("id");
                 var facilityName = $(this).data("facility");
+                const DELETE_URL = "{{ route('dashboard.facility.destroy', ':id') }}";
+                var url = DELETE_URL.replace(":id", facilityId);
                 Swal.fire({
                     title: "Delete Facility",
                     text: "Are you sure you want to remove " + facilityName + "?",
@@ -81,7 +83,7 @@
                     if (result.value) {
                         $.ajax({
                             type: "DELETE",
-                            url: "/dashboard/facility/" + facilityId,
+                            url: url,
                             data: {
                                 "_token": "{{ csrf_token() }}"
                             },

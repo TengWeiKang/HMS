@@ -59,7 +59,7 @@ class FacilityController extends Controller
      */
     public function show(Facility $facility)
     {
-        return view('dashboard/facility/view', ['facility' => $facility]);
+        // return view('dashboard/facility/view', ['facility' => $facility]);
     }
 
     /**
@@ -96,9 +96,10 @@ class FacilityController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Facility $facility)
     {
-        Facility::destroy($id);
+        $facility->rooms()->detach();
+        $facility->delete();
         return response()->json(['success' => "The facility has been removed"]);;
     }
 }

@@ -41,6 +41,13 @@
             </a>
         </li>
         @endif
+        @if(Auth::guard('employee')->user()->isAdmin())
+        <li>
+            <a href="{{ route("dashboard.service") }}">
+                <i class="zmdi zmdi-drink"></i><span style="margin-left: 10px">Service</span>
+            </a>
+        </li>
+        @endif
     </ul>
 </div>
 <!--End sidebar-wrapper-->

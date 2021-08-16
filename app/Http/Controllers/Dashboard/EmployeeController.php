@@ -126,9 +126,9 @@ class EmployeeController extends Controller
      * @param  int  $id
      * @return string
      */
-    public function destroy($id)
+    public function destroy(Employee $employee)
     {
-        Employee::destroy($id);
-        return response()->json(['success' => "Employee has been removed"]);;
+        $employee->delete();
+        return response()->json(['success' => "The employee has been removed"]);;
     }
 }
