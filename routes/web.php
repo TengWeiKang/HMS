@@ -7,6 +7,7 @@ use App\Http\Controllers\Dashboard\EmployeeProfileController;
 use App\Http\Controllers\Dashboard\EmployeeChangePasswordController;
 use App\Http\Controllers\Dashboard\RoomController;
 use App\Http\Controllers\Dashboard\FacilityController;
+use App\Http\Controllers\Dashboard\ReservationController;
 use App\Http\Controllers\Dashboard\ServiceController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
@@ -84,6 +85,18 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{service}/edit", [ServiceController::class, "edit"])->name("dashboard.service.edit");
         Route::put("/{service}/edit", [ServiceController::class, "update"]);
         Route::delete("/{service}", [ServiceController::class, "destroy"])->name("dashboard.service.destroy");
+    });
+
+
+    //reservation management
+    Route::group(["prefix" => "reservation"], function() {
+        Route::get("/", [ReservationController::class, "index"])->name("dashboard.reservation");
+        Route::get("/create", [ReservationController::class, "create"])->name("dashboard.reservation.create");
+        Route::post("/create", [ReservationController::class, "store"]);
+        Route::get("/{reservation}", [ReservationController::class, "show"])->name("dashboard.reservation.view");
+        Route::get("/{reservation}/edit", [ReservationController::class, "edit"])->name("dashboard.reservation.edit");
+        Route::put("/{reservation}/edit", [ReservationController::class, "update"]);
+        Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");
     });
 });
 

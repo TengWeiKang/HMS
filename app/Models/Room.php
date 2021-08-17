@@ -12,7 +12,8 @@ class Room extends Model
 
     const STATUS = [
         0 => ["status" => "Available", "color" => "#0F0"],
-        1 => ["status" => "Closed", "color" => "#111"]
+        1 => ["status" => "Closed", "color" => "#111"],
+        2 => ["status" => "Booking", "color" => "#AAA"]
     ];
 
     public $table = "room";

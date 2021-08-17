@@ -18,7 +18,7 @@
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
                 <hr>
-                <form action="{{ route("dashboard.room.create") }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route("dashboard.reservation.create") }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group row mx-2">
                         <label for="roomId">Room ID</label>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Bed</label>
-                        <div class="col-lg-6 pl-0">
+                        <div class="col-lg-6 pl-lg-0">
                             <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}">
                             @error("singleBed")
                             <div class="ml-2 text-sm text-danger">
@@ -66,7 +66,7 @@
                             </div>
                             @enderror
                         </div>
-                        <div class="col-lg-6 pr-0">
+                        <div class="col-lg-6 pr-lg-0">
                             <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}">
                             @error("doubleBed")
                             <div class="ml-2 text-sm text-danger">

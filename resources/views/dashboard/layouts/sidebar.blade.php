@@ -15,6 +15,13 @@
         </li>
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
+            <a href="{{ route("dashboard.service") }}">
+                <i class="fa fa-ticket"></i><span style="margin-left: 10px">Booking</span>
+            </a>
+        </li>
+        @endif
+        @if(Auth::guard('employee')->user()->isAdmin())
+        <li>
             <a style="cursor: pointer">
                 <i class="fa fa-angle-left"></i><span style="margin-left: 10px">Employees</span>
             </a>
@@ -44,7 +51,7 @@
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
             <a href="{{ route("dashboard.service") }}">
-                <i class="zmdi zmdi-drink"></i><span style="margin-left: 10px">Service</span>
+                <i class="zmdi zmdi-drink"></i><span style="margin-left: 10px">Room Services</span>
             </a>
         </li>
         @endif

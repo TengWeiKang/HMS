@@ -5,6 +5,8 @@
 <script src="{{ asset("dashboard/js/datatable.min.js") }}"></script>
 <script src="{{ asset("dashboard/js/sweetalert2.min.js") }}"></script>
 <script src="{{ asset("dashboard/plugins/select2/js/select2.min.js") }}"></script>
+<script src="{{ asset("dashboard/plugins/fullcalendar/js/moment.min.js") }}"></script>
+<script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 
 <!-- simplebar js -->
 <script src="{{ asset("dashboard/plugins/simplebar/js/simplebar.js") }}"></script>
