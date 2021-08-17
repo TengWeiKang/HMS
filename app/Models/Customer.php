@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Reservation;
 
 class Customer extends Authenticatable
 {
@@ -40,4 +41,8 @@ class Customer extends Authenticatable
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    public function reservations() {
+        return $this->morphMany(Reservation::class, "reservable");
+    }
 }

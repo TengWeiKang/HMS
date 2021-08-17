@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Facility;
+use App\Models\Reservation;
 
 class Room extends Model
 {
@@ -52,5 +53,14 @@ class Room extends Model
     public function facilities()
     {
         return $this->belongsToMany(Facility::class, "room_facility", "room_id", "facility_id");;
+    }
+    /**
+     * Get all of the reservations for the Room
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reservations()
+    {
+        return $this->hasMany(Reservation::class, 'room_id');
     }
 }

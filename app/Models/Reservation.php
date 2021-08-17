@@ -11,27 +11,39 @@ class Reservation extends Model
     use HasFactory;
 
     public $table = "reservation";
+    public $guarded = [];
 
     public $timestamps = ["created_at"];
     const UPDATED_AT = null;
 
     protected $fillable = [
+        'reservable_type',
+        'reservable_id',
         'room_id',
-        'name',
-        'price',
-        'single_bed',
-        'double_bed',
-        'image_type',
-        'room_image',
-        'status',
+        'start_date',
+        'end_date',
+        'check_in',
+        'check_out'
     ];
 
     protected $casts = [
+        'check_in' => 'datetime',
+        'check_out' => 'datetime',
         'created_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 
+    protected $visible = [
+        "start_date",
+        "end_date",
+    ];
+
+
     public function room() {
-        return $this->hasOne(Room::class, "room_id");
+        return $this->belongsTo(Room::class, "room_id");
+    }
+
+    public function reservable() {
+        return $this->morphTo();
     }
 }

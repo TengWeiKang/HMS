@@ -36,19 +36,19 @@
                 <form action="{{ route("dashboard.reservation.create") }}" method="POST">
                     @csrf
                     <div class="form-group row mx-2">
-                        <label for="roomId">Room ID</label>
+                        <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
-                            <option value="0">Admin</option>
-                            <option value="1">Staff</option>
-                            <option value="2">Housekeeper</option>
+                            @foreach ($rooms as $room)
+                                <option value="{{ $room->id }}" data-price="{{ $room->price }}">{{ $room->room_id . " - " . $room->name}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="customer">Customer</label>
-                        <select class="form-control form-control-rounded" name="customer">
-                            <option value="0">Admin</option>
-                            <option value="1">Staff</option>
-                            <option value="2">Housekeeper</option>
+                        <label for="customer">Customer (Able to custom input)</label>
+                        <select class="form-control form-control-rounded" id="customers" name="customer">
+                            @foreach ($customers as $customer)
+                                <option value="c||{{ $customer->id }}">{{ $customer->username}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="form-group row my-4 mx-2">
@@ -72,11 +72,30 @@
                         </div>
                         <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">1</span> day(s)</label>
                     </div>
+                    @if ($errors->has(["startDate", "endDate"]))
+                        <div class="col-lg-6 pr-lg-0">
+                            <div class="ml-2 text-sm text-danger">
+                                @error('startDate')
+                                    {{ $message }}
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-lg-6 pr-lg-0">
+                            <div class="ml-2 text-sm text-danger">
+                                @error('endDate')
+                                    {{ $message }}
+                                @enderror
+                            </div>
+                        </div>
+                    @endif
                     <div class="form-group col-12">
                         <div class="icheck-material-white">
-                            <input type="checkbox" id="checkIn"/>
+                            <input type="checkbox" id="checkIn" name="checkIn"/>
                             <label for="checkIn">Check In</label>
                         </div>
+                    </div>
+                    <div class="form-group col-12 mt-3">
+                        <label class="h5">RM <span id="totalPrice">0.00</span></label>
                     </div>
                     <div class="form-group row mx-2 mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
@@ -100,42 +119,33 @@
 @push("script")
     <script>
         $(document).ready(function() {
-            $('select.form-control').select2({
+            $('select.form-control#rooms').select2();
+            $('select.form-control#customers').select2({
                 multiple: false,
                 tags: true,
                 createTag: function (params) {
                     var term = $.trim(params.term);
-                        if (term === '') {
-                            return null;
-                        }
-                        return {
-                            id: "g||" + term,
-                            text: term,
-                            newTag: true // add additional parameters
-                        }
+                    if (term === '') {
+                        return null;
                     }
-                });
+                    return {
+                        id: "g||" + term,
+                        text: term,
+                        newTag: true
+                    }
+                }
+            });
             $('.select2.select2-container').addClass('form-control form-control-rounded')
             $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
+
+            $("#rooms").change(function() {
+
+            })
 
             function changeDate() {
                 let startDate = moment($("#startDate")[0].value).format("YYYY-MM-DD");
                 let endDate = moment($("#endDate")[0].value).add(1, "days").format("YYYY-MM-DD");
-                // let dateNow = moment().startOf('day');
-                // if (dateNow > startDate) {
-                //     alert("The starting date cannot be the passed date");
-                //     $("#startDate")[0].value = dateNow.format();
-                // }
-                // else if (dateNow > endDate) {
-                //     alert("The ending date cannot be the passed date");
-                //     $("#endDate")[0].value = startDate.format();
-                // }
-                // else if (startDate > endDate) {
-                //     alert("The starting date cannot be over than ending date")
-                //     $("#endDate")[0].value = startDate.format();
-                // }
-                // startDate = moment($("#startDate")[0].value).format("YYYY-MM-DD");
-                // endDate = moment($("#endDate")[0].value).format("YYYY-MM-DD");
+
                 $('#calendar').fullCalendar('select', startDate, endDate);
             }
             changeDate();
@@ -148,6 +158,14 @@
                     center: 'title',
                     right: 'next'
                 },
+                eventSources: [{
+                    url: "{{ route("dashboard.reservation.json") }}",
+                    type: "GET",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "roomID": 1
+                    }
+                }],
                 select: function(startDate, endDate) {
                     let dateNow = moment().startOf('day');
                     let tempStartDate = moment($("#startDate")[0].value);
