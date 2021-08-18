@@ -13,9 +13,9 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span>Dashboard</span>
             </a>
         </li>
-        @if(Auth::guard('employee')->user()->isAdmin())
+        @if(Auth::guard('employee')->user()->isAdmin() || Auth::guard("employee")->user()->isStaff())
         <li>
-            <a href="{{ route("dashboard.service") }}">
+            <a href="{{ route("dashboard.reservation") }}">
                 <i class="fa fa-ticket"></i><span style="margin-left: 10px">Booking</span>
             </a>
         </li>

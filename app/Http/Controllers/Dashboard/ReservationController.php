@@ -12,6 +12,9 @@ use Illuminate\Http\Request;
 
 class ReservationController extends Controller
 {
+    public function __construct() {
+        $this->middleware("employee:admin,staff");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -64,6 +67,7 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+        //! TODO: validate two date inputs
         $split = explode("||", $request->customer, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;
         $customerID = $split[1];

@@ -15,6 +15,9 @@
     .fc {
         text-align: center !important;
     }
+    .bg-red {
+        background-color: red;
+    }
 </style>
 
 @endpush
@@ -47,7 +50,7 @@
                         <label for="customer">Customer (Able to custom input)</label>
                         <select class="form-control form-control-rounded" id="customers" name="customer">
                             @foreach ($customers as $customer)
-                                <option value="c||{{ $customer->id }}">{{ $customer->username}}</option>
+                                <option value="c||{{ $customer->id }}">{{ $customer->username }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -107,7 +110,7 @@
     <div class="col-lg-4">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Calendar</div>
+                <div class="card-title">Calendar <span id="loading" class="text-warning"></span></div>
                 <hr>
                 <div id="calendar"></div>
             </div>
@@ -139,8 +142,18 @@
             $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
 
             $("#rooms").change(function() {
-
-            })
+                let calendar = $("#calendar");
+                let sources = {
+                    url: "{{ route("dashboard.reservation.json") }}",
+                    type: "GET",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "roomID": $("#rooms")[0].value
+                    }
+                };
+                calendar.fullCalendar("removeEventSources");
+                calendar.fullCalendar("addEventSource", sources);
+            });
 
             function changeDate() {
                 let startDate = moment($("#startDate")[0].value).format("YYYY-MM-DD");
@@ -158,12 +171,21 @@
                     center: 'title',
                     right: 'next'
                 },
+                loading: function(isLoading, view) {
+                    let loadingSpan = $("#loading")[0];
+                    if (isLoading) {
+                        loadingSpan.innerHTML = "(Fetching Data)";
+                    }
+                    else {
+                        loadingSpan.innerHTML = "";
+                    }
+                },
                 eventSources: [{
                     url: "{{ route("dashboard.reservation.json") }}",
                     type: "GET",
                     data: {
                         "_token": "{{ csrf_token() }}",
-                        "roomID": 1
+                        "roomID": $("#rooms")[0].value
                     }
                 }],
                 select: function(startDate, endDate) {
