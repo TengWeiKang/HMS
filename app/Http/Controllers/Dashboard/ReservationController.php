@@ -9,6 +9,7 @@ use App\Models\Customer;
 use App\Models\Guest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
 {
@@ -67,7 +68,6 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        //! TODO: validate two date inputs
         $split = explode("||", $request->customer, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;
         $customerID = $split[1];
@@ -77,10 +77,26 @@ class ReservationController extends Controller
             ])->id;
         }
         $customerID = (int) $customerID;
-        $this->validate($request, [
-            "startDate" => "required|date|after_or_equal:yesterday",
+        $validator = Validator::make($request->all(), [
+            "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate"
         ]);
+        $validator->after(function ($validator) use ($request) {
+            $count = Reservation::where("room_id", $request->roomId)
+                ->where(function ($query) use ($request) {
+                    $query->where("start_date", "<=", $request->startDate)
+                        ->where("end_date", ">=", $request->startDate)
+                        ->orWhere("start_date", "<=", $request->endDate)
+                        ->where("end_date", ">=", $request->endDate)
+                        ->orWhere("start_date", ">=", $request->startDate)
+                        ->where("end_date", "<=", $request->endDate);
+                }
+            )->count();
+            if ($count > 0) {
+                $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
+            }
+        });
+        $validator->validate();
         Reservation::create([
             "room_id" => $request->roomId,
             "start_date" => $request->startDate,
@@ -136,5 +152,9 @@ class ReservationController extends Controller
     public function destroy(Reservation $reservation)
     {
         //
+    }
+
+    private function validReservationDate($startDate, $endDate) {
+
     }
 }

@@ -76,7 +76,7 @@
                         <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">1</span> day(s)</label>
                     </div>
                     @if ($errors->has(["startDate", "endDate"]))
-                        <div class="col-lg-6 pr-lg-0">
+                        <div class="col-lg-6 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
                                 @error('startDate')
                                     {{ $message }}
@@ -91,7 +91,16 @@
                             </div>
                         </div>
                     @endif
-                    <div class="form-group col-12">
+                    @error('dateConflict')
+                        <div class="col-lg-12 pl-lg-0">
+                            <div class="ml-2 text-sm text-danger">
+                                @error('dateConflict')
+                                    {{ $message }}
+                                @enderror
+                            </div>
+                        </div>
+                    @enderror
+                    <div class="form-group col-12 mt-3">
                         <div class="icheck-material-white">
                             <input type="checkbox" id="checkIn" name="checkIn"/>
                             <label for="checkIn">Check In</label>
