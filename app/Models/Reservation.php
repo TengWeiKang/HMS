@@ -33,12 +33,6 @@ class Reservation extends Model
         'deleted_at' => 'datetime',
     ];
 
-    protected $visible = [
-        "start_date",
-        "end_date",
-    ];
-
-
     public function room() {
         return $this->belongsTo(Room::class, "room_id");
     }

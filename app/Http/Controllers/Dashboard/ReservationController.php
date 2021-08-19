@@ -34,18 +34,18 @@ class ReservationController extends Controller
     public function json(Request $request)
     {
         $roomID = $request->roomID;
-        $reservationList = Room::find($roomID)->reservations->toArray();
+        $reservations = Room::find($roomID)->reservations;
         $json = [];
-        foreach ($reservationList as $value) {
-            $endDate = Carbon::createFromFormat('Y-m-d', $value["end_date"]);
+        foreach ($reservations as $reservation) {
+            $endDate = Carbon::createFromFormat('Y-m-d', $reservation->end_date);
             $json[] = [
-                "start" => $value["start_date"],
+                "start" => $reservation->start_date,
                 "end" => $endDate->addDays(1)->format("Y-m-d"),
                 "rendering" => "background",
                 "className" => ["bg-red"]
             ];
         };
-        return json_encode($json);
+        return $json;
     }
 
     /**

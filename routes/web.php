@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
 use App\Http\Controllers\Dashboard\EmployeeChangePasswordController;
@@ -32,7 +33,9 @@ Route::group(["prefix" => 'customer'], function () {
 
 // admin
 Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function () {
-    Route::view('/', "dashboard/dashboard")->name("dashboard.home");
+    Route::get('/', [DashboardController::class, "index"])->name("dashboard.home");
+    Route::get('/json', [DashboardController::class, "json"])->name("dashboard.json");
+    Route::view('/test', "dashboard/test")->name("dashboard.test");
 
     //employee management
     Route::group(["prefix" => "employee"], function() {

@@ -1,6 +1,7 @@
 @extends("dashboard.layouts.template")
 
 @push("css")
+<link href="{{ asset("dashboard/plugins/fullcalendar/css/fullcalendar.min.css") }}" rel="stylesheet"/>
 <style>
     .fc-toolbar h2 {
         text-transform: initial;
@@ -19,7 +20,6 @@
         background-color: red;
     }
 </style>
-
 @endpush
 
 @section("title")
@@ -129,145 +129,147 @@
 @endsection
 
 @push("script")
-    <script>
-        $(document).ready(function() {
-            $('select.form-control#rooms').select2();
-            $('select.form-control#customers').select2({
-                multiple: false,
-                tags: true,
-                createTag: function (params) {
-                    var term = $.trim(params.term);
-                    if (term === '') {
-                        return null;
-                    }
-                    return {
-                        id: "g||" + term,
-                        text: term,
-                        newTag: true
-                    }
+<script src="{{ asset("dashboard/plugins/fullcalendar/js/moment.min.js") }}"></script>
+<script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
+<script>
+    $(document).ready(function() {
+        $('select.form-control#rooms').select2();
+        $('select.form-control#customers').select2({
+            multiple: false,
+            tags: true,
+            createTag: function (params) {
+                var term = $.trim(params.term);
+                if (term === '') {
+                    return null;
                 }
-            });
-            $('.select2.select2-container').addClass('form-control form-control-rounded')
-            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
+                return {
+                    id: "g||" + term,
+                    text: term,
+                    newTag: true
+                }
+            }
+        });
+        $('.select2.select2-container').addClass('form-control form-control-rounded')
+        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
 
-            $('input[type="date"]').on('focusin', function(){
-                $(this).data('prev', $(this).val());
-            });
+        $('input[type="date"]').on('focusin', function(){
+            $(this).data('prev', $(this).val());
+        });
 
-            $("#rooms").change(function() {
-                let calendar = $("#calendar");
-                let sources = {
-                    url: "{{ route("dashboard.reservation.json") }}",
-                    type: "POST",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "roomID": $("#rooms")[0].value
-                    }
-                };
-                // reset input
-                $("#startDate")[0].value = "";
-                $("#endDate")[0].value = "";
-                $("#totalPrice")[0].innerHTML = "0.00";
-                $("#numDays")[0].innerHTML = 0;
-                calendar.fullCalendar("unselect");
-                calendar.fullCalendar("removeEventSources");
-                calendar.fullCalendar("addEventSource", sources);
-            });
+        $("#rooms").change(function() {
+            let calendar = $("#calendar");
+            let sources = {
+                url: "{{ route("dashboard.reservation.json") }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "roomID": $("#rooms")[0].value
+                }
+            };
+            // reset input
+            $("#startDate")[0].value = "";
+            $("#endDate")[0].value = "";
+            $("#totalPrice")[0].innerHTML = "0.00";
+            $("#numDays")[0].innerHTML = 0;
+            calendar.fullCalendar("unselect");
+            calendar.fullCalendar("removeEventSources");
+            calendar.fullCalendar("addEventSource", sources);
+        });
 
-            function updateAndTriggerSwal(title, message) {
-                let tempStartDate = $("#startDate").data("prev");
-                let tempEndDate = $("#endDate").data("prev");
-                if (tempStartDate === "" || tempEndDate === "") {
-                    $('#calendar').fullCalendar('unselect');
-                    $("#startDate")[0].value = tempStartDate;
-                    $("#endDate")[0].value = tempEndDate;
+        function updateAndTriggerSwal(title, message) {
+            let tempStartDate = $("#startDate").data("prev");
+            let tempEndDate = $("#endDate").data("prev");
+            if (tempStartDate === "" || tempEndDate === "") {
+                $('#calendar').fullCalendar('unselect');
+                $("#startDate")[0].value = tempStartDate;
+                $("#endDate")[0].value = tempEndDate;
+            }
+            else {
+                $('#calendar').fullCalendar('select', moment(tempStartDate), moment(tempEndDate).add(1, "days"));
+            }
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: "error",
+            });
+        }
+
+        function changeDate() {
+            let startDate = $("#startDate")[0].value;
+            let endDate = $("#endDate")[0].value;
+            if (startDate !== "" && endDate !== "") {
+                $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
+            }
+        }
+
+        $("#calendar").fullCalendar({
+            selectable: true,
+            unselectAuto: false,
+            header: {
+                left: 'prev',
+                center: 'title',
+                right: 'next'
+            },
+            loading: function(isLoading, view) {
+                let loadingSpan = $("#loading")[0];
+                if (isLoading) {
+                    loadingSpan.innerHTML = "(Fetching Data)";
                 }
                 else {
-                    $('#calendar').fullCalendar('select', moment(tempStartDate), moment(tempEndDate).add(1, "days"));
+                    loadingSpan.innerHTML = "";
                 }
-                Swal.fire({
-                    title: title,
-                    text: message,
-                    icon: "error",
-                });
-            }
-
-            function changeDate() {
-                let startDate = $("#startDate")[0].value;
-                let endDate = $("#endDate")[0].value;
-                if (startDate !== "" && endDate !== "") {
-                    $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
+            },
+            eventSources: [{
+                url: "{{ route("dashboard.reservation.json") }}",
+                type: "POST",
+                data: {
+                    "_token": "{{ csrf_token() }}",
+                    "roomID": $("#rooms")[0].value
                 }
-            }
-
-            $("#calendar").fullCalendar({
-                selectable: true,
-                unselectAuto: false,
-                header: {
-                    left: 'prev',
-                    center: 'title',
-                    right: 'next'
-                },
-                loading: function(isLoading, view) {
-                    let loadingSpan = $("#loading")[0];
-                    if (isLoading) {
-                        loadingSpan.innerHTML = "(Fetching Data)";
-                    }
-                    else {
-                        loadingSpan.innerHTML = "";
-                    }
-                },
-                eventSources: [{
-                    url: "{{ route("dashboard.reservation.json") }}",
-                    type: "POST",
-                    data: {
-                        "_token": "{{ csrf_token() }}",
-                        "roomID": $("#rooms")[0].value
-                    }
-                }],
-                select: function(startDate, endDate) {
-                    let dateNow = moment().startOf('day');
-                    if (dateNow > startDate) {
-                        updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
-                    }
-                    else if (dateNow > endDate) {
-                        updateAndTriggerSwal("Invalid Date", "The ending date cannot be the passed date");
-                    }
-                    else if (startDate >= endDate) {
-                        updateAndTriggerSwal("Invalid Date", "The starting date cannot be over than ending date")
-                    }
-                    else {
-                        let events = $("#calendar").fullCalendar("clientEvents");
-                        let isValid = true;
+            }],
+            select: function(startDate, endDate) {
+                let dateNow = moment().startOf('day');
+                if (dateNow > startDate) {
+                    updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
+                }
+                else if (dateNow > endDate) {
+                    updateAndTriggerSwal("Invalid Date", "The ending date cannot be the passed date");
+                }
+                else if (startDate >= endDate) {
+                    updateAndTriggerSwal("Invalid Date", "The starting date cannot be over than ending date")
+                }
+                else {
+                    let events = $("#calendar").fullCalendar("clientEvents");
+                    let isValid = true;
+                    endDate.subtract(1, "days");
+                    events.forEach(event => {
+                        event.end.subtract(1, "days");
+                        if (event.start <= startDate && event.end >= startDate || event.start <= endDate && event.end >= endDate || event.start >= startDate && event.end <= endDate)
+                        {
+                            isValid = false;
+                        }
+                    });
+                    endDate.add(1, "days");
+                    if (isValid) {
+                        let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
                         endDate.subtract(1, "days");
-                        events.forEach(event => {
-                            event.end.subtract(1, "days");
-                            if (event.start <= startDate && event.end >= startDate || event.start <= endDate && event.end >= endDate || event.start >= startDate && event.end <= endDate)
-                            {
-                                isValid = false;
-                            }
-                        });
-                        endDate.add(1, "days");
-                        if (isValid) {
-                            let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
-                            endDate.subtract(1, "days");
-                            $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
-                            $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
-                            $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
-                            $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
-                            $("#numDays")[0].innerHTML = numberOfDays;
-                            let price = parseFloat($("#rooms").find(':selected').data('price'));
-                            $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
-                        }
-                        else {
-                            updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
-                        }
+                        $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
+                        $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
+                        $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
+                        $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
+                        $("#numDays")[0].innerHTML = numberOfDays;
+                        let price = parseFloat($("#rooms").find(':selected').data('price'));
+                        $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
+                    }
+                    else {
+                        updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
                     }
                 }
-            });
-            $("#startDate, #endDate").change(function() {
-                changeDate();
-            })
+            }
         });
-    </script>
+        $("#startDate, #endDate").change(function() {
+            changeDate();
+        })
+    });
+</script>
 @endpush
