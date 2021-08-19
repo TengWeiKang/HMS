@@ -100,6 +100,6 @@ class FacilityController extends Controller
     {
         $facility->rooms()->detach();
         $facility->delete();
-        return response()->json(['success' => "The facility has been removed"]);;
+        return response()->json(['success' => "The facility has been removed"]);
     }
 }

@@ -129,6 +129,6 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         $employee->delete();
-        return response()->json(['success' => "The employee has been removed"]);;
+        return response()->json(['success' => "The employee has been removed"]);
     }
 }

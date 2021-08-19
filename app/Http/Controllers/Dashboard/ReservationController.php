@@ -23,7 +23,8 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::all();
+        $reservations = Reservation::orderBy("created_at", "DESC")->get();
+        return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 
     /**
@@ -35,16 +36,21 @@ class ReservationController extends Controller
     {
         $roomID = $request->roomID;
         $reservations = Room::find($roomID)->reservations;
+        if ($request->has("ignoreID")) {
+            $ignoreID = $request->ignoreID;
+            $reservations = $reservations->filter(function ($value, $key) use ($ignoreID) {
+                return $value->id != $ignoreID;
+            });
+        }
         $json = [];
         foreach ($reservations as $reservation) {
-            $endDate = Carbon::createFromFormat('Y-m-d', $reservation->end_date);
             $json[] = [
-                "start" => $reservation->start_date,
-                "end" => $endDate->addDays(1)->format("Y-m-d"),
+                "start" => $reservation->start_date->format("Y-m-d"),
+                "end" => $reservation->end_date->addDays(1)->format("Y-m-d"),
                 "rendering" => "background",
                 "className" => ["bg-red"]
             ];
-        };
+        }
         return $json;
     }
 
@@ -73,7 +79,7 @@ class ReservationController extends Controller
         $customerID = $split[1];
         if (!$isCustomer) {
             $customerID = Guest::create([
-                "name" => $customerID
+                "username" => $customerID
             ])->id;
         }
         $customerID = (int) $customerID;
@@ -128,7 +134,9 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        //
+        $rooms = Room::all();
+        $customers = Customer::all();
+        return view('dashboard/reservation/edit-form', ["rooms" => $rooms, "customers" => $customers, "reservation" => $reservation]);
     }
 
     /**
@@ -140,7 +148,51 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-        //
+        $split = explode("||", $request->customer, 2);
+        $isCustomer = $split[0] == 'c' ? 1 : 0;
+        $customerID = $split[1];
+        if (!$isCustomer) {
+            $customerID = Guest::create([
+                "username" => $customerID
+            ])->id;
+        }
+        $customerID = (int) $customerID;
+        $validator = Validator::make($request->all(), [
+            "startDate" => "required|date",
+            "endDate" => "required|date"
+        ]);
+        $validator->after(function ($validator) use ($request, $reservation) {
+            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->roomId)
+                ->where(function ($query) use ($request) {
+                    $query->where("start_date", "<=", $request->startDate)
+                        ->where("end_date", ">=", $request->startDate)
+                        ->orWhere("start_date", "<=", $request->endDate)
+                        ->where("end_date", ">=", $request->endDate)
+                        ->orWhere("start_date", ">=", $request->startDate)
+                        ->where("end_date", "<=", $request->endDate);
+                }
+            )->count();
+            if ($count > 0) {
+                $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
+            }
+        });
+        $validator->validate();
+
+        $reservation->room_id = $request->roomId;
+        $reservation->start_date = $request->startDate;
+        $reservation->end_date = $request->endDate;
+        $reservation->reservable_type = $isCustomer ? Customer::class : Guest::class;
+        if ($reservation->check_in == null) {
+            $reservation->check_in = $request->checkIn ? Carbon::now() : null;
+        }
+        else if (!$request->checkIn) {
+            $reservation->check_in = null; // disable check in
+        }
+        $reservation->save();
+
+        $rooms = Room::all();
+        $customers = Customer::all();
+        return redirect()->route('dashboard.reservation.edit', ["rooms" => $rooms, "customers" => $customers, "reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
     }
 
     /**
@@ -151,10 +203,7 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-        //
-    }
-
-    private function validReservationDate($startDate, $endDate) {
-
+        $reservation->delete();
+        return response()->json(['success' => "The reservation has been removed"]);
     }
 }

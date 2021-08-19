@@ -142,6 +142,6 @@ class RoomController extends Controller
     {
         $room->facilities()->detach();
         $room->delete();
-        return response()->json(['success' => "The room has been removed"]);;
+        return response()->json(['success' => "The room has been removed"]);
     }
 }
