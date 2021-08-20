@@ -213,4 +213,26 @@ class ReservationController extends Controller
         $services = Service::all();
         return view('dashboard/reservation/room-service', ["reservation" => $reservation, "services" => $services]);
     }
+    public function storeService(Request $request, Reservation $reservation)
+    {
+        // $arr = array_map(null, $request->serviceID, $request->qty);
+        $arr = array_combine($request->serviceID, $request->qty);
+        // foreach ($arr as $key => $value) {
+        //     $arr[$key] = ["quantity" => $value];
+        // }
+        // dd($reservation->services);
+        // $reservation->services()->sync($arr);
+        foreach ($arr as $key => $value) {
+            if ($reservation->services()->where("service_id", $key)->exists()) {
+                $reservation->services()->where("service_id", $key)->increment("quantity", $value);
+            }
+            else {
+                $reservation->services()->attach($key, [
+                    "quantity" => $value
+                ]);
+            }
+        }
+        $services = Service::all();
+        return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation, "services" => $services])->with("message", "The Room Services Added Successfully");
+    }
 }

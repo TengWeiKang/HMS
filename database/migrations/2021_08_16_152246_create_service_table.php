@@ -18,7 +18,6 @@ class CreateServiceTable extends Migration
             $table->id();
             $table->string("name");
             $table->double("price");
-            $table->timestamps();
         });
 
         Service::create([

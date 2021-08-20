@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Room;
+use App\Models\Services;
 use Carbon\Carbon;
 
 class Reservation extends Model
@@ -45,13 +46,26 @@ class Reservation extends Model
     }
 
     /**
-     * Get all of the services for the Reservation
+     * The services that belong to the Reservation
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function services()
     {
-        return $this->hasManyThrough(Services::class, "room_service");
+        return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity");
+    }
+
+    public function totalServicePrices()
+    {
+        $totalPrice = 0;
+        foreach ($this->services as $service) {
+            $totalPrice += $service->price * $service->pivot->quantity;
+        }
+        return $totalPrice;
+    }
+
+    public function finalPrices() {
+        return $this->bookingPrice() + $this->totalServicePrices();
     }
 
     public function statusName() {
