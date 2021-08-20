@@ -15,15 +15,14 @@ class CreateReservationTable extends Migration
     {
         Schema::create('reservation', function (Blueprint $table) {
             $table->id();
-            $table->integer("room_id");
+            $table->integer("room_id")->index();
             $table->string("reservable_type");
-            $table->integer("reservable_id");
+            $table->integer("reservable_id")->index();
             $table->date("start_date");
             $table->date("end_date");
             $table->timestamp("check_in")->nullable();
             $table->timestamp("check_out")->nullable();
             $table->timestamp('created_at')->nullable();
-            $table->timestamp('deleted_at')->nullable();
         });
     }
 

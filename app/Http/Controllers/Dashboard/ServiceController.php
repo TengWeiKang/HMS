@@ -103,6 +103,6 @@ class ServiceController extends Controller
     public function destroy(Service $service)
     {
         $service->delete();
-        return response()->json(['success' => "The service has been removed"]);;
+        return response()->json(['success' => "The service has been removed"]);
     }
 }

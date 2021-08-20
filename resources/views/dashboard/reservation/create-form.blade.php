@@ -149,8 +149,8 @@
                 }
             }
         });
-        $('.select2.select2-container').addClass('form-control form-control-rounded')
-        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
+        $('.select2.select2-container').addClass('form-control form-control-rounded');
+        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
         $('input[type="date"]').on('focusin', function(){
             $(this).data('prev', $(this).val());

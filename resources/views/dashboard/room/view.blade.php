@@ -34,13 +34,38 @@
                     <h5 class="mb-3 font-weight-bold">Room Information</h5>
                     <div class="row">
                         <div class="col-md-12">
-                            <h6 class="mt-3">Room ID: {{ $room->room_id }}</h6>
-                            <h6 class="mt-3">Room Name: {{ $room->name }}</h6>
-                            <h6 class="mt-3">Price: RM {{ number_format($room->price, 2) }}</h6>
-                            <h6 class="mt-3">Single Bed: {{ $room->single_bed }}</h6>
-                            <h6 class="mt-3">Double Bed: {{ $room->double_bed }}</h6>
-                            <h6 class="mt-3">Status: <span style="color: {{ $room->statusColor() }}">{{ $room->status() }}</span></h6>
-                            <h6 class="mt-3">Created Date: {{ $room->created_at->format("d M Y") }}</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tr>
+                                        <td width="20%">Room ID:</td>
+                                        <td>{{ $room->room_id }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Room Name:</td>
+                                        <td>{{ $room->name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Price:</td>
+                                        <td>RM {{ number_format($room->price, 2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Single Bed:</td>
+                                        <td>{{ $room->single_bed }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Double Bed:</td>
+                                        <td>{{ $room->double_bed }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status:</td>
+                                        <td style="color: {{ $room->statusColor() }}">{{ $room->status() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Created Date:</td>
+                                        <td>{{ $room->created_at->format("d F Y") }}</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -49,7 +74,3 @@
     </div>
 </div>
 @endsection
-
-@push("script")
-    <script></script>
-@endpush

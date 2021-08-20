@@ -34,7 +34,7 @@ Route::group(["prefix" => 'customer'], function () {
 // admin
 Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function () {
     Route::get('/', [DashboardController::class, "index"])->name("dashboard.home");
-    Route::get('/json', [DashboardController::class, "json"])->name("dashboard.json");
+    Route::post('/json', [DashboardController::class, "json"])->name("dashboard.json");
     Route::view('/test', "dashboard/test")->name("dashboard.test");
 
     //employee management
@@ -90,7 +90,6 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::delete("/{service}", [ServiceController::class, "destroy"])->name("dashboard.service.destroy");
     });
 
-
     //reservation management
     Route::group(["prefix" => "reservation"], function() {
         Route::get("/", [ReservationController::class, "index"])->name("dashboard.reservation");
@@ -101,6 +100,8 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{reservation}/edit", [ReservationController::class, "edit"])->name("dashboard.reservation.edit");
         Route::put("/{reservation}/edit", [ReservationController::class, "update"]);
         Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");
+        Route::get("/{reservation}/service", [ReservationController::class, "createService"])->name("dashboard.reservation.service");
+        Route::post("/{reservation}/service", [ReservationController::class, "storeService"]);
     });
 });
 

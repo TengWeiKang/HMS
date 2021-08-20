@@ -61,7 +61,3 @@
     </div>
 </div><!--End Row--
 @endsection
-
-@push("script")
-    <script></script>
-@endpush

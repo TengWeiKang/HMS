@@ -31,7 +31,7 @@ class DashboardController extends Controller
                 ];
             }
         }
-        else {
+        else if ($return === "events"){
             $reservations = Reservation::all();
             foreach ($reservations as $reservation) {
                 $json[] = [
@@ -39,7 +39,7 @@ class DashboardController extends Controller
                     "resourceId" => $reservation->room_id,
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date,
-                    "end" => Carbon::createFromFormat('Y-m-d', $reservation->end_date)->addDays(1)->format("Y-m-d")
+                    "end" => $reservation->end_date->subtract(1, "days")->format("Y-m-d")
                 ];
             }
         }

@@ -103,7 +103,12 @@
                     <div class="form-group col-12 mt-3">
                         <label class="h5">RM <span id="totalPrice">{{ number_format($reservation->bookingPrice(), 2) }}</span></label>
                     </div>
-                    <div class="form-group row mx-2 mt-4">
+                    @if ($reservation->check_in != null)
+                        <div class="form-group col-12 mt-3">
+                            <a href="#" class="btn btn-primary btn-round px-5"><i class="icon-plus"></i> Add Room Service</a>
+                        </div>
+                    @endif
+                    <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
                     </div>
                 </form>
@@ -143,8 +148,8 @@
                 }
             }
         });
-        $('.select2.select2-container').addClass('form-control form-control-rounded')
-        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple')
+        $('.select2.select2-container').addClass('form-control form-control-rounded');
+        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
         $('input[type="date"]').on('focusin', function(){
             $(this).data('prev', $(this).val());

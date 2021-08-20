@@ -16,7 +16,7 @@
         @if(Auth::guard('employee')->user()->isAdmin() || Auth::guard("employee")->user()->isStaff())
         <li>
             <a href="{{ route("dashboard.reservation") }}">
-                <i class="fa fa-ticket"></i><span style="margin-left: 10px">Booking</span>
+                <i class="fa fa-ticket"></i><span style="margin-left: 10px">Reservation</span>
             </a>
         </li>
         @endif

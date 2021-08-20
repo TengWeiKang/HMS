@@ -68,7 +68,3 @@
 @section("title")
 
 @endsection
-
-@push("script")
-    <script></script>
-@endpush

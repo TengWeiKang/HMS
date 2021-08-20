@@ -37,8 +37,8 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $reservation->room->room_id }}</td>
                                     <td>{{ $reservation->reservable->username }}</td>
-                                    <td>{{ $reservation->start_date->format("Y-m-d") }}</td>
-                                    <td>{{ $reservation->end_date->format("Y-m-d") }}</td>
+                                    <td>{{ $reservation->start_date->format("d M Y") }}</td>
+                                    <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}">

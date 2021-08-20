@@ -35,6 +35,9 @@
             schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
             initialView: 'resourceTimelineMonth',
             contentHeight: "auto",
+            nowIndicator: true,
+            eventOverlap: false,
+            displayEventTime: false,
             headerToolbar: {
                 left: 'prevYear,prev,today,next,nextYear',
                 center: 'title',
@@ -43,7 +46,7 @@
             resourceAreaHeaderContent: 'Rooms',
             resources: {
                 url: "{{ route("dashboard.json") }}",
-                method: "GET",
+                method: "POST",
                 extraParams: {
                     "_token": "{{ csrf_token() }}",
                     "return": "resources"
@@ -51,7 +54,7 @@
             },
             eventSources: [{
                 url: "{{ route("dashboard.json") }}",
-                method: "GET",
+                method: "POST",
                 extraParams: {
                     "_token": "{{ csrf_token() }}",
                     "return": "events"
@@ -61,7 +64,7 @@
                 if (rawEvents.length == 0) {
                     $("#emptyRoom").removeAttr("style");
                 }
-            }
+            },
         });
         calendar.render();
 </script>

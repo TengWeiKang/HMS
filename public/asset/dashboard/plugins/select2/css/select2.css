@@ -154,7 +154,7 @@
     margin-right: 20px;
     padding-right: 0px; }
   .select2-container--default .select2-selection--single .select2-selection__placeholder {
-    color: #555; }
+    color: #BBB; }
   .select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 26px;
     position: absolute;
@@ -470,7 +470,7 @@
     font-weight: bold;
     padding: 0 4px; }
     .select2-container--classic .select2-selection--multiple .select2-selection__choice__remove:hover {
-      color: #555;
+      color: #BBB;
       outline: none; }
 
 .select2-container--classic[dir="rtl"] .select2-selection--multiple .select2-selection__choice {

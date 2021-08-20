@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Service;
 
 class CreateServiceTable extends Migration
 {
@@ -19,6 +20,19 @@ class CreateServiceTable extends Migration
             $table->double("price");
             $table->timestamps();
         });
+
+        Service::create([
+            "name" => "food",
+            "price" => 7
+        ]);
+        Service::create([
+            "name" => "drink",
+            "price" => 5
+        ]);
+        Service::create([
+            "name" => "food 2",
+            "price" => 9
+        ]);
     }
 
     /**

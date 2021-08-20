@@ -23,11 +23,32 @@
                     <h5 class="mb-3 font-weight-bold">User Profile</h5>
                     <div class="row">
                         <div class="col-md-12">
-                            <h6 class="mt-3">Username: {{ $employee->username }}</h6>
-                            <h6 class="mt-3">Email: {{ $employee->email }}</h6>
-                            <h6 class="mt-3">Phone number: {{ $employee->phone }}</h6>
-                            <h6 class="mt-3">Role: {{ $employee->role() }}</h6>
-                            <h6 class="mt-3">Created Date: {{ $employee->created_at->format("d M Y") }}</h6>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <tbody>
+                                        <tr>
+                                            <td width="20%">Username:</td>
+                                            <td>{{ $employee->username }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email:</td>
+                                            <td>{{ $employee->email }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phone number:</td>
+                                            <td>{{ $employee->phone }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Role:</td>
+                                            <td>{{ $employee->role() }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Created Date:</td>
+                                            <td>{{ $employee->created_at->format("d F Y") }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -36,7 +57,3 @@
     </div>
 </div>
 @endsection
-
-@push("script")
-    <script></script>
-@endpush

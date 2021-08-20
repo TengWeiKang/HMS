@@ -44,6 +44,16 @@ class Reservation extends Model
         return $this->morphTo();
     }
 
+    /**
+     * Get all of the services for the Reservation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function services()
+    {
+        return $this->hasManyThrough(Services::class, "room_service");
+    }
+
     public function statusName() {
         $today = Carbon::today();
         if ($this->check_in == null)

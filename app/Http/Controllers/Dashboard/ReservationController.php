@@ -7,6 +7,7 @@ use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\Customer;
 use App\Models\Guest;
+use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -123,7 +124,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        //
+        return view('dashboard/reservation/view', ["reservation" => $reservation]);
     }
 
     /**
@@ -205,5 +206,11 @@ class ReservationController extends Controller
     {
         $reservation->delete();
         return response()->json(['success' => "The reservation has been removed"]);
+    }
+
+    public function createService(Reservation $reservation)
+    {
+        $services = Service::all();
+        return view('dashboard/reservation/room-service', ["reservation" => $reservation, "services" => $services]);
     }
 }

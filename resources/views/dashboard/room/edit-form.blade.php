@@ -84,7 +84,6 @@
                             @endforeach
                         </select>
                     </div>
-                    {{-- || $errors->isEmpty() &&  --}}
                     <div class="form-group row mt-5 mx-2">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
                     </div>
