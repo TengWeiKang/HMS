@@ -95,7 +95,6 @@
                         </thead>
                         <tbody>
                             @foreach ($reservation->services as $service)
-                            {{-- {{ dd($service->pivot) }} --}}
                             <tr>
                                 <th>{{ $loop->index + 1 }}</th>
                                 <td>{{ $service->name }}</td>
