@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -23,9 +24,9 @@ class PaymentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Reservation $reservation)
     {
-        //
+        return view('dashboard/payment/create-form', ["reservation" => $reservation]);
     }
 
     /**

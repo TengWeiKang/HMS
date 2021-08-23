@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PaymentItem;
+use App\Models\PaymentCharge;
 
 class Payment extends Model
 {
@@ -23,6 +24,7 @@ class Payment extends Model
         'price_per_night',
         'start_date',
         'end_date',
+        'discount',
     ];
 
     protected $casts = [
@@ -36,9 +38,14 @@ class Payment extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function items(): HasMany
+    public function items()
     {
         return $this->hasMany(PaymentItem::class, 'payment_id');
+    }
+
+    public function charges()
+    {
+        return $this->hasMany(PaymentCharge::class, 'room_id');
     }
 
     public function dateDifference() {
@@ -49,8 +56,16 @@ class Payment extends Model
         return $this->dateDifference() * $this->price_per_night;
     }
 
+    public function totalCharges() {
+        $charges = 0;
+        foreach ($this->charges as $paymentCharge) {
+            $charge += $paymentCharge;
+        }
+        return $charge;
+    }
+
     public function finalPrices() {
-        return $this->bookingPrice() + $this->totalServicePrices();
+        return $this->bookingPrice() + $this->totalServicePrices() * (100 - $this->discount) / 100;
     }
 
     public function totalItemPrices()

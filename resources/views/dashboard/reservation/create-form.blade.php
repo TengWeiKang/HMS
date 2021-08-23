@@ -73,7 +73,7 @@
                             </div>
                             @enderror
                         </div>
-                        <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">0</span> day(s)</label>
+                        <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">0</span> night(s)</label>
                     </div>
                     @if ($errors->has(["startDate", "endDate"]))
                         <div class="col-lg-6 pl-lg-0">

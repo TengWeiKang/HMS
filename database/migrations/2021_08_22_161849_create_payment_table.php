@@ -21,6 +21,7 @@ class CreatePaymentTable extends Migration
             $table->double("price_per_night");
             $table->string("start_date");
             $table->string("end_date");
+            $table->double("discount");
             $table->timestamp("payment_at");
         });
     }

@@ -67,7 +67,7 @@
                         <div class="col-lg-4 pr-lg-0">
                             <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $reservation->end_date->format("Y-m-d")) }}">
                         </div>
-                        <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">{{ $reservation->dateDifference() }}</span> day(s)</label>
+                        <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">{{ $reservation->dateDifference() }}</span> night(s)</label>
                     </div>
                     @if ($errors->hasAny(["startDate", "endDate"]))
                         <div class="col-lg-6 pl-lg-0">

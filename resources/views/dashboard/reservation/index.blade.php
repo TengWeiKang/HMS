@@ -58,7 +58,7 @@
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                         @if ($reservation->check_in != null && $reservation->check_out == null)
-                                        <a href="{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}" title="Check Out">
+                                        <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
                                             <i class="zmdi zmdi-check text-white"></i>
                                         </a>
                                         @endif

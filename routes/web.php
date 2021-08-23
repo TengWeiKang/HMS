@@ -10,6 +10,7 @@ use App\Http\Controllers\Dashboard\RoomController;
 use App\Http\Controllers\Dashboard\FacilityController;
 use App\Http\Controllers\Dashboard\ReservationController;
 use App\Http\Controllers\Dashboard\ServiceController;
+use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -102,6 +103,17 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");
         Route::get("/{reservation}/service", [ReservationController::class, "createService"])->name("dashboard.reservation.service");
         Route::post("/{reservation}/service", [ReservationController::class, "storeService"]);
+    });
+
+    //payment management
+    Route::group(["prefix" => "payment"], function() {
+        Route::get("/", [PaymentController::class, "index"])->name("dashboard.payment");
+        Route::get("{reservation}/create", [PaymentController::class, "create"])->name("dashboard.payment.create");
+        Route::post("{reservation}/create", [PaymentController::class, "store"]);
+        Route::get("/{payment}", [PaymentController::class, "show"])->name("dashboard.payment.view");
+        // Route::get("/{payment}/edit", [PaymentController::class, "edit"])->name("dashboard.payment.edit");
+        // Route::put("/{payment}/edit", [PaymentController::class, "update"]);
+        Route::delete("/{payment}", [PaymentController::class, "destroy"])->name("dashboard.payment.destroy");
     });
 });
 
