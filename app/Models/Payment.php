@@ -18,7 +18,8 @@ class Payment extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'room',
+        'room_id',
+        'room_name',
         'reservable_type',
         'reservable_id',
         'price_per_night',
@@ -56,24 +57,37 @@ class Payment extends Model
         return $this->dateDifference() * $this->price_per_night;
     }
 
-    public function totalCharges() {
+    public function totalChargesPrice() {
         $charges = 0;
         foreach ($this->charges as $paymentCharge) {
-            $charge += $paymentCharge;
+            $charges += $paymentCharge->price;
         }
-        return $charge;
-    }
-
-    public function finalPrices() {
-        return $this->bookingPrice() + $this->totalServicePrices() * (100 - $this->discount) / 100;
+        return $charges;
     }
 
     public function totalItemPrices()
     {
         $totalPrice = 0;
         foreach ($this->items as $item) {
-            $totalPrice += $item->quantity * $item->pivot->unit_price;
+            $totalPrice += $item->quantity * $item->unit_price;
         }
         return $totalPrice;
+    }
+
+    public function subPrice() {
+        return $this->bookingPrice() + $this->totalItemPrices();
+    }
+
+    public function totalSubPrices() {
+        return $this->subPrice() * (100 - $this->discount) / 100;
+    }
+
+
+    public function totalPrices() {
+        return $this->totalSubPrices() + $this->totalChargesPrice();
+    }
+
+    public function reservable() {
+        return $this->morphTo();
     }
 }

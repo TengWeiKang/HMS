@@ -16,7 +16,8 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        //
+        $payments = Payment::all();
+        return view('dashboard/payment/index', ["payments" => $payments]);
     }
 
     /**
@@ -35,9 +36,46 @@ class PaymentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Reservation $reservation)
     {
-        //
+        $this->validate($request, [
+            'discount' => 'required|numeric|min:0|max:100|regex:/^\d*(\.\d{1,2})?$/',
+            'description' => 'array',
+            'description.*' => 'required|max:255',
+            'chargePrices' => 'array',
+            'chargePrices.*' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
+        ]);
+        $items = [];
+        foreach ($reservation->services as $service) {
+            $items[] = [
+                "service_name" => $service->name,
+                "quantity" => $service->pivot->quantity,
+                "unit_price" => $service->price
+            ];
+        }
+        $charges = [];
+        if (!is_null($request->description)) {
+            for ($i = 0; $i < count($request->description); $i++) {
+                $charges[] = [
+                    "description" => $request->description[$i],
+                    "price" => $request->chargePrices[$i]
+                ];
+            }
+        }
+        $a = Payment::create([
+            "room_id" => $reservation->room->id,
+            "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
+            "reservable_type" => $reservation->reservable_type,
+            "reservable_id" => $reservation->reservable_id,
+            "price_per_night" => $reservation->room->price,
+            "start_date" => $reservation->start_date,
+            "end_date" => $reservation->end_date,
+            "discount" => $request->discount
+        ]);
+        $a->items()->createMany($items);
+        $a->charges()->createMany($charges);
+
+        return redirect()->route('dashboard.payment.view', ["payment" => $reservation]);
     }
 
     /**
@@ -48,7 +86,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        //
+        return view('dashboard/payment/view', ["payment" => $payment]);
     }
 
     /**

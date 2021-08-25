@@ -68,7 +68,7 @@ class RoomController extends Controller
             "single_bed" => $request->singleBed,
             "double_bed" => $request->doubleBed,
         ])->facilities()->attach($request->facilities);
-        return redirect()->route('dashboard.room.create');
+        return redirect()->route('dashboard.room.create')->with("message", "The room has created successfully");
     }
 
     /**

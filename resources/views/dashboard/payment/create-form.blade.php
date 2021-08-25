@@ -26,7 +26,6 @@
 				@endif
                 <form action="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" method="POST">
                     @csrf
-                    <input type="hidden" name="reservation_id" value="{{ $reservation->id }}">
                     <div class="card-title mt-4">Initial Payment</div>
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -73,7 +72,7 @@
                         </table>
                     </div>
                     @endif
-                    <div class="table-responsive mt-5">
+                    <div class="table-responsive">
                         <table class="table table-hover">
                             <tbody>
                                 <tr>
@@ -118,8 +117,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="form-group mt-3">
-                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
+                    <div class="form-group mt-3 text-right mr-3">
+                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-check"></i> Payment</button>
                     </div>
                 </form>
             </div>
@@ -135,18 +134,21 @@
             function updatePrices() {
                 let price = parseFloat("{{ $reservation->finalPrices() }}");
                 let discount = $("#discount").val();
-                if (discount == 0) {
+                if (discount == "") {
                     discount = 0;
                 }
-                else if (discount < 0) {
-                    discount = 0;
-                    $("#discount").val(0);
-                }
-                else if (discount > 100) {
-                    discount = 100;
-                    $("discount").val(100);
-                }
-                let discountedPrice = price * ((100 - parseFloat(discount)) / 100);
+				else {
+					discount = parseFloat(discount);
+					if (discount < 0) {
+						discount = 0;
+						$("#discount").val(0);
+					}
+					else if (discount > 100) {
+						discount = 100;
+						$("#discount").val(100);
+					}
+				}
+                let discountedPrice = price * ((100 - discount) / 100);
                 $("#price")[0].innerHTML = discountedPrice.toFixed(2);
 
                 $charges = $("input[name='chargePrices[]']");
@@ -169,14 +171,16 @@
             function bindListener() {
                 $(".delete-charge-row").on("click", function () {
                     $(this).parent().parent().remove();
+                    updatePrices();
                 });
+				$("#discount, input[name='chargePrices[]']").on("input", function () {
+					updatePrices();
+				});
             }
-
-            bindListener();
 
             $(".add-charge-row").on("click", function () {
                 let chargeInput = `<tr>
-                    <td><input type="text" name="" class="form-control form-control-rounded table-input" style="width: 90%" required></td>
+                    <td><input type="text" name="description[]" class="form-control form-control-rounded table-input" style="width: 90%" required></td>
                     <td class="text-center">
                         <a class="delete-charge-row" style="cursor: pointer; font-size: 20px">
                             <i class="zmdi zmdi-delete text-white"></i>
@@ -187,11 +191,8 @@
                 $(chargeInput).insertBefore($(this).parent().parent());
                 bindListener();
                 updatePrices();
-            })
-
-            $("#discount, input[name='chargePrices[]']").on("input", function () {
-                updatePrices();
             });
+            bindListener();
         });
 
     </script>

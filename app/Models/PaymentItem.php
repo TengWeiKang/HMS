@@ -9,13 +9,17 @@ class PaymentItem extends Model
 {
     use HasFactory;
 
+    public $table = "payment_item";
+    public $timestamps = false;
+
     protected $fillable = [
-        'reservable_type',
-        'reservable_id',
-        'room_id',
-        'start_date',
-        'end_date',
-        'check_in',
-        'check_out'
+        'payment_id',
+        'service_name',
+        'quantity',
+        'unit_price',
     ];
+
+    public function servicePrice() {
+        return $this->quantity * $this->unit_price;
+    }
 }
