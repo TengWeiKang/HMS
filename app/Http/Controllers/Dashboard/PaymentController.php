@@ -63,7 +63,7 @@ class PaymentController extends Controller
                 ];
             }
         }
-        $a = Payment::create([
+        $payment = Payment::create([
             "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
             "reservable_type" => $reservation->reservable_type,
@@ -73,9 +73,10 @@ class PaymentController extends Controller
             "end_date" => $reservation->end_date,
             "discount" => $request->discount
         ]);
-        $a->items()->createMany($items);
-        $a->charges()->createMany($charges);
+        $payment->items()->createMany($items);
+        $payment->charges()->createMany($charges);
 
+        $reservation->housekeptBy = null;
         $reservation->check_out = Carbon::now();
         $reservation->save();
 

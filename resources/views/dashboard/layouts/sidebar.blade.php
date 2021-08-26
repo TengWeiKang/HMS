@@ -20,6 +20,13 @@
             </a>
         </li>
         @endif
+        @if(Auth::guard('employee')->user()->isAdmin() || Auth::guard("employee")->user()->isStaff())
+        <li>
+            <a href="{{ route("dashboard.payment") }}">
+                <i class="fa fa-dollar"></i><span style="margin-left: 9px">Payment</span>
+            </a>
+        </li>
+        @endif
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
             <a style="cursor: pointer">
@@ -37,14 +44,14 @@
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
             <a href="{{ route("dashboard.facility") }}">
-                <i class="fa fa-wifi"></i><span style="margin-left: 12px">Facilities</span>
+                <i class="fa fa-wifi"></i><span style="margin-left: 11px">Facilities</span>
             </a>
         </li>
         @endif
         @if(Auth::guard('employee')->user()->isAdmin())
         <li>
             <a href="{{ route("dashboard.room") }}">
-                <i class="fa fa-hotel"></i><span style="margin-left: 12px">Rooms</span>
+                <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
             </a>
         </li>
         @endif

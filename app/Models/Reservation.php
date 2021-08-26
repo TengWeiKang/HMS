@@ -97,6 +97,16 @@ class Reservation extends Model
         return $this->dateDifference() * $this->room->price;
     }
 
+    /**
+     * Get the payment associated with the Reservation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'room_id');
+    }
+
     // public function customerRedirect() {
     //     if ($this->reservable == null || $this->reservable_type instanceof Guest) {
     //         return "";

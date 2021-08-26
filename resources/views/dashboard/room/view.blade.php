@@ -61,7 +61,7 @@
                                     </tr>
                                     <tr>
                                         <td>Status:</td>
-                                        <td style="color: {{ $room->statusColor() }}">{{ $room->status() }}</td>
+                                        <td style="color: {{ $room->statusColor() }}">{!! nl2br($room->status()) !!}</td>
                                     </tr>
                                     <tr>
                                         <td>Created Date:</td>

@@ -276,7 +276,7 @@
                     if (event.checkin != null && event.checkout == null) {
                         isReserved = true;
                     }
-                })
+                });
                 if (isReserved) {
                     $el.checked = false;
                     $el.disabled = true;
@@ -291,6 +291,7 @@
         $("#startDate, #endDate").change(function() {
             changeDate();
         })
+        changeDate();
     });
 </script>
 @endpush

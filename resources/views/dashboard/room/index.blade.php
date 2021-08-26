@@ -1,7 +1,11 @@
 @extends("dashboard.layouts.template")
 
 @push("css")
-
+<style>
+    select option {
+        background-color: transparent;
+    }
+</style>
 @endpush
 
 @section("title")
@@ -22,11 +26,12 @@
                     <table id="table" class="">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Room ID</th>
-                                <th>Room Name</th>
-                                <th>Price Per Night</th>
-                                <th>Status</th>
+                                <th width="5%">#</th>
+                                <th width="10%">Room ID</th>
+                                <th width="15%">Room Name</th>
+                                <th width="10%">Price Per Night</th>
+                                <th width="20%">Status</th>
+                                <th>Note</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -37,7 +42,8 @@
                                     <td>{{ $room->room_id }}</td>
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
-                                    <td style="color: {{ $room->statusColor() }};">{{ $room->status() }}</td>
+                                    <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status()) !!}</td>
+                                    <td>{!! nl2br($room->note) !!}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
@@ -48,6 +54,11 @@
                                         <a href="{{ route("dashboard.room.view", ["room" => $room]) }}">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
+                                        @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null)
+                                        <a class="assign" data-id="{{ $room->id }}" style="cursor: pointer">
+                                            <i class="fa fa-user-plus text-white"></i>
+                                        </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -57,6 +68,7 @@
             </div>
         </div>
     </div>
+    {{-- {{ dd($housekeepers) }} --}}
 </div>
 @endsection
 
@@ -107,6 +119,49 @@
                         });
                     }
                 })
+            });
+            $(".assign").on("click", function () {
+                var roomId = $(this).data("id");
+                Swal.fire({
+                    title: "Select a Housekeeper to clean the room",
+                    input: "select",
+                    inputOptions: {
+                        @foreach ($housekeepers as $housekeeper)
+                        "{{ $housekeeper->id }}" : "{{ $housekeeper->username }}",
+                        @endforeach
+                    },
+                    inputPlaceholder: "Select Housekeeper",
+                    showCancelButton: true
+                }).then((result) => {
+                    console.log(roomId);
+                    if (result.isConfirmed) {
+                        if (result.value == "") {
+                            Swal.fire("Error!", "Please select a housekeeper", "error");
+                        }
+                        else {
+                            $.ajax({
+                                type: "POST",
+                                url: "{{ route("dashboard.room.note") }}",
+                                data: {
+                                    "_token": "{{ csrf_token() }}",
+                                    "room": roomId,
+                                    "housekeptBy": result.value
+                                },
+                                success: function (response) {
+                                    Swal.fire({
+                                        title: "Note Updated",
+                                        text: response["success"],
+                                        icon: 'success',
+                                        showConfirmButton: false,
+                                        timer: 1000,
+                                    }).then(() => {
+                                        window.location.href = "{{ route("dashboard.room") }}";
+                                    });
+                                }
+                            });
+                        }
+                    }
+                });
             });
         });
     </script>

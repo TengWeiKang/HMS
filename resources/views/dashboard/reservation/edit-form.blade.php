@@ -260,6 +260,26 @@
                         updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
                     }
                 }
+            },
+            eventAfterAllRender: function(view) {
+                $el = $("#checkIn")[0];
+                $msgEl = $("#reserved")[0];
+                let events = $("#calendar").fullCalendar("clientEvents");
+                let isReserved = false;
+                events.forEach(event => {
+                    if (event.checkin != null && event.checkout == null) {
+                        isReserved = true;
+                    }
+                });
+                if (isReserved) {
+                    $el.checked = false;
+                    $el.disabled = true;
+                    $msgEl.innerHTML = "The room has been reserved by other customer";
+                }
+                else {
+                    $el.disabled = false;
+                    $msgEl.innerHTML = "";
+                }
             }
         });
         $("#startDate, #endDate").change(function() {

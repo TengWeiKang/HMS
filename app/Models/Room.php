@@ -14,7 +14,7 @@ class Room extends Model
     const STATUS = [
         0 => ["status" => "Available", "color" => "#0F0"],
         1 => ["status" => "Closed", "color" => "#111"],
-        2 => ["status" => "Booking", "color" => "#AAA"]
+        2 => ["status" => "Dirty", "color" => "#AAA"]
     ];
 
     public $table = "room";
@@ -28,8 +28,10 @@ class Room extends Model
         'price',
         'single_bed',
         'double_bed',
-        'image_type',
         'room_image',
+        'image_type',
+        'note',
+        'housekeptBy',
         'status',
     ];
 
@@ -41,7 +43,11 @@ class Room extends Model
         if ($this->isReserved()) {
             return "Reserved";
         }
-        return self::STATUS[$this->status]["status"];
+        $additional = "";
+        if (($this->status == 2 && $this->housekeptBy != null)) {
+            $additional = "\n(Assigned: " . ($this->housekept->username) .")";
+        }
+        return self::STATUS[$this->status]["status"] . $additional;
     }
 
     public function statusColor() {
@@ -73,6 +79,11 @@ class Room extends Model
     public function histories()
     {
         return $this->hasMany(Reservation::class, 'room_id')->whereNotNull("check_out")->orderBy("start_date", "DESC");
+    }
+
+    public function housekept()
+    {
+        return $this->belongsTo(Employee::class, "housekeptBy");
     }
 
     public function isReserved() {

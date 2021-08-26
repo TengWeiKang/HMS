@@ -31,7 +31,7 @@
                                     <tbody>
                                         <tr>
                                             <td width="20%">Room:</td>
-                                            <td>{{ $reservation->room->room_id . " - " . $reservation->room->name}}</td>
+                                            <td><a href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}" style="color:blue; text-decoration: underline">{{ $reservation->room->room_id . " - " . $reservation->room->name}}</a></td>
                                         </tr>
                                         <tr>
                                             <td>Customer:</td>
@@ -46,8 +46,8 @@
                                             <td>{{ $reservation->end_date->format("d F Y") }}</td>
                                         </tr>
                                         <tr>
-                                            <td>Total Date:</td>
-                                            <td>{{ $reservation->dateDifference() . " " . Str::plural("day", $reservation->dateDifference() )}}</td>
+                                            <td>Total Nights:</td>
+                                            <td>{{ $reservation->dateDifference() . " " . Str::plural("night", $reservation->dateDifference() )}}</td>
                                         </tr>
                                         @if ($reservation->check_in != null)
                                         <tr>
@@ -65,13 +65,19 @@
                                             <td>Booking Price:</td>
                                             <td>RM {{ number_format($reservation->bookingPrice(), 2) }}</td>
                                         </tr>
+                                        @if ($reservation->services->count() > 0)
                                         <tr>
                                             <td>Room Service Price:</td>
                                             <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
                                         </tr>
+                                        @endif
                                         <tr>
                                             <td>Total Payment:</td>
-                                            <td>RM {{ number_format($reservation->finalPrices(), 2) }}</td>
+                                            <td>RM {{ number_format($reservation->finalPrices(), 2) }}
+                                                @if ($reservation->payment != null)
+                                                <a class="pl-3" style="color:blue; text-decoration: underline" href="{{ route("dashboard.payment.view", ["payment" => $reservation->payment]) }}">View Payment</a>
+                                                @endif
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -96,24 +102,29 @@
                                     </thead>
                                     <tbody>
                                         @if (count($reservation->services) == 0)
-                                            <th colspan="5" class="text-center">No Room Service Found</th>
-                                        @endif
-                                        @foreach ($reservation->services as $service)
                                         <tr>
-                                            <th>{{ $loop->index + 1 }}</th>
-                                            <td>{{ $service->name }}</td>
-                                            <td>RM {{ number_format($service->price, 2) }}</td>
-                                            <td>{{ $service->pivot->quantity }}</td>
-                                            <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                            <th colspan="5" class="text-center">No Room Service Found</th>
                                         </tr>
-                                        @endforeach
+                                        @else
+                                            @foreach ($reservation->services as $service)
+                                            <tr>
+                                                <th>{{ $loop->index + 1 }}</th>
+                                                <td>{{ $service->name }}</td>
+                                                <td>RM {{ number_format($service->price, 2) }}</td>
+                                                <td>{{ $service->pivot->quantity }}</td>
+                                                <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                            </tr>
+                                            @endforeach
+                                        @endif
                                     </tbody>
+                                    @if (count($reservation->services) > 0)
                                     <tfoot>
                                         <tr>
                                             <td colspan="4"></td>
                                             <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
                                         </tr>
                                     </tfoot>
+                                    @endif
                                 </table>
                             </div>
                         </div>

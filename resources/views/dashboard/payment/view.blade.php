@@ -89,7 +89,7 @@
                     </table>
                 </div>
                 @if ($payment->charges->count())
-                <div class="card-title mt-5">Additional Charges (Optional)</div>
+                <div class="card-title mt-5">Additional Charges</div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>

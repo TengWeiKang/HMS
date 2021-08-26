@@ -5,13 +5,14 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Room;
 use App\Models\Facility;
+use App\Models\Employee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 class RoomController extends Controller
 {
     public function __construct() {
-        $this->middleware("employee:admin");
+        $this->middleware("employee");
     }
 
     /**
@@ -22,7 +23,8 @@ class RoomController extends Controller
     public function index()
     {
         $rooms = Room::all();
-        return view('dashboard/room/index', ["rooms" => $rooms]);
+        $housekeepers = Employee::where("role", 2)->get();
+        return view('dashboard/room/index', ["rooms" => $rooms, "housekeepers" => $housekeepers]);
     }
 
     /**
@@ -143,5 +145,14 @@ class RoomController extends Controller
         $room->facilities()->detach();
         $room->delete();
         return response()->json(['success' => "The room has been removed"]);
+    }
+
+    public function updateNote(Request $request) {
+        // TODO: notify housekeeper through email
+        $room = Room::find($request->room);
+        $room->status = 2;
+        $room->housekeptBy = $request->housekeptBy;
+        $room->save();
+        return response()->json(['success' => "The note for the room has successfully updated"]);
     }
 }
