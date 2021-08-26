@@ -49,7 +49,9 @@ class ReservationController extends Controller
                 "start" => $reservation->start_date->format("Y-m-d"),
                 "end" => $reservation->end_date->addDays(1)->format("Y-m-d"),
                 "rendering" => "background",
-                "className" => ["bg-red"]
+                "className" => ["bg-red"],
+                "checkin" => $reservation->check_in,
+                "checkout" => $reservation->check_out,
             ];
         }
         return $json;

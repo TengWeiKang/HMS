@@ -38,10 +38,16 @@ class Room extends Model
     ];
 
     public function status() {
+        if ($this->isReserved()) {
+            return "Reserved";
+        }
         return self::STATUS[$this->status]["status"];
     }
 
     public function statusColor() {
+        if ($this->isReserved()) {
+            return "orange";
+        }
         return self::STATUS[$this->status]["color"];
     }
 
@@ -62,5 +68,16 @@ class Room extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'room_id');
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(Reservation::class, 'room_id')->whereNotNull("check_out")->orderBy("start_date", "DESC");
+    }
+
+    public function isReserved() {
+        return $this->reservations->filter(function ($value, $key) {
+            return $value->check_in != null && $value->check_out == null;
+        })->count() > 0;
     }
 }

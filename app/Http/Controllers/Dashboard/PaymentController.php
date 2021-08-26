@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class PaymentController extends Controller
 {
@@ -74,6 +75,9 @@ class PaymentController extends Controller
         ]);
         $a->items()->createMany($items);
         $a->charges()->createMany($charges);
+
+        $reservation->check_out = Carbon::now();
+        $reservation->save();
 
         return redirect()->route('dashboard.payment.view', ["payment" => $reservation]);
     }

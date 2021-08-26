@@ -45,7 +45,7 @@
                         </tbody>
                     </table>
                 </div>
-                @if ($payment->items && true)
+                @if ($payment->items->count())
                 <div class="card-title mt-5">Room Services</div>
                 <div class="table-responsive">
                     <table class="table table-hover">
@@ -88,7 +88,7 @@
                         </tbody>
                     </table>
                 </div>
-                @if ($payment->charges)
+                @if ($payment->charges->count())
                 <div class="card-title mt-5">Additional Charges (Optional)</div>
                 <div class="table-responsive">
                     <table class="table table-hover">

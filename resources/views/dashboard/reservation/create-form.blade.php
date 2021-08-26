@@ -104,6 +104,7 @@
                         <div class="icheck-material-white">
                             <input type="checkbox" id="checkIn" name="checkIn"/>
                             <label for="checkIn">Check In</label>
+                            <label id="reserved" style="cursor: default; color:orangered"></label>
                         </div>
                     </div>
                     <div class="form-group col-12 mt-3">
@@ -264,6 +265,26 @@
                     else {
                         updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
                     }
+                }
+            },
+            eventAfterAllRender: function(view) {
+                $el = $("#checkIn")[0];
+                $msgEl = $("#reserved")[0];
+                let events = $("#calendar").fullCalendar("clientEvents");
+                let isReserved = false;
+                events.forEach(event => {
+                    if (event.checkin != null && event.checkout == null) {
+                        isReserved = true;
+                    }
+                })
+                if (isReserved) {
+                    $el.checked = false;
+                    $el.disabled = true;
+                    $msgEl.innerHTML = "The room has been reserved by other customer";
+                }
+                else {
+                    $el.disabled = false;
+                    $msgEl.innerHTML = "";
                 }
             }
         });

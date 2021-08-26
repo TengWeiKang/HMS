@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Room;
 use App\Models\Services;
+use App\Models\Guest;
 use Carbon\Carbon;
 
 class Reservation extends Model
@@ -95,6 +96,13 @@ class Reservation extends Model
     public function bookingPrice() {
         return $this->dateDifference() * $this->room->price;
     }
+
+    // public function customerRedirect() {
+    //     if ($this->reservable == null || $this->reservable_type instanceof Guest) {
+    //         return "";
+    //     }
+    //     return "";
+    // }
 
     // public function statusName() {
     //     $today = Carbon::today();

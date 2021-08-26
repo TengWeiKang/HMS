@@ -47,7 +47,7 @@
                             </tbody>
                         </table>
                     </div>
-                    @if ($reservation->services)
+                    @if ($reservation->services->count())
                     <div class="card-title mt-5">Room Services</div>
                     <div class="table-responsive">
                         <table class="table table-hover">
