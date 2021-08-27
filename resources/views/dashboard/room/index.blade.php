@@ -5,6 +5,14 @@
     select option {
         background-color: transparent;
     }
+    .modal .h1, .modal .h2, .modal .h3, .modal .h4, .modal .h5, .modal .h6, .modal h1, .modal h2, .modal h3, .modal h4, .modal h5, .modal h6, .modal label {
+        color: black;
+        text-transform: initial;
+        font-size: inherit;
+    }
+    .modal-footer {
+        padding-right: 0;
+    }
 </style>
 @endpush
 
@@ -59,8 +67,8 @@
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
-                                        @if ($room->housekept == Auth::guard("employee")->user() || true)
-                                        <a class="clear" data-id="{{ $room->id }}" style="cursor: pointer">
+                                        @if ($room->housekept == Auth::guard("employee")->user())
+                                        <a class="clear" data-id="{{ $room->id }}" style="cursor: pointer" data-toggle="modal" data-target="#clear-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}">
                                             <i class="icon-notebook text-white"></i>
                                         </a>
                                         @endif
@@ -69,6 +77,42 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <!-- Modal -->
+                    <form action="" method="POST">
+                        <div class="modal fade" id="clear-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Update Room Status for <span id="room_id"></span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="form-group text-center">
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" id="available" name="status" class="custom-control-input" style="width: 25%">
+                                                <label class="custom-control-label" for="available">Available</label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline">
+                                                <input type="radio" id="repair" name="status" class="custom-control-input" style="width: 15%">
+                                                <label class="custom-control-label" for="repair">Repair</label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="note">Note for the room (Optional)</label>
+                                            <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" name="id">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <input type="submit" class="btn btn-primary">Submit</input>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -79,11 +123,18 @@
 @push("script")
     <script>
         $(document).ready(function () {
+            $('#clear-modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('id');
+                var room_id = button.data('room');
+                var modal = $(this);
+                modal.find('#room_id')[0].innerHTML = room_id;
+                modal.find('input[name="id"]').val(id);
+            });
             $("#table").DataTable({
-                "responsive": true,
                 "columnDefs": [
                 {
-                    "targets": 5,
+                    "targets": 6,
                     "orderable": false,
                     "searchable": false
                 }]
@@ -167,20 +218,20 @@
                     }
                 });
             });
-            $(".clear").on("click", function () {
-                var roomId = $(this).data("id");
-                Swal.fire({
-                    title: "Update the room status",
-                    html: '<input type="radio" value="1" name="status" class="swal2-radio" style="margin: 1em 1em 0"/>' +
-                        '<span class="swal2-label mr-5">Available</span>' +
-                        '<input type="radio" value="-1" name="status" class="swal2-radio ml-5" style="margin: 1em 1em 0"/>' +
-                        '<span class="swal2-label mr-5">Repair</span>' +
-                        '<div style="text-align: left"><label style="text-transform: initial; color: black; margin-left:3em; margin-top: 3em; margin-bottom: 0;" for="note">Note (Optional)</label>' +
-                        '<textarea class="swal2-textarea" style="width: -webkit-fill-available; resize: none; height: 150px; font-size: 16px" name="note"></textarea></div>',
-                    showCancelButton: true
-                });
+            // $(".clear").on("click", function () {
+            //     var roomId = $(this).data("id");
+            //     Swal.fire({
+            //         title: "Update the room status",
+            //         html: '<input type="radio" value="1" name="status" class="swal2-radio" style="margin: 1em 1em 0"/>' +
+            //             '<span class="swal2-label mr-5">Available</span>' +
+            //             '<input type="radio" value="-1" name="status" class="swal2-radio ml-5" style="margin: 1em 1em 0"/>' +
+            //             '<span class="swal2-label mr-5">Repair</span>' +
+            //             '<div style="text-align: left"><label style="text-transform: initial; color: black; margin-left:3em; margin-top: 3em; margin-bottom: 0;" for="note">Note (Optional)</label>' +
+            //             '<textarea class="swal2-textarea" style="width: -webkit-fill-available; resize: none; height: 150px; font-size: 16px" name="note"></textarea></div>',
+            //         showCancelButton: true
+            //     });
 
-            });
+            // });
         });
     </script>
 @endpush
