@@ -23,14 +23,14 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="table" class="">
+                    <table id="table" width="100%">
                         <thead>
                             <tr>
-                                <th width="5%">#</th>
-                                <th width="10%">Room ID</th>
-                                <th width="15%">Room Name</th>
-                                <th width="10%">Price Per Night</th>
-                                <th width="20%">Status</th>
+                                <th>#</th>
+                                <th>Room ID</th>
+                                <th>Room Name</th>
+                                <th>Price (1 night)</th>
+                                <th>Status</th>
                                 <th>Note</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -43,7 +43,7 @@
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status()) !!}</td>
-                                    <td>{!! nl2br($room->note) !!}</td>
+                                    <td style="white-space:break-spaces">{!! nl2br($room->note) !!}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
@@ -59,6 +59,11 @@
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
+                                        @if ($room->housekept == Auth::guard("employee")->user() || true)
+                                        <a class="clear" data-id="{{ $room->id }}" style="cursor: pointer">
+                                            <i class="icon-notebook text-white"></i>
+                                        </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -68,7 +73,6 @@
             </div>
         </div>
     </div>
-    {{-- {{ dd($housekeepers) }} --}}
 </div>
 @endsection
 
@@ -76,10 +80,10 @@
     <script>
         $(document).ready(function () {
             $("#table").DataTable({
+                "responsive": true,
                 "columnDefs": [
                 {
                     "targets": 5,
-                    "width": "10%",
                     "orderable": false,
                     "searchable": false
                 }]
@@ -162,6 +166,20 @@
                         }
                     }
                 });
+            });
+            $(".clear").on("click", function () {
+                var roomId = $(this).data("id");
+                Swal.fire({
+                    title: "Update the room status",
+                    html: '<input type="radio" value="1" name="status" class="swal2-radio" style="margin: 1em 1em 0"/>' +
+                        '<span class="swal2-label mr-5">Available</span>' +
+                        '<input type="radio" value="-1" name="status" class="swal2-radio ml-5" style="margin: 1em 1em 0"/>' +
+                        '<span class="swal2-label mr-5">Repair</span>' +
+                        '<div style="text-align: left"><label style="text-transform: initial; color: black; margin-left:3em; margin-top: 3em; margin-bottom: 0;" for="note">Note (Optional)</label>' +
+                        '<textarea class="swal2-textarea" style="width: -webkit-fill-available; resize: none; height: 150px; font-size: 16px" name="note"></textarea></div>',
+                    showCancelButton: true
+                });
+
             });
         });
     </script>

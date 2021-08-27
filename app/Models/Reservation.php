@@ -86,7 +86,7 @@ class Reservation extends Model
         else if ($this->check_out == null)
             return "orangered";
         else
-            return "green";
+            return "lightgreen";
     }
 
     public function dateDifference() {
