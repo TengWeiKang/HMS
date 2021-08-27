@@ -12,9 +12,10 @@ class Room extends Model
     use HasFactory;
 
     const STATUS = [
-        0 => ["status" => "Available", "color" => "#0F0"],
+        0 => ["status" => "Available", "color" => "#0f0"],
         1 => ["status" => "Closed", "color" => "#111"],
-        2 => ["status" => "Dirty", "color" => "#AAA"]
+        2 => ["status" => "Dirty", "color" => "#282828"],
+        3 => ["status" => "Repairing", "color" => "#ff8484"]
     ];
 
     public $table = "room";

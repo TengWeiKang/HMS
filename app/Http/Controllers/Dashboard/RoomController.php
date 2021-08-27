@@ -147,12 +147,21 @@ class RoomController extends Controller
         return response()->json(['success' => "The room has been removed"]);
     }
 
-    public function updateNote(Request $request) {
+    public function assign(Request $request) {
         // TODO: notify housekeeper through email
         $room = Room::find($request->room);
         $room->status = 2;
         $room->housekeptBy = $request->housekeptBy;
         $room->save();
         return response()->json(['success' => "The note for the room has successfully updated"]);
+    }
+
+    public function roomCleaned(Request $request) {
+        $room = Room::find($request->id);
+        $room->status = $request->status;
+        $room->note = $request->note;
+        $room->housekeptBy = null;
+        $room->save();
+        return redirect()->route('dashboard.room');
     }
 }

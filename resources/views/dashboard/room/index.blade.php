@@ -10,9 +10,6 @@
         text-transform: initial;
         font-size: inherit;
     }
-    .modal-footer {
-        padding-right: 0;
-    }
 </style>
 @endpush
 
@@ -51,7 +48,7 @@
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status()) !!}</td>
-                                    <td style="white-space:break-spaces">{!! nl2br($room->note) !!}</td>
+                                    <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
@@ -67,9 +64,14 @@
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
-                                        @if ($room->housekept == Auth::guard("employee")->user())
+                                        @if ($room->status == 2 && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
                                         <a class="clear" data-id="{{ $room->id }}" style="cursor: pointer" data-toggle="modal" data-target="#clear-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}">
-                                            <i class="icon-notebook text-white"></i>
+                                            <i class="icon-flag text-white"></i>
+                                        </a>
+                                        @endif
+                                        @if ($room->status == 3 && (Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
+                                        <a class="clear" data-id="{{ $room->id }}" style="cursor: pointer" data-toggle="modal" data-target="#repair-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}">
+                                            <i class="icon-wrench text-white"></i>
                                         </a>
                                         @endif
                                     </td>
@@ -77,8 +79,9 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <!-- Modal -->
-                    <form action="" method="POST">
+                    <!-- Clean Room Modal -->
+                    <form action="{{ route("dashboard.room.clean") }}" method="POST">
+                        @csrf
                         <div class="modal fade" id="clear-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
@@ -91,23 +94,23 @@
                                     <div class="modal-body">
                                         <div class="form-group text-center">
                                             <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="available" name="status" class="custom-control-input" style="width: 25%">
+                                                <input type="radio" id="available" name="status" class="custom-control-input" style="width: 25%" value="0" required>
                                                 <label class="custom-control-label" for="available">Available</label>
                                             </div>
                                             <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="repair" name="status" class="custom-control-input" style="width: 15%">
+                                                <input type="radio" id="repair" name="status" class="custom-control-input" style="width: 15%" value="3">
                                                 <label class="custom-control-label" for="repair">Repair</label>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="note">Note for the room (Optional)</label>
-                                            <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px"></textarea>
+                                            <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important"></textarea>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
                                         <input type="hidden" name="id">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <input type="submit" class="btn btn-primary">Submit</input>
+                                        <input type="submit" class="btn btn-primary" value="Submit">
                                     </div>
                                 </div>
                             </div>
@@ -196,7 +199,7 @@
                         else {
                             $.ajax({
                                 type: "POST",
-                                url: "{{ route("dashboard.room.note") }}",
+                                url: "{{ route("dashboard.room.assign") }}",
                                 data: {
                                     "_token": "{{ csrf_token() }}",
                                     "room": roomId,
@@ -218,20 +221,6 @@
                     }
                 });
             });
-            // $(".clear").on("click", function () {
-            //     var roomId = $(this).data("id");
-            //     Swal.fire({
-            //         title: "Update the room status",
-            //         html: '<input type="radio" value="1" name="status" class="swal2-radio" style="margin: 1em 1em 0"/>' +
-            //             '<span class="swal2-label mr-5">Available</span>' +
-            //             '<input type="radio" value="-1" name="status" class="swal2-radio ml-5" style="margin: 1em 1em 0"/>' +
-            //             '<span class="swal2-label mr-5">Repair</span>' +
-            //             '<div style="text-align: left"><label style="text-transform: initial; color: black; margin-left:3em; margin-top: 3em; margin-bottom: 0;" for="note">Note (Optional)</label>' +
-            //             '<textarea class="swal2-textarea" style="width: -webkit-fill-available; resize: none; height: 150px; font-size: 16px" name="note"></textarea></div>',
-            //         showCancelButton: true
-            //     });
-
-            // });
         });
     </script>
 @endpush

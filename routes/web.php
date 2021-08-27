@@ -72,7 +72,8 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
     //room management
     Route::group(["prefix" => "room"], function() {
         Route::get("/", [RoomController::class, "index"])->name("dashboard.room");
-        Route::post("/note", [RoomController::class, "updateNote"])->name("dashboard.room.note");
+        Route::post("/assign", [RoomController::class, "assign"])->name("dashboard.room.assign");
+        Route::post("/clean", [RoomController::class, "roomCleaned"])->name("dashboard.room.clean");
         Route::get("/create", [RoomController::class, "create"])->name("dashboard.room.create");
         Route::post("/create", [RoomController::class, "store"]);
         Route::get("/{room}", [RoomController::class, "show"])->name("dashboard.room.view");
