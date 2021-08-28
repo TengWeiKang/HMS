@@ -20,6 +20,7 @@
                 </div>
             </div>
         </div>
+        <button type="button" class="btn btn-primary w-100">Update Status</button>
     </div>
     <div class="col-lg-9">
         <div class="card">

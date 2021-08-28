@@ -47,7 +47,7 @@
                         </select>
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="customer">Customer (Able to custom input)</label>
+                        <label for="customers">Customer (Able to custom input)</label>
                         <select class="form-control form-control-rounded" id="customers" name="customer">
                             @foreach ($customers as $customer)
                                 <option value="c||{{ $customer->id }}">{{ $customer->username }}</option>

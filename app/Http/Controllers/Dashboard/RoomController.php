@@ -12,7 +12,6 @@ use Illuminate\Support\Arr;
 class RoomController extends Controller
 {
     public function __construct() {
-        $this->middleware("employee");
     }
 
     /**
@@ -149,11 +148,11 @@ class RoomController extends Controller
 
     public function assign(Request $request) {
         // TODO: notify housekeeper through email
-        $room = Room::find($request->room);
+        $room = Room::find($request->id);
         $room->status = 2;
-        $room->housekeptBy = $request->housekeptBy;
+        $room->housekeptBy = $request->housekeeper;
         $room->save();
-        return response()->json(['success' => "The note for the room has successfully updated"]);
+        return redirect()->back();
     }
 
     public function roomCleaned(Request $request) {
@@ -162,6 +161,14 @@ class RoomController extends Controller
         $room->note = $request->note;
         $room->housekeptBy = null;
         $room->save();
-        return redirect()->route('dashboard.room');
+        return redirect()->back();
+    }
+
+    public function repair(Request $request) {
+        $room = Room::find($request->id);
+        $room->status = $request->status;
+        $room->note = $request->note;
+        $room->save();
+        return redirect()->back();
     }
 }
