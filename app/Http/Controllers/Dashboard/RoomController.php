@@ -155,16 +155,7 @@ class RoomController extends Controller
         return redirect()->back();
     }
 
-    public function roomCleaned(Request $request) {
-        $room = Room::find($request->id);
-        $room->status = $request->status;
-        $room->note = $request->note;
-        $room->housekeptBy = null;
-        $room->save();
-        return redirect()->back();
-    }
-
-    public function repair(Request $request) {
+    public function updateStatus(Request $request) {
         $room = Room::find($request->id);
         $room->status = $request->status;
         $room->note = $request->note;

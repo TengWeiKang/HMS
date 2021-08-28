@@ -14,7 +14,7 @@
         color: black;
     }
     .select2.select2-container {
-        border: 1px solid #444;
+        border: 1px solid #aaa;
     }
 </style>
 @endpush
@@ -56,28 +56,23 @@
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status()) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
-                                        <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}">
+                                        <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
                                             <i class="zmdi zmdi-edit text-white"></i>
                                         </a>
-                                        <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer">
+                                        <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer" title="Delete">
                                             <i class="zmdi zmdi-delete text-white"></i>
                                         </a>
-                                        <a href="{{ route("dashboard.room.view", ["room" => $room]) }}">
+                                        <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                         @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null)
-                                        <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}">
+                                        <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
-                                        @if ($room->status == 2 && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
-                                        <a class="clear" style="cursor: pointer" data-toggle="modal" data-target="#clear-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}">
-                                            <i class="icon-flag text-white"></i>
-                                        </a>
-                                        @endif
-                                        @if ($room->status == 3 && (Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
-                                        <a class="clear" style="cursor: pointer" data-toggle="modal" data-target="#repair-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}">
-                                            <i class="icon-wrench text-white"></i>
+                                        @if ($room->status() != "Reserved" && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
+                                        <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                            <i class="icon-settings text-white"></i>
                                         </a>
                                         @endif
                                     </td>
@@ -88,17 +83,17 @@
                     <!-- Assign Kousekeeper Modal -->
                     <form action="{{ route("dashboard.room.assign") }}" method="POST">
                         @csrf
-                        <div class="modal fade" id="assign-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal fade overflow-hidden" id="assign-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Assign Housekeeper for <span id="assign_room_id"></span></h5>
+                                        <h5 class="modal-title">Assign Housekeeper for <span id="assign-room-id"></span></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="form-group row mx-4">
+                                        <div class="form-group row mx-2">
                                             <label for="housekeeper">Housekeeper</label>
                                             <select class="form-control" id="housekeeper" name="housekeeper">
                                                 @foreach ($housekeepers as $housekeeper)
@@ -116,69 +111,31 @@
                             </div>
                         </div>
                     </form>
-                    <!-- Clean Room Modal -->
-                    <form action="{{ route("dashboard.room.clean") }}" method="POST">
+                    <!-- Update Status Modal -->
+                    <form action="{{ route("dashboard.room.status") }}" method="POST">
                         @csrf
-                        <div class="modal fade" id="clear-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                        <div class="modal fade overflow-hidden" id="status-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title">Update Room Status for <span id="room_id"></span></h5>
+                                        <h5 class="modal-title">Update Room Status for <span id="status-room-id"></span></h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <div class="form-group text-center">
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="available" name="status" class="custom-control-input" style="width: 25%" value="0" required>
-                                                <label class="custom-control-label" for="available">Available</label>
-                                            </div>
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="repair" name="status" class="custom-control-input" style="width: 15%" value="3">
-                                                <label class="custom-control-label" for="repair">Repair</label>
-                                            </div>
+                                        <div class="form-group row mx-2">
+                                            <label for="status">Room Status</label>
+                                            <select class="form-control" id="status" name="status">
+                                                <option value="0">Available</option>
+                                                <option value="2">Dirty</option>
+                                                <option value="3">Repairing</option>
+                                                <option value="1">Closed</option>
+                                            </select>
                                         </div>
-                                        <div class="form-group">
+                                        <div class="form-group row mx-2">
                                             <label for="note">Note for the room (Optional)</label>
                                             <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <input type="hidden" name="id">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <input type="submit" class="btn btn-primary" value="Submit">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                    <!-- Repair Room Modal -->
-                    <form action="{{ route("dashboard.room.repair") }}" method="POST">
-                        @csrf
-                        <div class="modal fade" id="repair-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Update Room Status for <span id="repair_room_id"></span></h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="form-group text-center">
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="repair-available" name="status" class="custom-control-input" style="width: 25%" value="0" required>
-                                                <label class="custom-control-label" for="repair-available">Available</label>
-                                            </div>
-                                            <div class="custom-control custom-radio custom-control-inline">
-                                                <input type="radio" id="repair-closed" name="status" class="custom-control-input" style="width: 15%" value="1">
-                                                <label class="custom-control-label" for="repair-closed">Closed</label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="note">Note for the room (Optional)</label>
-                                            <textarea name="note" id="repair-note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important"></textarea>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -200,8 +157,8 @@
 @push("script")
     <script>
         $(document).ready(function () {
-            $('select#housekeeper').select2();
-            $('.select2.select2-container').addClass('form-control form-control-rounded');
+            $('select#housekeeper, select#status').select2();
+            $('.select2.select2-container').addClass('form-control');
             // $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
             $('#assign-modal').on('show.bs.modal', function (event) {
@@ -209,31 +166,21 @@
                 var id = button.data('id');
                 var roomID = button.data('room');
                 var modal = $(this);
-                modal.find('#assign_room_id')[0].innerHTML = roomID;
-                modal.find('input[name="id"]').val(id);
-                console.log(id, roomID, modal.find('#assign_room_id')[0], modal.find('input[name="id"]'));
-            });
-
-            $('#clear-modal').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget); // Button that triggered the modal
-                var id = button.data('id');
-                var room_id = button.data('room');
-                var modal = $(this);
-                modal.find('#room_id')[0].innerHTML = room_id;
+                modal.find('#assign-room-id')[0].innerHTML = roomID;
                 modal.find('input[name="id"]').val(id);
             });
 
-            $('#repair-modal').on('show.bs.modal', function (event) {
+            $('#status-modal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget); // Button that triggered the modal
                 var id = button.data('id');
                 var room_id = button.data('room');
                 var note = button.data('note');
+                var status = button.data('status');
                 var modal = $(this);
-                console.log(note);
-                console.log(modal);
-                modal.find('#repair_room_id')[0].innerHTML = room_id;
+                modal.find('#status-room-id')[0].innerHTML = room_id;
                 modal.find('input[name="id"]').val(id);
                 modal.find('textarea[name="note"]').val(note);
+                // modal.find('select[name="status"]').val(status).change();
             });
 
             $("#table").DataTable({
@@ -281,49 +228,6 @@
                     }
                 })
             });
-            // $(".assign").on("click", function () {
-            //     var roomId = $(this).data("id");
-            //     Swal.fire({
-            //         title: "Select a Housekeeper to clean the room",
-            //         input: "select",
-            //         inputOptions: {
-            //             @foreach ($housekeepers as $housekeeper)
-            //             "{{ $housekeeper->id }}" : "{{ $housekeeper->username }}",
-            //             @endforeach
-            //         },
-            //         inputPlaceholder: "Select Housekeeper",
-            //         showCancelButton: true
-            //     }).then((result) => {
-            //         console.log(roomId);
-            //         if (result.isConfirmed) {
-            //             if (result.value == "") {
-            //                 Swal.fire("Error!", "Please select a housekeeper", "error");
-            //             }
-            //             else {
-            //                 $.ajax({
-            //                     type: "POST",
-            //                     url: "{{ route("dashboard.room.assign") }}",
-            //                     data: {
-            //                         "_token": "{{ csrf_token() }}",
-            //                         "room": roomId,
-            //                         "housekeptBy": result.value
-            //                     },
-            //                     success: function (response) {
-            //                         Swal.fire({
-            //                             title: "Note Updated",
-            //                             text: response["success"],
-            //                             icon: 'success',
-            //                             showConfirmButton: false,
-            //                             timer: 1000,
-            //                         }).then(() => {
-            //                             window.location.href = "{{ route("dashboard.room") }}";
-            //                         });
-            //                     }
-            //                 });
-            //             }
-            //         }
-            //     });
-            // });
         });
     </script>
 @endpush
