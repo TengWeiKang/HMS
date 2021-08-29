@@ -80,7 +80,8 @@ class RoomController extends Controller
      */
     public function show(Room $room)
     {
-        return view('dashboard/room/view', ['room' => $room]);
+        $housekeepers = Employee::where("role", 2)->get();
+        return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
 
     /**

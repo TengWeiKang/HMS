@@ -53,7 +53,7 @@
                                     <td>{{ $room->room_id }}</td>
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
-                                    <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status()) !!}</td>
+                                    <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
@@ -65,12 +65,12 @@
                                         <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
-                                        @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null)
+                                        @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null && Auth::guard("employee")->user()->isAccessible("staff", "admin"))
                                         <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
-                                        @if ($room->status() != "Reserved" && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAdmin() || Auth::guard("employee")->user()->isStaff()))
+                                        @if ($room->status(false) != "Reserved" && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
                                         <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                             <i class="icon-settings text-white"></i>
                                         </a>
@@ -159,7 +159,6 @@
         $(document).ready(function () {
             $('select#housekeeper, select#status').select2();
             $('.select2.select2-container').addClass('form-control');
-            // $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
             $('#assign-modal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget); // Button that triggered the modal

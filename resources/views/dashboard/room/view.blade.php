@@ -1,7 +1,22 @@
 @extends("dashboard.layouts.template")
 
 @push("css")
-
+<style>
+    select option {
+        background-color: transparent;
+    }
+    .modal .h1, .modal .h2, .modal .h3, .modal .h4, .modal .h5, .modal .h6, .modal h1, .modal h2, .modal h3, .modal h4, .modal h5, .modal h6, .modal label {
+        color: black;
+        text-transform: initial;
+        font-size: inherit;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: black;
+    }
+    .select2.select2-container {
+        border: 1px solid #aaa;
+    }
+</style>
 @endpush
 
 @section("title")
@@ -20,7 +35,12 @@
                 </div>
             </div>
         </div>
-        <button type="button" class="btn btn-primary w-100">Update Status</button>
+        @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null && Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+            <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
+        @endif
+        @if ($room->status(false) != "Reserved" && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
+            <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
+        @endif
     </div>
     <div class="col-lg-9">
         <div class="card">
@@ -62,7 +82,7 @@
                                     </tr>
                                     <tr>
                                         <td>Status:</td>
-                                        <td style="color: {{ $room->statusColor() }}">{!! nl2br($room->status()) !!}</td>
+                                        <td style="color: {{ $room->statusColor() }}">{!! nl2br($room->status(true)) !!}</td>
                                     </tr>
                                     <tr>
                                         <td>Created Date:</td>
@@ -75,6 +95,16 @@
                                                 {!! nl2br(implode("\n", $room->facilities()->pluck("name")->toArray())) !!}
                                             @else
                                                 <span style="color: #F33">No Facilities for this room</span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Note:</td>
+                                        <td>
+                                            @if (is_null($room->note))
+                                                <span><i>No Note is provided</i></span>
+                                            @else
+                                                <span style="white-space:break-spaces">{!! $room->note !!}</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -94,26 +124,33 @@
                                             <th>Customer</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
-                                            <th>Action</th>
+                                            <th>Status</th>
+                                            <th class="text-center">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($room->reservations->count())
-                                            @foreach ($room->reservations as $history)
+                                        @if ($room->histories->count())
+                                            @foreach ($room->histories as $history)
                                                 <tr>
                                                     <td>{{ $history->reservable->username}}</td>
                                                     <td>{{ $history->start_date->format("d M Y") }}</td>
                                                     <td>{{ $history->end_date->format("d M Y") }}</td>
+                                                    <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>
                                                     <td class="text-center">
                                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $history]) }}">
                                                             <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
                                                         </a>
+                                                        @if ($history->payment != null)
+                                                        <a href="{{ route("dashboard.payment.view", ["payment" => $history->payment]) }}">
+                                                            <i class="fa fa-dollar text-white" style="font-size: 18px"></i>
+                                                        </a>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="4" class="text-center">No Reservation is made by any customers</td>
+                                                <td colspan="5" class="text-center">No Reservation is made by any customers</td>
                                             </tr>
                                         @endif
                                     </tbody>
@@ -125,5 +162,81 @@
             </div>
         </div>
     </div>
+    <!-- Assign Kousekeeper Modal -->
+    <form action="{{ route("dashboard.room.assign") }}" method="POST">
+        @csrf
+        <div class="modal fade overflow-hidden" id="assign-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Assign Housekeeper for {{ $room->room_id }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row mx-2">
+                            <label for="housekeeper">Housekeeper</label>
+                            <select class="form-control" id="housekeeper" name="housekeeper">
+                                @foreach ($housekeepers as $housekeeper)
+                                    <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="{{ $room->id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Update Status Modal -->
+    <form action="{{ route("dashboard.room.status") }}" method="POST">
+        @csrf
+        <div class="modal fade overflow-hidden" id="status-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Update Room Status for {{ $room->room_id }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row mx-2">
+                            <label for="status">Room Status</label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="0" @if ($room->status == 0) selected @endif>Available</option>
+                                <option value="2" @if ($room->status == 2) selected @endif>Dirty</option>
+                                <option value="3" @if ($room->status == 3) selected @endif>Repairing</option>
+                                <option value="1" @if ($room->status == 1) selected @endif>Closed</option>
+                            </select>
+                        </div>
+                        <div class="form-group row mx-2">
+                            <label for="note">Note for the room (Optional)</label>
+                            <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important">{{ $room->note }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="{{ $room->id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 @endsection
+
+@push('script')
+    <script>
+        $(document).ready(function () {
+            $('select#housekeeper, select#status').select2();
+            $('.select2.select2-container').addClass('form-control');
+        });
+    </script>
+@endpush

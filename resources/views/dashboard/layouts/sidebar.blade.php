@@ -13,21 +13,21 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span style="margin-left: 10px">Dashboard</span>
             </a>
         </li>
-        @if(Auth::guard('employee')->user()->isAdmin() || Auth::guard("employee")->user()->isStaff())
+        @if(Auth::guard("employee")->user()->isAccessible("staff", "admin"))
         <li>
             <a href="{{ route("dashboard.reservation") }}">
                 <i class="fa fa-ticket"></i><span style="margin-left: 9px">Reservation</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard('employee')->user()->isAdmin() || Auth::guard("employee")->user()->isStaff())
+        @if(Auth::guard("employee")->user()->isAccessible("staff", "admin"))
         <li>
             <a href="{{ route("dashboard.payment") }}">
                 <i class="fa fa-dollar"></i><span style="margin-left: 9px">Payment</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard('employee')->user()->isAdmin())
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a style="cursor: pointer">
                 <i class="fa fa-angle-left"></i><span style="margin-left: 22px">Employees</span>
@@ -41,21 +41,21 @@
             </ul>
         </li>
         @endif
-        @if(Auth::guard('employee')->user()->isAdmin())
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.facility") }}">
                 <i class="fa fa-wifi"></i><span style="margin-left: 11px">Facilities</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard('employee')->user()->isAdmin())
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.room") }}">
                 <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard('employee')->user()->isAdmin())
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.service") }}">
                 <i class="zmdi zmdi-drink"></i><span style="margin-left: 17px">Room Services</span>

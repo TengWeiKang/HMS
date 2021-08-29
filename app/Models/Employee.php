@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class Employee extends Authenticatable
 {
@@ -62,5 +64,9 @@ class Employee extends Authenticatable
 
     public function isHousekeeper() {
         return ($this->role == 2) ? true : false;
+    }
+
+    public function isAccessible(...$roles) {
+        return in_array(Str::lower(self::ROLES[$this->role]), $roles);
     }
 }

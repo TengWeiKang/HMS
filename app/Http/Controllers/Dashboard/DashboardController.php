@@ -27,7 +27,7 @@ class DashboardController extends Controller
             foreach ($rooms as $room) {
                 $json[] = [
                     "id" => $room->id,
-                    "title" => $room->room_id . " - " . $room->name,
+                    "title" => $room->room_id . " - " . $room->name . " (" . $room->status(false) . ")",
                 ];
             }
         }

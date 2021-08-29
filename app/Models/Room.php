@@ -40,12 +40,12 @@ class Room extends Model
         'created_at' => 'datetime',
     ];
 
-    public function status() {
+    public function status($withAssigned) {
         if ($this->isReserved()) {
             return "Reserved";
         }
         $additional = "";
-        if (($this->status == 2 && $this->housekeptBy != null)) {
+        if ($withAssigned && $this->status == 2 && $this->housekeptBy != null) {
             $additional = "\n(Assigned: " . ($this->housekept->username) .")";
         }
         return self::STATUS[$this->status]["status"] . $additional;
@@ -79,10 +79,10 @@ class Room extends Model
 
     public function histories()
     {
-        return $this->hasMany(Reservation::class, 'room_id')->whereNotNull("check_out")->orderBy("start_date", "DESC");
+        return $this->hasMany(Reservation::class, 'room_id')->whereNotNull("check_in")->orderBy("start_date", "DESC");
     }
 
-    public function housekept()
+    public function housekeeper()
     {
         return $this->belongsTo(Employee::class, "housekeptBy");
     }
