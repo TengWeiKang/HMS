@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Facility;
 use App\Models\Reservation;
+use App\Models\RoomFacility;
+use Carbon\Carbon;
 
 class Room extends Model
 {
@@ -45,8 +47,8 @@ class Room extends Model
             return "Reserved";
         }
         $additional = "";
-        if ($withAssigned && $this->status == 2 && $this->housekeptBy != null) {
-            $additional = "\n(Assigned: " . ($this->housekept->username) .")";
+        if ($withAssigned && $this->status == 2 && $this->housekeeper != null) {
+            $additional = "\n(Assigned: " . ($this->housekeeper->username) .")";
         }
         return self::STATUS[$this->status]["status"] . $additional;
     }
@@ -77,11 +79,6 @@ class Room extends Model
         return $this->hasMany(Reservation::class, 'room_id');
     }
 
-    public function histories()
-    {
-        return $this->hasMany(Reservation::class, 'room_id')->whereNotNull("check_in")->orderBy("start_date", "DESC");
-    }
-
     public function housekeeper()
     {
         return $this->belongsTo(Employee::class, "housekeptBy");
@@ -91,5 +88,31 @@ class Room extends Model
         return $this->reservations->filter(function ($value, $key) {
             return $value->check_in != null && $value->check_out == null;
         })->count() > 0;
+    }
+
+    public function isTurnoverToday() {
+        return $this->departure()->count() > 0 && $this->arrival()->count() > 0;
+    }
+
+    public function isDepartureToday() {
+        return $this->departure()->count() > 0 && $this->arrival()->count() == 0;
+    }
+
+    public function isArrivalToday() {
+        return $this->departure()->count() == 0 && $this->arrival()->count() > 0;
+    }
+
+    public function departure() {
+        $today = Carbon::today();
+        return $this->reservations->filter(function ($value, $key) use ($today) {
+            return $value->end_date->addDays() == $today;
+        });
+    }
+
+    public function arrival() {
+        $today = Carbon::today();
+        return $this->reservations->filter(function ($value, $key) use ($today) {
+            return $value->start_date == $today;
+        });
     }
 }

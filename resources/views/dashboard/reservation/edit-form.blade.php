@@ -43,7 +43,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($reservation->room->id == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (RM " . number_format($room->price, 2) . ")"}}</option>
+                            <option value="{{ $room->id }}" data-price="{{ $room->price }}">{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>

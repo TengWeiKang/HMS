@@ -21,7 +21,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::all();
+        $rooms = Room::with("housekeeper", "reservations")->get();
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/index', ["rooms" => $rooms, "housekeepers" => $housekeepers]);
     }
@@ -75,11 +75,14 @@ class RoomController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Room  $room
+     * @param  integer  $room
      * @return \Illuminate\Http\Response
      */
-    public function show(Room $room)
+    public function show($room)
     {
+        $room = Room::with(["reservations" => function ($query) {
+            $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
+        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"])->find($room);
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
@@ -151,7 +154,7 @@ class RoomController extends Controller
         // TODO: notify housekeeper through email
         $room = Room::find($request->id);
         $room->status = 2;
-        $room->housekeptBy = $request->housekeeper;
+        $room->housekeeper = $request->housekeeper;
         $room->save();
         return redirect()->back();
     }

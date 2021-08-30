@@ -11,6 +11,7 @@ use App\Http\Controllers\Dashboard\FacilityController;
 use App\Http\Controllers\Dashboard\ReservationController;
 use App\Http\Controllers\Dashboard\ServiceController;
 use App\Http\Controllers\Dashboard\PaymentController;
+use App\Http\Controllers\Dashboard\HousekeeperController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -117,6 +118,17 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         // Route::get("/{payment}/edit", [PaymentController::class, "edit"])->name("dashboard.payment.edit");
         // Route::put("/{payment}/edit", [PaymentController::class, "update"]);
         Route::delete("/{payment}", [PaymentController::class, "destroy"])->name("dashboard.payment.destroy");
+    });
+
+    //housekeeper management on current day
+    Route::group(["prefix" => "housekeeper"], function() {
+        Route::get("/", [HousekeeperController::class, "index"])->name("dashboard.housekeeper");
+        // Route::get("/create", [HousekeeperController::class, "create"])->name("dashboard.housekeeper.create");
+        // Route::post("/create", [HousekeeperController::class, "store"]);
+        // Route::get("/{employee}", [HousekeeperController::class, "show"])->name("dashboard.housekeeper.view");
+        // Route::get("/{employee}/edit", [HousekeeperController::class, "edit"])->name("dashboard.housekeeper.edit");
+        // Route::put("/{employee}/edit", [HousekeeperController::class, "update"]);
+        // Route::delete("/{employee}", [HousekeeperController::class, "destroy"])->name("dashboard.housekeeper.destroy");
     });
 });
 

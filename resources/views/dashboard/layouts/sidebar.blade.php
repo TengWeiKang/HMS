@@ -13,6 +13,11 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span style="margin-left: 10px">Dashboard</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route("dashboard.housekeeper") }}">
+                <i class="zmdi zmdi-info"></i> <span style="margin-left: 10px">Today</span>
+            </a>
+        </li>
         @if(Auth::guard("employee")->user()->isAccessible("staff", "admin"))
         <li>
             <a href="{{ route("dashboard.reservation") }}">

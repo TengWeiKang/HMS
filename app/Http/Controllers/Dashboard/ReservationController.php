@@ -24,7 +24,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::orderBy("created_at", "DESC")->get();
+        $reservations = Reservation::with("room", "reservable")->orderBy("created_at", "DESC")->get();
         return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 

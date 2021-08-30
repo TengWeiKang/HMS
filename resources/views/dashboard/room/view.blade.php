@@ -35,10 +35,10 @@
                 </div>
             </div>
         </div>
-        @if (!$room->isReserved() && $room->status == 2 && $room->housekept == null && Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+        @if (!$room->isReserved() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("staff", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
-        @if ($room->status(false) != "Reserved" && ($room->housekept == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
+        @if ($room->status(false) != "Reserved" && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
         @endif
     </div>
@@ -92,7 +92,7 @@
                                         <td>Facilities:</td>
                                         <td>
                                             @if ($room->facilities->count())
-                                                {!! nl2br(implode("\n", $room->facilities()->pluck("name")->toArray())) !!}
+                                                {!! nl2br(implode("\n", $room->facilities->pluck("name")->toArray())) !!}
                                             @else
                                                 <span style="color: #F33">No Facilities for this room</span>
                                             @endif
@@ -129,8 +129,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($room->histories->count())
-                                            @foreach ($room->histories as $history)
+                                        @if ($room->reservations->count())
+                                            @foreach ($room->reservations as $history)
                                                 <tr>
                                                     <td>{{ $history->reservable->username}}</td>
                                                     <td>{{ $history->start_date->format("d M Y") }}</td>

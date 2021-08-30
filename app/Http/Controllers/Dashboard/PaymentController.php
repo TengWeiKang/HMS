@@ -17,7 +17,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::all();
+        $payments = Payment::with("reservable", "items", "charges")->get();
         return view('dashboard/payment/index', ["payments" => $payments]);
     }
 
@@ -76,7 +76,7 @@ class PaymentController extends Controller
         $payment->items()->createMany($items);
         $payment->charges()->createMany($charges);
 
-        $reservation->housekeptBy = null;
+        $reservation->housekeeper = null;
         $reservation->check_out = Carbon::now();
         $reservation->save();
 
@@ -86,11 +86,12 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Payment  $payment
+     * @param  integer  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show(Payment $payment)
+    public function show($payment)
     {
+        $payment = Payment::with("items", "charges")->find($payment);
         return view('dashboard/payment/view', ["payment" => $payment]);
     }
 
