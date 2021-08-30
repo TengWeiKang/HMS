@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $return = $request->return;
         $json = [];
         if ($return === "resources") {
-            $rooms = Room::all();
+            $rooms = Room::with("reservations")->get();
             foreach ($rooms as $room) {
                 $json[] = [
                     "id" => $room->id,
@@ -32,13 +32,15 @@ class DashboardController extends Controller
             }
         }
         else if ($return === "events"){
-            $reservations = Reservation::all();
+            $reservations = Reservation::with("reservable", "payment")->get();
             foreach ($reservations as $reservation) {
                 $json[] = [
                     "id" => $reservation->id,
                     "resourceId" => $reservation->room_id,
+                    "backgroundColor" => $reservation->statusColor(),
+                    "textColor" => "black",
                     "title" => $reservation->reservable->username,
-                    "start" => $reservation->start_date,
+                    "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->subtract(1, "days")->format("Y-m-d")
                 ];
             }

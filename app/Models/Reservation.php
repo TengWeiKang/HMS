@@ -38,6 +38,12 @@ class Reservation extends Model
         'deleted_at' => 'datetime',
     ];
 
+    const STATUS = [
+        0 => ["status" => "Waiting for Check-in", "color" => "yellow"],
+        1 => ["status" => "Checked-in", "color" => "orangered"],
+        2 => ["status" => "Completed", "color" => "lightgreen"],
+    ];
+
     public function room() {
         return $this->belongsTo(Room::class, "room_id");
     }
@@ -70,23 +76,21 @@ class Reservation extends Model
     }
 
     public function statusName() {
-        $today = Carbon::today();
         if ($this->check_in == null)
-            return "Waiting for Check-in";
+            return self::STATUS[0]["status"];
         else if ($this->check_out == null)
-            return "Checked-in";
+            return self::STATUS[1]["status"];
         else
-            return "Completed";
+            return self::STATUS[2]["status"];
     }
 
     public function statusColor() {
-        $today = Carbon::today();
         if ($this->check_in == null)
-            return "yellow";
+            return self::STATUS[0]["color"];
         else if ($this->check_out == null)
-            return "orangered";
+            return self::STATUS[1]["color"];
         else
-            return "lightgreen";
+            return self::STATUS[2]["color"];
     }
 
     public function dateDifference() {

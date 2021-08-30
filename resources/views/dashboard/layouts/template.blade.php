@@ -13,14 +13,11 @@
 
             <div class="clearfix"></div>
             <div class="content-wrapper">
-                <div class="container">
-                    <div class="container-fluid">
-                        @yield('content')
-                        <div class="overlay toggle-menu"></div>
-                    </div>
+                <div class="container-fluid">
+                    @yield('content')
+                    <div class="overlay toggle-menu"></div>
                 </div>
             </div>
-            <a href="javaScript:void();" class="back-to-top"><i class="fa fa-angle-double-up"></i></a>
             @include('dashboard.layouts.footer')
         </div>
         @include('dashboard.layouts.scripts')

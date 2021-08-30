@@ -42,7 +42,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price }}">{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if (request()->room_id == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -57,7 +57,7 @@
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Reservation Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", request()->start_date) }}">
                             @error("startDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -66,7 +66,7 @@
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", request()->end_date) }}">
                             @error("endDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
