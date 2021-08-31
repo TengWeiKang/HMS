@@ -26,13 +26,6 @@ class CreateCustomerTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
-
-        Customer::create([
-            "username" => "customer1",
-            "email" => "customer1@gmail.com",
-            "phone" => "012-3456789",
-            "password" => Hash::make("123456789")
-        ]);
     }
 
     /**

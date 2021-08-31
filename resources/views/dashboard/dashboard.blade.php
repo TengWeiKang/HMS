@@ -102,7 +102,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" id="undoBtn" class="btn btn-secondary" data-dismiss="modal">Undo</button>
-                <button type="button" id="saveBtn" class="btn btn-primary">Save</button>
+                <button type="button" id="saveBtn" class="btn btn-primary" data-dismiss="modal">Save</button>
             </div>
         </div>
     </div>
@@ -257,6 +257,7 @@
                     $("#after_end_date").html(properDateFormat(eventEnd));
                 }
                 $("#modify-date-modal").modal("show");
+                $("#undoBtn, #saveBtn").unbind();
                 $("#undoBtn").on("click", function() {
                     eventDropInfo.revert();
                 });
@@ -264,8 +265,18 @@
                     let eventID = event.id;
                     let roomID = newResourceInfo.id;
                     let startDateISO = dateISOString(event.start);
-                    let endDateISO = dateISOString(event.end);
-                    //^ TODO: ajax post request
+                    let endDateISO = dateISOString(eventEnd);
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route("dashboard.reservation-update") }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            id: eventID,
+                            room_id: roomID,
+                            start_date: startDateISO,
+                            end_date: endDateISO
+                        }
+                    });
                 });
             }
         });

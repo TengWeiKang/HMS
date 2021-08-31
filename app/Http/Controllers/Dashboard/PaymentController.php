@@ -64,6 +64,7 @@ class PaymentController extends Controller
             }
         }
         $payment = Payment::create([
+            "reservation_id" => $reservation->id,
             "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
             "reservable_type" => $reservation->reservable_type,
@@ -76,11 +77,13 @@ class PaymentController extends Controller
         $payment->items()->createMany($items);
         $payment->charges()->createMany($charges);
 
-        $reservation->housekeeper = null;
+        $reservation->room->status = 2;
+        $reservation->room->housekeptBy = null;
+        $reservation->room->save();
         $reservation->check_out = Carbon::now();
         $reservation->save();
 
-        return redirect()->route('dashboard.payment.view', ["payment" => $reservation]);
+        return redirect()->route('dashboard.payment.view', ["payment" => $payment]);
     }
 
     /**
@@ -91,7 +94,7 @@ class PaymentController extends Controller
      */
     public function show($payment)
     {
-        $payment = Payment::with("items", "charges")->find($payment);
+        $payment = Payment::with("items", "charges")->findOrFail($payment);
         return view('dashboard/payment/view', ["payment" => $payment]);
     }
 

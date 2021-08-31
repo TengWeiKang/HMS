@@ -127,7 +127,7 @@
                                                 <option value="0">Available</option>
                                                 <option value="2">Dirty</option>
                                                 <option value="3">Repairing</option>
-                                                <option value="1">Closed</option>
+                                                {{-- <option value="1">Closed</option> --}}
                                             </select>
                                         </div>
                                         <div class="form-group row mx-2">
@@ -176,7 +176,7 @@
                 modal.find('#status-room-id')[0].innerHTML = room_id;
                 modal.find('input[name="id"]').val(id);
                 modal.find('textarea[name="note"]').val(note);
-                // modal.find('select[name="status"]').val(status).change();
+                modal.find('select[name="status"]').val(status).change();
             });
 
             $("#table").DataTable({

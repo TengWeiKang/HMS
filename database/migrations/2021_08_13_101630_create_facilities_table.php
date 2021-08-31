@@ -18,18 +18,6 @@ class CreateFacilitiesTable extends Migration
             $table->id();
             $table->string("name")->unique();
         });
-
-        Facility::create([
-            "name" => "facility 1"
-        ]);
-
-        Facility::create([
-            "name" => "facility 2"
-        ]);
-
-        Facility::create([
-            "name" => "facility 3"
-        ]);
     }
 
     /**

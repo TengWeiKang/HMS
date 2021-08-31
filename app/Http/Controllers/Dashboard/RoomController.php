@@ -82,7 +82,7 @@ class RoomController extends Controller
     {
         $room = Room::with(["reservations" => function ($query) {
             $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
-        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"])->find($room);
+        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"])->findOrFail($room);
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
@@ -152,16 +152,17 @@ class RoomController extends Controller
 
     public function assign(Request $request) {
         // TODO: notify housekeeper through email
-        $room = Room::find($request->id);
+        $room = Room::findOrFail($request->id);
         $room->status = 2;
-        $room->housekeeper = $request->housekeeper;
+        $room->housekeptBy = $request->housekeeper;
         $room->save();
         return redirect()->back();
     }
 
     public function updateStatus(Request $request) {
-        $room = Room::find($request->id);
+        $room = Room::findOrFail($request->id);
         $room->status = $request->status;
+        $room->housekeptBy = null;
         $room->note = $request->note;
         $room->save();
         return redirect()->back();

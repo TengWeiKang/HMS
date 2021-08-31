@@ -15,7 +15,6 @@ class Room extends Model
 
     const STATUS = [
         0 => ["status" => "Available", "color" => "#0f0"],
-        1 => ["status" => "Closed", "color" => "#111"],
         2 => ["status" => "Dirty", "color" => "#282828"],
         3 => ["status" => "Repairing", "color" => "#ff8484"]
     ];
@@ -105,14 +104,14 @@ class Room extends Model
     public function departure() {
         $today = Carbon::today();
         return $this->reservations->filter(function ($value, $key) use ($today) {
-            return $value->end_date->addDays() == $today;
+            return !is_null($value->check_in) && is_null($value->check_out) && $value->end_date->addDays() == $today;
         });
     }
 
     public function arrival() {
         $today = Carbon::today();
         return $this->reservations->filter(function ($value, $key) use ($today) {
-            return $value->start_date == $today;
+            return is_null($value->check_in) && $value->start_date == $today;
         });
     }
 }

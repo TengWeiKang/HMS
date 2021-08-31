@@ -12,14 +12,10 @@
 <div class="row mt-3">
     <div class="col-lg-12">
         <div class="card">
-            <div class="card-header">All Payments Record
-                <div class="card-action">
-                    <a href="{{ route("dashboard.reservation.create") }}"><u><span>Create New Reservation</span></u></a>
-                </div>
-            </div>
+            <div class="card-header">All Payments Record</div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="table" class="">
+                    <table id="table">
                         <thead>
                             <tr>
                                 <th>#</th>

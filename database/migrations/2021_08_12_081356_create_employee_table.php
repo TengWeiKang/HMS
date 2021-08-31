@@ -24,30 +24,6 @@ class CreateEmployeeTable extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
-
-        Employee::create([
-            "username" => "admin",
-            "email" => "admin@gmail.com",
-            "phone" => "012-3456789",
-            "password" => Hash::make("123456789"),
-            "role" => 0
-        ]);
-
-        Employee::create([
-            "username" => "staff",
-            "email" => "staff@gmail.com",
-            "phone" => "012-3456789",
-            "password" => Hash::make("123456789"),
-            "role" => 1
-        ]);
-
-        Employee::create([
-            "username" => "housekeeper",
-            "email" => "housekeeper@gmail.com",
-            "phone" => "012-3456789",
-            "password" => Hash::make("123456789"),
-            "role" => 2
-        ]);
     }
 
     /**

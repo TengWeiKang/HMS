@@ -11,7 +11,7 @@
         <div class="card-body">
           <h5 class="card-title">Basic Table</h5>
           <div class="table-responsive">
-            <table id="table" class="">
+            <table id="table">
                 <thead>
                     <tr>
                         <th class="">Name</th>

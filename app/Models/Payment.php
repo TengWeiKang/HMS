@@ -18,6 +18,7 @@ class Payment extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'reservation_id',
         'room_id',
         'room_name',
         'reservable_type',
@@ -46,7 +47,7 @@ class Payment extends Model
 
     public function charges()
     {
-        return $this->hasMany(PaymentCharge::class, 'room_id');
+        return $this->hasMany(PaymentCharge::class, 'payment_id');
     }
 
     public function dateDifference() {

@@ -15,7 +15,7 @@ class CreatePaymentChargeTable extends Migration
     {
         Schema::create('payment_charge', function (Blueprint $table) {
             $table->id();
-            $table->integer("room_id")->index();
+            $table->integer("payment_id")->index();
             $table->string("description");
             $table->double("price");
         });

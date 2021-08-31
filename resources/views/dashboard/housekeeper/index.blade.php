@@ -5,6 +5,15 @@
     .card-body>.row {
         margin-top: 1em;
     }
+    select option {
+        background-color: transparent;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: black;
+    }
+    .select2.select2-container {
+        border: 1px solid #aaa;
+    }
 </style>
 @endpush
 
@@ -169,10 +178,77 @@
         </div>
     </div>
 </div>
+<!-- Assign Kousekeeper Modal -->
+<form action="{{ route("dashboard.room.assign") }}" method="POST">
+    @csrf
+    <div class="modal fade overflow-hidden" id="assign-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Housekeeper for <span id="assign-room-id"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row mx-2">
+                        <label for="housekeeper">Housekeeper</label>
+                        <select class="form-control" id="housekeeper" name="housekeeper">
+                            @foreach ($housekeepers as $housekeeper)
+                                <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Update Status Modal -->
+<form action="{{ route("dashboard.room.status") }}" method="POST">
+    @csrf
+    <div class="modal fade overflow-hidden" id="status-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Room Status for <span id="status-room-id"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row mx-2">
+                        <label for="status">Room Status</label>
+                        <select class="form-control" id="status" name="status">
+                            <option value="0">Available</option>
+                            <option value="2">Dirty</option>
+                            <option value="3">Repairing</option>
+                            {{-- <option value="1">Closed</option> --}}
+                        </select>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="note">Note for the room (Optional)</label>
+                        <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" value="Submit">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 @endsection
 
 @push("script")
-    {{-- <script>
+    <script>
         $(document).ready(function () {
             $('select#housekeeper, select#status').select2();
             $('.select2.select2-container').addClass('form-control');
@@ -196,54 +272,8 @@
                 modal.find('#status-room-id')[0].innerHTML = room_id;
                 modal.find('input[name="id"]').val(id);
                 modal.find('textarea[name="note"]').val(note);
-                // modal.find('select[name="status"]').val(status).change();
-            });
-
-            $("#table").DataTable({
-                "columnDefs": [
-                {
-                    "targets": 6,
-                    "orderable": false,
-                    "searchable": false
-                }]
-            });
-
-            $(".deleteRoom").on("click", function () {
-                const DELETE_URL = "{{ route('dashboard.room.destroy', ':id') }}";
-                var roomId = $(this).data("id");
-                var roomName = $(this).data("name");
-                var url = DELETE_URL.replace(":id", roomId);
-                Swal.fire({
-                    title: "Delete Room",
-                    text: "Are you sure you want to remove " + roomName + "?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    cancelButtonColor: "#E00",
-                    confirmButtonColor: "#00E",
-                    confirmButtonText: "Yes"
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            type: "DELETE",
-                            url: url,
-                            data: {
-                                "_token": "{{ csrf_token() }}"
-                            },
-                            success: function (response){
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: response["success"],
-                                    icon: 'success',
-                                    showConfirmButton: false,
-                                    timer: 1000,
-                                }).then(() => {
-                                    window.location.href = "{{ route("dashboard.room") }}";
-                                });
-                            }
-                        });
-                    }
-                })
+                modal.find('select[name="status"]').val(status).change();
             });
         });
-    </script> --}}
+    </script>
 @endpush

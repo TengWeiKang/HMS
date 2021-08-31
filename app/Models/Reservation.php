@@ -108,7 +108,7 @@ class Reservation extends Model
      */
     public function payment()
     {
-        return $this->hasOne(Payment::class, 'room_id');
+        return $this->hasOne(Payment::class, 'reservation_id');
     }
 
     // public function customerRedirect() {

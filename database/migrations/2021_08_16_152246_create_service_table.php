@@ -19,19 +19,6 @@ class CreateServiceTable extends Migration
             $table->string("name");
             $table->double("price");
         });
-
-        Service::create([
-            "name" => "food",
-            "price" => 7
-        ]);
-        Service::create([
-            "name" => "drink",
-            "price" => 5
-        ]);
-        Service::create([
-            "name" => "food 2",
-            "price" => 9
-        ]);
     }
 
     /**

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Room;
+use App\Models\Employee;
 
 class HousekeeperController extends Controller
 {
@@ -25,6 +26,7 @@ class HousekeeperController extends Controller
         $arrivals = $rooms->filter(function ($value, $key) {
             return $value->isArrivalToday();
         });
-        return view('dashboard/housekeeper/index', ["turnovers" => $turnovers, "departures" => $departures, "arrivals" => $arrivals]);
+        $housekeepers = Employee::where("role", 2)->get();
+        return view('dashboard/housekeeper/index', ["turnovers" => $turnovers, "departures" => $departures, "arrivals" => $arrivals, "housekeepers" => $housekeepers]);
     }
 }

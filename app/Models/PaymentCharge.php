@@ -12,7 +12,7 @@ class PaymentCharge extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'room_id',
+        'payment_id',
         'description',
         'price',
     ];

@@ -37,7 +37,7 @@ Route::group(["prefix" => 'customer'], function () {
 Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function () {
     Route::get('/', [DashboardController::class, "index"])->name("dashboard.home");
     Route::post('/json', [DashboardController::class, "json"])->name("dashboard.json");
-    Route::view('/test', "dashboard/test")->name("dashboard.test");
+    Route::post('/update-reservation', [DashboardController::class, "reservation_date_update"])->name("dashboard.reservation-update");
 
     //employee management
     Route::group(["prefix" => "employee"], function() {

@@ -207,7 +207,7 @@
                                 <option value="0" @if ($room->status == 0) selected @endif>Available</option>
                                 <option value="2" @if ($room->status == 2) selected @endif>Dirty</option>
                                 <option value="3" @if ($room->status == 3) selected @endif>Repairing</option>
-                                <option value="1" @if ($room->status == 1) selected @endif>Closed</option>
+                                {{-- <option value="1" @if ($room->status == 1) selected @endif>Closed</option> --}}
                             </select>
                         </div>
                         <div class="form-group row mx-2">

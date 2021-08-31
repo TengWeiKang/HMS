@@ -41,9 +41,10 @@ class DashboardController extends Controller
                     "resourceId" => $reservation->room_id,
                     "backgroundColor" => $reservation->statusColor(),
                     "textColor" => "black",
+                    "classNames" => "text-center",
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date->format("Y-m-d"),
-                    "end" => $reservation->end_date->subtract(1, "days")->format("Y-m-d"),
+                    "end" => $reservation->end_date->addDays()->format("Y-m-d"),
                     "editable" => ($reservation->statusName() == "Completed") ? false : true,
                     "resourceEditable" => ($reservation->statusName() == "Completed") ? false : true,
                 ];
@@ -52,7 +53,13 @@ class DashboardController extends Controller
         return $json;
     }
 
-    public function reservation_date_update() {
+    public function reservation_date_update(Request $request) {
+        $reservation = Reservation::findOrFail($request->id);
+        $reservation->room_id = $request->room_id;
+        $reservation->start_date = $request->start_date;
+        $reservation->end_date = $request->end_date;
+        $reservation->save();
+        return response()->json(['success' => "The reservation has been updated successfully"]);
 
     }
 }
