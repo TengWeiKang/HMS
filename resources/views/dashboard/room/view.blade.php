@@ -5,11 +5,6 @@
     select option {
         background-color: transparent;
     }
-    .modal .h1, .modal .h2, .modal .h3, .modal .h4, .modal .h5, .modal .h6, .modal h1, .modal h2, .modal h3, .modal h4, .modal h5, .modal h6, .modal label {
-        color: black;
-        text-transform: initial;
-        font-size: inherit;
-    }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: black;
     }

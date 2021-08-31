@@ -28,3 +28,9 @@ table td.action-col {
     vertical-align: middle;
     border-style: none;
 }
+
+.modal .h1, .modal .h2, .modal .h3, .modal .h4, .modal .h5, .modal .h6, .modal h1, .modal h2, .modal h3, .modal h4, .modal h5, .modal h6, .modal label {
+    color: black;
+    text-transform: initial;
+    font-size: inherit;
+}

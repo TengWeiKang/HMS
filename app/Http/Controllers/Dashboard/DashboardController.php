@@ -27,7 +27,9 @@ class DashboardController extends Controller
             foreach ($rooms as $room) {
                 $json[] = [
                     "id" => $room->id,
+                    "room_id" => $room->room_id,
                     "title" => $room->room_id . " - " . $room->name . " (" . $room->status(false) . ")",
+                    "price" => $room->price
                 ];
             }
         }
@@ -41,10 +43,16 @@ class DashboardController extends Controller
                     "textColor" => "black",
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date->format("Y-m-d"),
-                    "end" => $reservation->end_date->subtract(1, "days")->format("Y-m-d")
+                    "end" => $reservation->end_date->subtract(1, "days")->format("Y-m-d"),
+                    "editable" => ($reservation->statusName() == "Completed") ? false : true,
+                    "resourceEditable" => ($reservation->statusName() == "Completed") ? false : true,
                 ];
             }
         }
         return $json;
+    }
+
+    public function reservation_date_update() {
+
     }
 }
