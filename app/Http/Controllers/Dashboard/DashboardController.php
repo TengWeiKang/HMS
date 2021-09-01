@@ -8,13 +8,10 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\Reservation;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
-    public function __construct() {
-        $this->middleware("employee:admin,staff");
-    }
-
     public function index() {
         return view('dashboard/dashboard');
     }
@@ -35,6 +32,7 @@ class DashboardController extends Controller
         }
         else if ($return === "events"){
             $reservations = Reservation::with("reservable", "payment")->get();
+            $isHousekeeper = Auth::guard("employee")->user()->isHousekeeper();
             foreach ($reservations as $reservation) {
                 $json[] = [
                     "id" => $reservation->id,
@@ -45,8 +43,8 @@ class DashboardController extends Controller
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->addDays()->format("Y-m-d"),
-                    "editable" => ($reservation->statusName() == "Completed") ? false : true,
-                    "resourceEditable" => ($reservation->statusName() == "Completed") ? false : true,
+                    "editable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
+                    "resourceEditable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
                 ];
             }
         }
