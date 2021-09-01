@@ -55,7 +55,8 @@ class DashboardController extends Controller
 
     public function reservation_date_update(Request $request) {
         $reservation = Reservation::findOrFail($request->id);
-        $reservation->room_id = $request->room_id;
+        if ($request->has("room_id"))
+            $reservation->room_id = $request->room_id;
         $reservation->start_date = $request->start_date;
         $reservation->end_date = $request->end_date;
         $reservation->save();

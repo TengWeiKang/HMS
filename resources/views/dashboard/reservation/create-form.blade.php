@@ -206,6 +206,7 @@
         $("#calendar").fullCalendar({
             selectable: true,
             unselectAuto: false,
+            height: "auto",
             header: {
                 left: 'prev',
                 center: 'title',

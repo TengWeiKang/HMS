@@ -55,8 +55,8 @@
         </div>
     </div>
 </div>
-<!-- Confirmation Modify Reservation Modal -->
-<div class="modal fade" id="modify-date-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+<!-- Drag / Drop / Resize Event Modal -->
+<div class="modal fade" id="drag-drop-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -66,37 +66,44 @@
                 <div class="row mx-2">
                     <h5>Customer: <span id="customer"></span></h5>
                 </div>
-                <div id="room_changes_info" class="d-none">
-                    <div class="row mx-2 mt-3">
+                <div id="room_info" class="d-none mt-3">
+                    <div class="row mx-2">
+                        <h5>Room (Before): <span id="room_description"></span></h5>
+                    </div>
+                </div>
+                <div id="room_changes_info" class="d-none mt-3">
+                    <div class="row mx-2">
                         <h5>Room (Before): <span id="before_room"></span></h5>
                     </div>
                     <div class="row mx-2">
                         <h5>Room (After): <span id="after_room"></span></h5>
                     </div>
-                    <div class="row mx-2">
-                        <h5>Prices Changes: <span id="modified_price"></span></h5>
-                    </div>
                 </div>
-                <div id="date_change_info" class="d-none">
-                    <div class="row mx-2 mt-3">
+                <div id="date_change_info" class="d-none mt-3">
+                    <div class="row mx-2">
                         <h5>Start Date (Before): <span id="before_start_date"></span></h5>
                     </div>
                     <div class="row mx-2">
                         <h5>End Date (Before): <span id="before_end_date"></span></h5>
                     </div>
-                    <div class="row mx-2 mt-3">
+                    <div class="row mx-2">
                         <h5>Start Date (After): <span id="after_start_date"></span></h5>
                     </div>
                     <div class="row mx-2">
                         <h5>End Date (After): <span id="after_end_date"></span></h5>
                     </div>
                 </div>
-                <div id="date_unchange_info" class="d-none">
-                    <div class="row mx-2 mt-3">
+                <div id="date_unchange_info" class="d-none mt-3">
+                    <div class="row mx-2">
                         <h5>Start Date: <span id="unchanged_start_date"></span></h5>
                     </div>
                     <div class="row mx-2">
                         <h5>End Date: <span id="unchanged_end_date"></span></h5>
+                    </div>
+                </div>
+                <div id="price_changes_info" class="d-none mt-3">
+                    <div class="row mx-2">
+                        <h5>Prices Changes: <span id="modified_price"></span></h5>
                     </div>
                 </div>
             </div>
@@ -143,6 +150,10 @@
             selectOverlap: false,
             displayEventTime: false,
             selectable: true,
+            // dayHeaderFormat: {month: 'numeric', day: 'numeric'},
+            slotLabelFormat: [
+                {day: 'numeric', month: 'numeric'},
+            ],
             headerToolbar: {
                 left: 'prev,today,next',
                 center: 'title',
@@ -230,7 +241,7 @@
                 let newRoomID = newResourceInfo.extendedProps.room_id;
                 let newRoomPrice = newResourceInfo.extendedProps.price;
                 if (oldRoomID != newRoomID) {
-                    $("#room_changes_info").removeClass("d-none");
+                    $("#room_changes_info, #price_changes_info, #room_info").removeClass("d-none");
                     $("#before_room").html(oldRoomID + " (RM " + oldRoomPrice.toFixed(2) +" per night)");
                     $("#after_room").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)");
                     let oldTotalPrice = oldRoomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
@@ -238,25 +249,25 @@
                     $("#modified_price").html("RM " + oldTotalPrice.toFixed(2) + " → RM " + newTotalPrice.toFixed(2));
                 }
                 else {
-                    $("#room_changes_info").addClass("d-none");
+                    $("#room_changes_info, #price_changes_info, #room_info").addClass("d-none");
                 }
                 let delta = eventDropInfo.delta;
                 if (delta.days == 0 && delta.months == 0 && delta.years == 0) {
-                    $("#date_change_info").addClass("d-none");
                     $("#date_unchange_info").removeClass("d-none");
-                    $("#unchanged_start_date").html(properDateFormat(eventDropInfo.oldEvent.start));
+                    $("#date_change_info").addClass("d-none");
+                    $("#unchanged_start_date").html(properDateFormat(oldEvent.start));
                     $("#unchanged_end_date").html(properDateFormat(oldEventEnd));
                 }
                 else {
                     $("#date_unchange_info").addClass("d-none");
                     $("#date_change_info").removeClass("d-none");
                     $("#customer").html(event.title + " (" + dateDifferenceInDays(oldEvent.start, oldEventEnd) + " nights)");
-                    $("#before_start_date").html(properDateFormat(eventDropInfo.oldEvent.start));
+                    $("#before_start_date").html(properDateFormat(oldEvent.start));
                     $("#before_end_date").html(properDateFormat(oldEventEnd));
                     $("#after_start_date").html(properDateFormat(event.start));
                     $("#after_end_date").html(properDateFormat(eventEnd));
                 }
-                $("#modify-date-modal").modal("show");
+                $("#drag-drop-modal").modal("show");
                 $("#undoBtn, #saveBtn").unbind();
                 $("#undoBtn").on("click", function() {
                     eventDropInfo.revert();
@@ -273,6 +284,52 @@
                             _token: "{{ csrf_token() }}",
                             id: eventID,
                             room_id: roomID,
+                            start_date: startDateISO,
+                            end_date: endDateISO
+                        }
+                    });
+                });
+            },
+            eventResize: function(eventResizeInfo) {
+                let oldEvent = eventResizeInfo.oldEvent;
+                let event = eventResizeInfo.event;
+
+                let oldEventEnd = new Date(oldEvent.end.setDate(oldEvent.end.getDate() - 1));
+                let eventEnd = new Date(event.end.setDate(event.end.getDate() - 1));
+
+                let newResourceInfo = event.getResources()[0];
+                let roomPrice = newResourceInfo.extendedProps.price;
+                let roomID = newResourceInfo.extendedProps.room_id;
+
+                $("#room_changes_info, #date_unchange_info").addClass("d-none");
+                $("#date_change_info, #price_changes_info, #room_info").removeClass("d-none");
+
+                $("#customer").html(event.title);
+                $("#room_description").html(roomID + " (RM " + roomPrice.toFixed(2) +" per night)")
+                $("#before_start_date").html(properDateFormat(oldEvent.start));
+                $("#before_end_date").html(properDateFormat(oldEventEnd));
+                $("#after_start_date").html(properDateFormat(event.start));
+                $("#after_end_date").html(properDateFormat(eventEnd));
+
+                let oldTotalPrice = roomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
+                let newTotalPrice = roomPrice * dateDifferenceInDays(event.start, eventEnd);
+                $("#modified_price").html("RM " + oldTotalPrice.toFixed(2) + " → RM " + newTotalPrice.toFixed(2));
+
+                $("#drag-drop-modal").modal("show");
+                $("#undoBtn, #saveBtn").unbind();
+                $("#undoBtn").on("click", function() {
+                    eventResizeInfo.revert();
+                });
+                $("#saveBtn").on("click", function() {
+                    let eventID = event.id;
+                    let startDateISO = dateISOString(event.start);
+                    let endDateISO = dateISOString(eventEnd);
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route("dashboard.reservation-update") }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            id: eventID,
                             start_date: startDateISO,
                             end_date: endDateISO
                         }
