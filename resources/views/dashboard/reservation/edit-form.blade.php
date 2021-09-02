@@ -43,7 +43,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                            <option value="{{ $room->id }}" data-price="{{ $room->price }}">{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                            <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($reservation->room_id == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -105,7 +105,7 @@
                     </div>
                     @if ($reservation->check_in != null)
                         <div class="form-group col-12 mt-3">
-                            <a href="#" class="btn btn-primary btn-round px-5"><i class="icon-plus"></i> Add Room Service</a>
+                            <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary btn-round px-5"><i class="icon-plus"></i> Add Room Service</a>
                         </div>
                     @endif
                     <div class="form-group col-12 mt-4">

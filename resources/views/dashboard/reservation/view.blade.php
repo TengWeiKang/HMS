@@ -49,6 +49,10 @@
                                             <td>Total Nights:</td>
                                             <td>{{ $reservation->dateDifference() . " " . Str::plural("night", $reservation->dateDifference() )}}</td>
                                         </tr>
+                                        <tr>
+                                            <td>Status:</td>
+                                            <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
+                                        </tr>
                                         @if ($reservation->check_in != null)
                                         <tr>
                                             <td>Check in:</td>

@@ -1,9 +1,9 @@
 <!--Start sidebar-wrapper-->
 <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
     <div class="brand-logo">
-        <a href="index.html">
-            <img src="{{ asset("dashboard/images/logo-icon.png") }}" class="logo-icon" alt="logo icon">
-            <h5 class="logo-text">Dashboard</h5>
+        <a href="{{ route("dashboard.home") }}">
+            {{-- <img src="{{ asset("dashboard/images/logo-icon.png") }}" class="logo-icon" alt="logo icon"> --}}
+            <h5 class="logo-text">Hotel Management</h5>
         </a>
     </div>
     <ul class="sidebar-menu do-nicescrol">

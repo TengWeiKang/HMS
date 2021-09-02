@@ -75,22 +75,21 @@ class Reservation extends Model
         return $this->bookingPrice() + $this->totalServicePrices();
     }
 
-    public function statusName() {
+    public function status() {
         if ($this->check_in == null)
-            return self::STATUS[0]["status"];
+            return 0;
         else if ($this->check_out == null)
-            return self::STATUS[1]["status"];
+            return 1;
         else
-            return self::STATUS[2]["status"];
+            return 2;
+    }
+
+    public function statusName() {
+        return self::STATUS[$this->status()]["status"];
     }
 
     public function statusColor() {
-        if ($this->check_in == null)
-            return self::STATUS[0]["color"];
-        else if ($this->check_out == null)
-            return self::STATUS[1]["color"];
-        else
-            return self::STATUS[2]["color"];
+        return self::STATUS[$this->status()]["color"];
     }
 
     public function dateDifference() {

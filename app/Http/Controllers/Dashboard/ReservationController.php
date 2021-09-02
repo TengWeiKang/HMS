@@ -215,6 +215,7 @@ class ReservationController extends Controller
         $services = Service::all();
         return view('dashboard/reservation/room-service', ["reservation" => $reservation, "services" => $services]);
     }
+
     public function storeService(Request $request, Reservation $reservation)
     {
         // $arr = array_map(null, $request->serviceID, $request->qty);
@@ -236,5 +237,12 @@ class ReservationController extends Controller
         }
         $services = Service::all();
         return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation, "services" => $services])->with("message", "The Room Services Added Successfully");
+    }
+
+    public function checkIn(Reservation $reservation)
+    {
+        $reservation->check_in = Carbon::now();
+        $reservation->save();
+        return redirect()->back();
     }
 }

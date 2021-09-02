@@ -34,7 +34,7 @@
                 </ul>
             </li>
             <li class="nav-item">
-                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
+                <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="javascript:void();">
                     <span class="user-profile">
                         {{ Auth::guard("employee")->user()->username }}
                         {{-- <img src="https://via.placeholder.com/110x110" class="img-circle" alt="user avatar"> --}}

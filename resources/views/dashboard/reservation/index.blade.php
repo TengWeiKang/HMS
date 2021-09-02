@@ -42,6 +42,11 @@
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+                                            @if ($reservation->check_in == null)
+                                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
+                                                <i class="fa fa-download text-white"></i>
+                                            </a>
+                                            @endif
                                             @if ($reservation->check_out == null)
                                             <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" title="Edit">
                                                 <i class="zmdi zmdi-edit text-white"></i>

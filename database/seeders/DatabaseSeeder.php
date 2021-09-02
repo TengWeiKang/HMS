@@ -154,9 +154,6 @@ class DatabaseSeeder extends Seeder
             "end_date" => Carbon::now()->today()->addDays(3),
             "reservable_type" => Customer::class,
             "reservable_id" => 2,
-        ])->services()->attach([
-            ["service_id" => 2, "quantity" => 3],
-            ["service_id" => 3, "quantity" => 2],
         ]);
 
         Reservation::create([
@@ -173,8 +170,8 @@ class DatabaseSeeder extends Seeder
 
         Reservation::create([
             "room_id" => 1,
-            "start_date" => Carbon::now()->today()->subDays(7),
-            "end_date" => Carbon::now()->today()->subDays(5),
+            "start_date" => Carbon::now()->today()->subDays(5),
+            "end_date" => Carbon::now()->today()->subDays(2),
             "reservable_type" => Customer::class,
             "reservable_id" => 1,
             "check_in" => Carbon::now()->subDays(7),

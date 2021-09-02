@@ -2,7 +2,26 @@
 
 @push('css')
 <link href="{{ asset("dashboard/plugins/fullcalendar-v5/main.min.css") }}" rel="stylesheet"/>
-
+<style>
+    .modal table td {
+        color: black;
+        padding-top: .25rem;
+        padding-bottom: .25rem;
+    }
+    .event-pointer {
+        cursor: pointer;
+    }
+    .icheck-material-white>input:first-child:checked+input[type=hidden]+label::before,
+    .icheck-material-white>input:first-child:checked+label::before,
+    [class*=icheck-material]>input:first-child+input[type=hidden]+label::before,
+    [class*=icheck-material]>input:first-child+label::before {
+        border-color: gray;
+    }
+    .c-mx {
+        padding-left: 24.5px;
+        padding-right: 24.5px;
+    }
+</style>
 @endpush
 
 @section('title')
@@ -11,9 +30,12 @@
 
 @section('content')
 <div class="card mt-3">
+    <div class="card-header" style="font-size: 20px">Calendar <span id="loading" class="text-warning font-weight-normal small"></span>
+        <div class="card-action">
+            <a id="refetch-event" href="javascript:void();"><i class="icon-refresh text-white mr-1" style="font-size: 20px"></i></a>
+        </div>
+    </div>
     <div class="card-body">
-        <div class="card-title">Calendar</div>
-        <hr>
         <div class="row">
             <div class="col-lg-12">
                 <div id="calendar"></div>
@@ -103,13 +125,99 @@
                 </div>
                 <div id="price_changes_info" class="d-none mt-3">
                     <div class="row mx-2">
-                        <h5>Prices Changes: <span id="modified_price"></span></h5>
+                        <h5>Booking Prices Changes: <span id="modified_price"></span></h5>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" id="undoBtn" class="btn btn-secondary" data-dismiss="modal">Undo</button>
                 <button type="button" id="saveBtn" class="btn btn-primary" data-dismiss="modal">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Display Reservation Modal -->
+<div class="modal fade" id="display-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reservation Information</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="table-responsive col-12">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td>Room ID:</td>
+                                    <td id="display-room-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Customer:</td>
+                                    <td id="display-customer"></td>
+                                </tr>
+                                <tr>
+                                    <td>Date:</td>
+                                    <td id="display-date"></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Nights:</td>
+                                    <td id="display-total-night"></td>
+                                </tr>
+                                <tr>
+                                    <td>Total:</td>
+                                    <td id="display-total-price"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row c-mx">
+                    <div class="icheck-material-secondary">
+                        <input type="checkbox" id="newTab" name="newTab"/>
+                        <label for="newTab">Open in New Tab</label>
+                    </div>
+                </div>
+                <div id="display-check-in" class="row mt-3 d-none">
+                    <div class="col-4">
+                        <button type="button" class="btn btn-secondary w-100" name="check-in"><i class="fa fa-download text-white"></i> Check In</button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" class="btn btn-secondary w-100" name="edit"><i class="zmdi zmdi-edit text-white"></i> Edit</button>
+                    </div>
+                    <div class="col-4">
+                        <button type="button" class="btn btn-secondary w-100" name="view"><i class="zmdi zmdi-eye text-white"></i> View</button>
+                    </div>
+                </div>
+                <div id="display-reserved" class="d-none">
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" name="check-out"><i class="zmdi zmdi-check text-white"></i> Check Out</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" name="add-service"><i class="zmdi zmdi-plus text-white"></i> Add Service</button>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" name="edit"><i class="zmdi zmdi-edit text-white"></i> Edit</button>
+                        </div>
+                        <div class="col-6">
+                            <button type="button" class="btn btn-secondary w-100" name="view"><i class="zmdi zmdi-eye text-white"></i> View</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="display-complete" class="row mt-3 d-none">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary w-100" name="view"><i class="zmdi zmdi-eye text-white"></i> View</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-secondary w-100" name="payment"><i class="zmdi zmdi-eye text-white"></i> Payment</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -124,7 +232,8 @@
         $("button#redirectBtn").on("click", function() {
             let redirectURL = $("input#redirectURL").val();
             window.location.href = redirectURL;
-        })
+        });
+
 
         function properDateFormat(date) {
             return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
@@ -149,8 +258,8 @@
             eventOverlap: false,
             selectOverlap: false,
             displayEventTime: false,
+            lazyFetching: false,
             selectable: true,
-            // dayHeaderFormat: {month: 'numeric', day: 'numeric'},
             slotLabelFormat: [
                 {day: 'numeric', month: 'numeric'},
             ],
@@ -190,6 +299,15 @@
                     $("#emptyRoom").removeAttr("style");
                 }
             },
+            loading: function(isLoading) {
+                let loadingSpan = $("#loading");
+                if (isLoading) {
+                    loadingSpan.html("(Fetching Data)");
+                }
+                else {
+                    loadingSpan.html("");
+                }
+            },
             select: function(selectionInfo) {
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
@@ -225,6 +343,72 @@
 
                     $("#confirmation-modal").modal("show");
                 }
+            },
+            eventClick: function (eventClickInfo) {
+                let event = eventClickInfo.event;
+                let endDate = new Date(event.end.setDate(event.end.getDate() - 1));
+                let dateDiff = dateDifferenceInDays(event.start, endDate);
+                $("#display-room-id").html(event.getResources()[0].extendedProps.room_id);
+                $("#display-customer").html(event.title);
+                $("#display-date").html(properDateFormat(event.start) + " - " + properDateFormat(endDate));
+                $("#display-total-night").html( dateDiff + " nights");
+                $("#display-total-price").html("RM " + event.extendedProps.totalPrice.toFixed(2));
+
+                $("button[name='check-in'], button[name='edit'], button[name='view'], button[name='check-out'], button[name='add-service'], button[name='payment']").unbind()
+
+                let status = event.extendedProps.status;
+                const CHECK_IN_URL = "{{ route("dashboard.reservation.check-in", ":reservationID") }}";
+                const EDIT_URL = "{{ route("dashboard.reservation.edit", ":reservationID") }}";
+                const VIEW_URL = "{{ route("dashboard.reservation.view", ":reservationID") }}";
+                const ADD_SERVICE_URL = "{{ route("dashboard.reservation.service", ":reservationID") }}";
+                const CHECK_OUT_URL = "{{ route("dashboard.payment.create", ":reservationID") }}";
+                const PAYMENT_URL = "{{ route("dashboard.payment.view", ":paymentID") }}";
+                let eventID = event.id;
+                switch (status) {
+                    case 0:
+                        $("#display-check-in").removeClass("d-none");
+                        $("#display-reserved, #display-complete").addClass("d-none");
+                        $("button[name='check-in']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(CHECK_IN_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                        });
+                        $("button[name='edit']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(EDIT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                        });
+                        break;
+                    case 1:
+                        $("#display-reserved").removeClass("d-none");
+                        $("#display-check-in, #display-complete").addClass("d-none");
+                        $("button[name='check-out']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(CHECK_OUT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                        });
+                        $("button[name='add-service']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(ADD_SERVICE_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                        });
+                        $("button[name='edit']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(EDIT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                        });
+                        break;
+                    case 2:
+                        let paymentID = event.extendedProps.paymentId;
+                        $("#display-complete").removeClass("d-none");
+                        $("#display-check-in, #display-reserved").addClass("d-none");
+                        $("button[name='payment']").on("click", function() {
+                            let newTab = $("#newTab").prop("checked");
+                            window.open(PAYMENT_URL.replace(":paymentID", paymentID), (newTab ? "_blank": "_self"));
+                        });
+                        break;
+                }
+                $("button[name='view']").on("click", function() {
+                    let newTab = $("#newTab").prop("checked");
+                    window.open(VIEW_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                });
+
+                $("#display-modal").modal("show");
             },
             eventDrop: function(eventDropInfo) {
                 let oldEvent = eventDropInfo.oldEvent;
@@ -338,6 +522,11 @@
             }
         });
         calendar.render();
+        $("#refetch-event").on("click", function(e) {
+            e.preventDefault();
+            calendar.refetchResources();
+            calendar.refetchEvents();
+        });
     });
 </script>
 @endpush

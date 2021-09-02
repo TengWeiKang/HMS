@@ -102,6 +102,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/create", [ReservationController::class, "create"])->name("dashboard.reservation.create");
         Route::post("/create", [ReservationController::class, "store"]);
         Route::get("/{reservation}", [ReservationController::class, "show"])->name("dashboard.reservation.view");
+        Route::get("/{reservation}/check-in", [ReservationController::class, "checkIn"])->name("dashboard.reservation.check-in");
         Route::get("/{reservation}/edit", [ReservationController::class, "edit"])->name("dashboard.reservation.edit");
         Route::put("/{reservation}/edit", [ReservationController::class, "update"]);
         Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");

@@ -39,12 +39,15 @@ class DashboardController extends Controller
                     "resourceId" => $reservation->room_id,
                     "backgroundColor" => $reservation->statusColor(),
                     "textColor" => "black",
-                    "classNames" => "text-center",
+                    "classNames" => "text-center event-pointer",
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->addDays()->format("Y-m-d"),
                     "editable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
                     "resourceEditable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
+                    "totalPrice" => $reservation->finalPrices(),
+                    "status" => $reservation->status(),
+                    "paymentId" => optional($reservation->payment)->id,
                 ];
             }
         }

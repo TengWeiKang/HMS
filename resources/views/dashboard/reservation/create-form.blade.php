@@ -213,12 +213,12 @@
                 right: 'next'
             },
             loading: function(isLoading, view) {
-                let loadingSpan = $("#loading")[0];
+                let loadingSpan = $("#loading");
                 if (isLoading) {
-                    loadingSpan.innerHTML = "(Fetching Data)";
+                    loadingSpan.html("(Fetching Data)");
                 }
                 else {
-                    loadingSpan.innerHTML = "";
+                    loadingSpan.html("");
                 }
             },
             eventSources: [{
