@@ -35,6 +35,9 @@
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
+                @if (session('error'))
+                    <div class="text-danger text-center">{{ session('error') }}</div>
+				@endif
                 <hr>
                 <form action="{{ route("dashboard.reservation.create") }}" method="POST">
                     @csrf
@@ -94,9 +97,7 @@
                     @error('dateConflict')
                         <div class="col-lg-12 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
-                                @error('dateConflict')
-                                    {{ $message }}
-                                @enderror
+                                {{ $message }}
                             </div>
                         </div>
                     @enderror
@@ -269,8 +270,8 @@
                 }
             },
             eventAfterAllRender: function(view) {
-                $el = $("#checkIn")[0];
-                $msgEl = $("#reserved")[0];
+                let checkbox = $("#checkIn")[0];
+                let msgElement = $("#reserved")[0];
                 let events = $("#calendar").fullCalendar("clientEvents");
                 let isReserved = false;
                 events.forEach(event => {
@@ -279,13 +280,13 @@
                     }
                 });
                 if (isReserved) {
-                    $el.checked = false;
-                    $el.disabled = true;
-                    $msgEl.innerHTML = "The room has been reserved by other customer";
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    msgElement.innerHTML = "The room has been reserved by other customer";
                 }
                 else {
-                    $el.disabled = false;
-                    $msgEl.innerHTML = "";
+                    checkbox.disabled = false;
+                    msgElement.innerHTML = "";
                 }
             }
         });

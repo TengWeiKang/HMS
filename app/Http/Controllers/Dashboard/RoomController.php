@@ -75,14 +75,14 @@ class RoomController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  integer  $room
+     * @param  \App\Models\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function show($room)
+    public function show(Room $room)
     {
-        $room = Room::with(["reservations" => function ($query) {
+        $room->load(["reservations" => function ($query) {
             $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
-        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"])->findOrFail($room);
+        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"]);
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }

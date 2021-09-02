@@ -89,12 +89,12 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  integer  $payment
+     * @param  \App\Models\Payment  $payment
      * @return \Illuminate\Http\Response
      */
-    public function show($payment)
+    public function show(Payment $payment)
     {
-        $payment = Payment::with("items", "charges")->findOrFail($payment);
+        $payment->load("items", "charges");
         return view('dashboard/payment/view', ["payment" => $payment]);
     }
 

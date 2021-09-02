@@ -64,7 +64,7 @@ class ReservationController extends Controller
      */
     public function create()
     {
-        $rooms = Room::all();
+        $rooms = Room::with("reservations")->get();
         $customers = Customer::all();
         return view('dashboard/reservation/create-form', ["rooms" => $rooms, "customers" => $customers]);
     }
@@ -106,6 +106,14 @@ class ReservationController extends Controller
             }
         });
         $validator->validate();
+        $error = "";
+        if ($request->checkIn) {
+            $room = Room::find($request->roomId);
+            if ($room->isReserved()) {
+                $request->checkIn = false;
+                $error = "The room is currently reserved by other customer";
+            }
+        }
         Reservation::create([
             "room_id" => $request->roomId,
             "start_date" => $request->startDate,
@@ -114,8 +122,12 @@ class ReservationController extends Controller
             "reservable_id" => $customerID,
             "check_in" => ($request->checkIn ? Carbon::now() : null)
         ]);
-
-        return redirect()->route('dashboard.reservation.create')->with("message", "New Reservation Created Successfully");
+        if ($error == "") {
+            return redirect()->route('dashboard.reservation.create')->with("message", "New Reservation Created Successfully");
+        }
+        else {
+            return redirect()->route('dashboard.reservation.create')->with("message", "New Reservation Created Successfully")->with("error", $error);
+        }
     }
 
     /**
@@ -137,7 +149,8 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        $rooms = Room::all();
+        $reservation->load("room", "reservable");
+        $rooms = Room::with("reservations")->get();
         $customers = Customer::all();
         return view('dashboard/reservation/edit-form', ["rooms" => $rooms, "customers" => $customers, "reservation" => $reservation]);
     }
@@ -178,24 +191,25 @@ class ReservationController extends Controller
             if ($count > 0) {
                 $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
             }
+            if ($request->checkIn) {
+                $room = Room::find($request->roomId);
+                if ($room->isReserved() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
+                    $validator->errors()->add("reserved", "The room is currently reserved by other customer");
+                }
+            }
         });
-        $validator->validate();
-
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
         $reservation->room_id = $request->roomId;
         $reservation->start_date = $request->startDate;
         $reservation->end_date = $request->endDate;
         $reservation->reservable_type = $isCustomer ? Customer::class : Guest::class;
-        if ($reservation->check_in == null) {
-            $reservation->check_in = $request->checkIn ? Carbon::now() : null;
-        }
-        else if (!$request->checkIn) {
-            $reservation->check_in = null; // disable check in
-        }
-        $reservation->save();
+        $reservation->check_in = $request->checkIn ? Carbon::now() : null;
+        $reservation->reservable_id = $customerID;
+        // $reservation->save();
 
-        $rooms = Room::all();
-        $customers = Customer::all();
-        return redirect()->route('dashboard.reservation.edit', ["rooms" => $rooms, "customers" => $customers, "reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
+        return redirect()->route('dashboard.reservation.edit', ["reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
     }
 
     /**
@@ -241,8 +255,10 @@ class ReservationController extends Controller
 
     public function checkIn(Reservation $reservation)
     {
-        $reservation->check_in = Carbon::now();
-        $reservation->save();
+        if (!$reservation->room->isReserved()) {
+            $reservation->check_in = Carbon::now();
+            $reservation->save();
+        }
         return redirect()->back();
     }
 }

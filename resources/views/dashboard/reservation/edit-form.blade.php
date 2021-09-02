@@ -35,6 +35,9 @@
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
+                @error('reserved')
+                    <div class="text-danger text-center">{{ $message }}</div>
+                @enderror
                 <hr>
                 <form action="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" method="POST">
                     @csrf
@@ -43,7 +46,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                            <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($reservation->room_id == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                            <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -61,11 +64,11 @@
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Reservation Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $reservation->start_date->format("Y-m-d")) }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $reservation->start_date->format("Y-m-d")) }}" required>
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $reservation->end_date->format("Y-m-d")) }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $reservation->end_date->format("Y-m-d")) }}" required>
                         </div>
                         <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">{{ $reservation->dateDifference() }}</span> night(s)</label>
                     </div>
@@ -88,9 +91,7 @@
                     @error('dateConflict')
                         <div class="col-lg-12 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
-                                @error('dateConflict')
-                                    {{ $message }}
-                                @enderror
+                                {{ $message }}
                             </div>
                         </div>
                     @enderror
@@ -98,12 +99,13 @@
                         <div class="icheck-material-white">
                             <input type="checkbox" id="checkIn" name="checkIn" @if ($reservation->check_in != null) checked @endif/>
                             <label for="checkIn">Check In</label>
+                            <label id="reserved" style="cursor: default; color:orangered"></label>
                         </div>
                     </div>
                     <div class="form-group col-12 mt-3">
                         <label class="h5">RM <span id="totalPrice">{{ number_format($reservation->bookingPrice(), 2) }}</span></label>
                     </div>
-                    @if ($reservation->check_in != null)
+                    @if ($reservation->check_in != null && $reservation->check_out == null)
                         <div class="form-group col-12 mt-3">
                             <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary btn-round px-5"><i class="icon-plus"></i> Add Room Service</a>
                         </div>
@@ -132,6 +134,7 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
+        let initialize = false;
         $('select.form-control#rooms').select2();
         $('select.form-control#customers').select2({
             multiple: false,
@@ -171,6 +174,7 @@
             $("#endDate")[0].value = "";
             $("#totalPrice")[0].innerHTML = "0.00";
             $("#numDays")[0].innerHTML = 0;
+            $("input[type='date']").data("prev", "");
             calendar.fullCalendar("unselect");
             calendar.fullCalendar("removeEventSources");
             calendar.fullCalendar("addEventSource", sources);
@@ -262,8 +266,8 @@
                 }
             },
             eventAfterAllRender: function(view) {
-                $el = $("#checkIn")[0];
-                $msgEl = $("#reserved")[0];
+                let checkbox = $("#checkIn")[0];
+                let msgElement = $("#reserved")[0];
                 let events = $("#calendar").fullCalendar("clientEvents");
                 let isReserved = false;
                 events.forEach(event => {
@@ -272,13 +276,13 @@
                     }
                 });
                 if (isReserved) {
-                    $el.checked = false;
-                    $el.disabled = true;
-                    $msgEl.innerHTML = "The room has been reserved by other customer";
+                    // checkbox.checked = false;
+                    // checkbox.disabled = true;
+                    msgElement.innerHTML = "The room has been reserved by other customer";
                 }
                 else {
-                    $el.disabled = false;
-                    $msgEl.innerHTML = "";
+                    checkbox.disabled = false;
+                    msgElement.innerHTML = "";
                 }
             }
         });

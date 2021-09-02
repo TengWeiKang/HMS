@@ -7,6 +7,7 @@
         color: black;
         padding-top: .25rem;
         padding-bottom: .25rem;
+        border-color: gray;
     }
     .event-pointer {
         cursor: pointer;
@@ -20,6 +21,9 @@
     .c-mx {
         padding-left: 24.5px;
         padding-right: 24.5px;
+    }
+    .table-bordered {
+        border-color: black;
     }
 </style>
 @endpush
@@ -79,13 +83,73 @@
 </div>
 <!-- Drag / Drop / Resize Event Modal -->
 <div class="modal fade" id="drag-drop-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-    <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Date Modified</h5>
             </div>
             <div class="modal-body">
-                <div class="row mx-2">
+                <div class="row">
+                    <div class="table-responsive col-12">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td></td>
+                                    <td class="text-center">Before</td>
+                                    <td class="text-center">After</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Customer:</td>
+                                    <td colspan="2" class="text-center" id="customer"></td>
+                                </tr>
+                                <tr id="room_info">
+                                    <td>Room:</td>
+                                    <td colspan="2" class="text-center" id="room_description"></td>
+                                </tr>
+                                <tr id="room_changes_info">
+                                    <td>Room:</td>
+                                    <td class="text-center" id="before_room"></td>
+                                    <td class="text-center" id="after_room"></td>
+                                </tr>
+                                <tr id="date_unchange_info">
+                                    <td>Date:</td>
+                                    <td colspan="2" class="text-center" id="unchanged_date"></td>
+                                </tr>
+                                <tr id="start_date_change_info">
+                                    <td>Start Date:</td>
+                                    <td class="text-center" id="before_start_date"></td>
+                                    <td class="text-center" id="after_start_date"></td>
+                                </tr>
+                                <tr id="end_date_change_info">
+                                    <td>End Date:</td>
+                                    <td class="text-center" id="before_end_date"></td>
+                                    <td class="text-center" id="after_end_date"></td>
+                                </tr>
+                                <tr id="unchanged_night">
+                                    <td>Night:</td>
+                                    <td colspan="2" class="text-center" id="nights"></td>
+                                </tr>
+                                <tr id="changed_night">
+                                    <td>Night:</td>
+                                    <td class="text-center" id="before_night"></td>
+                                    <td class="text-center" id="after_night"></td>
+                                </tr>
+                                <tr id="price_changes_info">
+                                    <td>Booking Prices:</td>
+                                    <td class="text-center" id="before_modified_price"></td>
+                                    <td class="text-center" id="after_modified_price"></td>
+                                </tr>
+                                <tr id="price_unchanged_info">
+                                    <td>Booking Prices:</td>
+                                    <td colspan="2" class="text-center" id="unmodified_price"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {{-- <div class="row mx-2">
                     <h5>Customer: <span id="customer"></span></h5>
                 </div>
                 <div id="room_info" class="d-none mt-3">
@@ -127,7 +191,7 @@
                     <div class="row mx-2">
                         <h5>Booking Prices Changes: <span id="modified_price"></span></h5>
                     </div>
-                </div>
+                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" id="undoBtn" class="btn btn-secondary" data-dismiss="modal">Undo</button>
@@ -149,7 +213,7 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="table-responsive col-12">
-                        <table class="table">
+                        <table class="table table-bordered">
                             <tbody>
                                 <tr>
                                     <td>Room ID:</td>
@@ -351,7 +415,7 @@
                 $("#display-room-id").html(event.getResources()[0].extendedProps.room_id);
                 $("#display-customer").html(event.title);
                 $("#display-date").html(properDateFormat(event.start) + " - " + properDateFormat(endDate));
-                $("#display-total-night").html( dateDiff + " nights");
+                $("#display-total-night").html(dateDiff + " nights");
                 $("#display-total-price").html("RM " + event.extendedProps.totalPrice.toFixed(2));
 
                 $("button[name='check-in'], button[name='edit'], button[name='view'], button[name='check-out'], button[name='add-service'], button[name='payment']").unbind()
@@ -371,6 +435,9 @@
                         $("button[name='check-in']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
                             window.open(CHECK_IN_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                            if (newTab) {
+                                calendar.refetchEvents();
+                            }
                         });
                         $("button[name='edit']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
@@ -425,27 +492,36 @@
                 let newRoomID = newResourceInfo.extendedProps.room_id;
                 let newRoomPrice = newResourceInfo.extendedProps.price;
                 if (oldRoomID != newRoomID) {
-                    $("#room_changes_info, #price_changes_info, #room_info").removeClass("d-none");
+                    $("#room_changes_info, #price_changes_info").removeClass("d-none");
+                    $("#room_info, #price_unchanged_info").addClass("d-none");
                     $("#before_room").html(oldRoomID + " (RM " + oldRoomPrice.toFixed(2) +" per night)");
                     $("#after_room").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)");
                     let oldTotalPrice = oldRoomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
                     let newTotalPrice = newRoomPrice * dateDifferenceInDays(event.start, eventEnd);
-                    $("#modified_price").html("RM " + oldTotalPrice.toFixed(2) + " → RM " + newTotalPrice.toFixed(2));
+                    $("#before_modified_price").html("RM " + oldTotalPrice.toFixed(2));
+                    $("#after_modified_price").html("RM " + newTotalPrice.toFixed(2));
                 }
                 else {
-                    $("#room_changes_info, #price_changes_info, #room_info").addClass("d-none");
+                    $("#room_info, #price_unchanged_info").removeClass("d-none");
+                    $("#room_changes_info, #price_changes_info").addClass("d-none");
+                    $("#room_description").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)")
+                    $("#unmodified_price").html("RM " + newRoomPrice * dateDifferenceInDays(event.start, eventEnd))
                 }
                 let delta = eventDropInfo.delta;
+
+                $("#unchanged_night").removeClass("d-none");
+                $("#changed_night").addClass("d-none");
+                $("#nights").html(dateDifferenceInDays(event.start, eventEnd) + " nights");
+
                 if (delta.days == 0 && delta.months == 0 && delta.years == 0) {
                     $("#date_unchange_info").removeClass("d-none");
-                    $("#date_change_info").addClass("d-none");
-                    $("#unchanged_start_date").html(properDateFormat(oldEvent.start));
-                    $("#unchanged_end_date").html(properDateFormat(oldEventEnd));
+                    $("#start_date_change_info, #end_date_change_info").addClass("d-none");
+                    $("#unchanged_date").html(properDateFormat(oldEvent.start) + " - " + properDateFormat(oldEventEnd));
                 }
                 else {
                     $("#date_unchange_info").addClass("d-none");
-                    $("#date_change_info").removeClass("d-none");
-                    $("#customer").html(event.title + " (" + dateDifferenceInDays(oldEvent.start, oldEventEnd) + " nights)");
+                    $("#start_date_change_info, #end_date_change_info").removeClass("d-none");
+                    $("#customer").html(event.title);
                     $("#before_start_date").html(properDateFormat(oldEvent.start));
                     $("#before_end_date").html(properDateFormat(oldEventEnd));
                     $("#after_start_date").html(properDateFormat(event.start));
@@ -485,8 +561,8 @@
                 let roomPrice = newResourceInfo.extendedProps.price;
                 let roomID = newResourceInfo.extendedProps.room_id;
 
-                $("#room_changes_info, #date_unchange_info").addClass("d-none");
-                $("#date_change_info, #price_changes_info, #room_info").removeClass("d-none");
+                $("#room_changes_info, #date_unchange_info, #unchanged_night, #price_unchanged_info").addClass("d-none");
+                $("#start_date_change_info, #end_date_change_info, #price_changes_info, #room_info, #changed_night").removeClass("d-none");
 
                 $("#customer").html(event.title);
                 $("#room_description").html(roomID + " (RM " + roomPrice.toFixed(2) +" per night)")
@@ -494,10 +570,13 @@
                 $("#before_end_date").html(properDateFormat(oldEventEnd));
                 $("#after_start_date").html(properDateFormat(event.start));
                 $("#after_end_date").html(properDateFormat(eventEnd));
+                $("#before_night").html(dateDifferenceInDays(oldEvent.start, oldEventEnd));
+                $("#after_night").html(dateDifferenceInDays(event.start, eventEnd));
 
                 let oldTotalPrice = roomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
                 let newTotalPrice = roomPrice * dateDifferenceInDays(event.start, eventEnd);
-                $("#modified_price").html("RM " + oldTotalPrice.toFixed(2) + " → RM " + newTotalPrice.toFixed(2));
+                $("#before_modified_price").html("RM " + oldTotalPrice.toFixed(2));
+                $("#after_modified_price").html("RM " + newTotalPrice.toFixed(2));
 
                 $("#drag-drop-modal").modal("show");
                 $("#undoBtn, #saveBtn").unbind();

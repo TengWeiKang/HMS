@@ -84,9 +84,17 @@ class Room extends Model
     }
 
     public function isReserved() {
-        return $this->reservations->filter(function ($value, $key) {
+        return $this->reservedBy() != null;
+    }
+
+    public function reservedBy() {
+        $reservation = $this->reservations->filter(function ($value, $key) {
             return $value->check_in != null && $value->check_out == null;
-        })->count() > 0;
+        });
+        if ($reservation->count() > 0) {
+            return $reservation[0];
+        }
+        return null;
     }
 
     public function isTurnoverToday() {
