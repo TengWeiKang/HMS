@@ -45,7 +45,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -109,9 +109,9 @@
                         </div>
                     </div>
                     <div class="form-group col-12 mt-3">
-                        <label class="h5">RM <span id="totalPrice">0.00</span></label>
+                        <label class="h5">Booking Price: RM <span id="totalPrice">0.00</span></label>
                     </div>
-                    <div class="form-group row mx-2 mt-4">
+                    <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
                     </div>
                 </form>

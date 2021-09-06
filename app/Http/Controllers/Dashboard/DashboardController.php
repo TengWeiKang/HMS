@@ -25,8 +25,9 @@ class DashboardController extends Controller
                 $json[] = [
                     "id" => $room->id,
                     "room_id" => $room->room_id,
-                    "title" => $room->room_id . " - " . $room->name . " (" . $room->status(false) . ")",
-                    "price" => $room->price
+                    "title" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
+                    "price" => $room->price,
+                    "status" => $room->status()
                 ];
             }
         }

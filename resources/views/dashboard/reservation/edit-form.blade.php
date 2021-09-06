@@ -46,7 +46,7 @@
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($rooms as $room)
-                            <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->status(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                            <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                     <div class="form-group col-12 mt-3">
-                        <label class="h5">RM <span id="totalPrice">{{ number_format($reservation->bookingPrice(), 2) }}</span></label>
+                        <label class="h5">Booking Price: RM <span id="totalPrice">{{ number_format($reservation->bookingPrice(), 2) }}</span></label>
                     </div>
                     @if ($reservation->check_in != null && $reservation->check_out == null)
                         <div class="form-group col-12 mt-3">
@@ -209,6 +209,7 @@
         $("#calendar").fullCalendar({
             selectable: true,
             unselectAuto: false,
+            height: "auto",
             header: {
                 left: 'prev',
                 center: 'title',
@@ -276,8 +277,8 @@
                     }
                 });
                 if (isReserved) {
-                    // checkbox.checked = false;
-                    // checkbox.disabled = true;
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
                     msgElement.innerHTML = "The room has been reserved by other customer";
                 }
                 else {

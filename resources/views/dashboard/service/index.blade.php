@@ -59,7 +59,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 2,
+                    "targets": 3,
                     "width": "10%",
                     "orderable": false,
                     "searchable": false

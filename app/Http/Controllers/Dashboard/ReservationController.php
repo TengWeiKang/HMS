@@ -167,6 +167,11 @@ class ReservationController extends Controller
         $split = explode("||", $request->customer, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;
         $customerID = $split[1];
+
+        // delete previous guest record
+        if ($reservation->reservable_type == Guest::class) {
+            Guest::destroy($reservation->reservable_id);
+        }
         if (!$isCustomer) {
             $customerID = Guest::create([
                 "username" => $customerID
@@ -207,7 +212,7 @@ class ReservationController extends Controller
         $reservation->reservable_type = $isCustomer ? Customer::class : Guest::class;
         $reservation->check_in = $request->checkIn ? Carbon::now() : null;
         $reservation->reservable_id = $customerID;
-        // $reservation->save();
+        $reservation->save();
 
         return redirect()->route('dashboard.reservation.edit', ["reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
     }
@@ -220,6 +225,9 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
+        if ($reservation->reservable_type == Guest::class) {
+            Guest::destroy($reservation->reservable_id);
+        }
         $reservation->delete();
         return response()->json(['success' => "The reservation has been removed"]);
     }
@@ -232,13 +240,8 @@ class ReservationController extends Controller
 
     public function storeService(Request $request, Reservation $reservation)
     {
-        // $arr = array_map(null, $request->serviceID, $request->qty);
         $arr = array_combine($request->serviceID, $request->qty);
-        // foreach ($arr as $key => $value) {
-        //     $arr[$key] = ["quantity" => $value];
-        // }
-        // dd($reservation->services);
-        // $reservation->services()->sync($arr);
+
         foreach ($arr as $key => $value) {
             if ($reservation->services()->where("service_id", $key)->exists()) {
                 $reservation->services()->where("service_id", $key)->increment("quantity", $value);

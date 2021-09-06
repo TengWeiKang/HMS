@@ -33,7 +33,7 @@
         @if (!$room->isReserved() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("staff", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
-        @if ($room->status(false) != "Reserved" && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
+        @if ($room->status != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
         @endif
     </div>
@@ -77,7 +77,7 @@
                                     </tr>
                                     <tr>
                                         <td>Status:</td>
-                                        <td style="color: {{ $room->statusColor() }}">{!! nl2br($room->status(true)) !!}</td>
+                                        <td style="color: {{ $room->statusColor() }}">{!! nl2br($room->statusName(true)) !!}</td>
                                     </tr>
                                     <tr>
                                         <td>Created Date:</td>

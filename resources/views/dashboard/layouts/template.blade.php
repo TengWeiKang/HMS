@@ -6,7 +6,7 @@
         @include('dashboard.layouts.css')
     </head>
 
-    <body class="bg-theme bg-theme1">
+    <body class="bg-theme bg-theme3">
         <div id="wrapper">
             @include('dashboard.layouts.sidebar')
             @include('dashboard.layouts.header')

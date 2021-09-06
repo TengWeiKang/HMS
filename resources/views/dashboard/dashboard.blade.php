@@ -25,6 +25,22 @@
     .table-bordered {
         border-color: black;
     }
+
+    .resource-url {
+        text-decoration: underline !important;
+    }
+    .status-available {
+        color: {{ App\Models\Room::STATUS[0]["color"] }};
+    }
+    .status-dirty {
+        color: {{ App\Models\Room::STATUS[2]["color"] }};
+    }
+    .status-repair {
+        color: {{ App\Models\Room::STATUS[3]["color"] }};
+    }
+    .status-reserved {
+        color: {{ App\Models\Room::STATUS[4]["color"] }};
+    }
 </style>
 @endpush
 
@@ -71,6 +87,12 @@
                 </div>
                 <div class="row mx-2">
                     <h5>End Date: <span id="end_date"></span></h5>
+                </div>
+                <div class="row c-mx">
+                    <div class="icheck-material-secondary">
+                        <input type="checkbox" id="createNewTab" name="createNewTab"/>
+                        <label for="createNewTab">Open in New Tab</label>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -149,49 +171,6 @@
                         </table>
                     </div>
                 </div>
-                {{-- <div class="row mx-2">
-                    <h5>Customer: <span id="customer"></span></h5>
-                </div>
-                <div id="room_info" class="d-none mt-3">
-                    <div class="row mx-2">
-                        <h5>Room (Before): <span id="room_description"></span></h5>
-                    </div>
-                </div>
-                <div id="room_changes_info" class="d-none mt-3">
-                    <div class="row mx-2">
-                        <h5>Room (Before): <span id="before_room"></span></h5>
-                    </div>
-                    <div class="row mx-2">
-                        <h5>Room (After): <span id="after_room"></span></h5>
-                    </div>
-                </div>
-                <div id="date_change_info" class="d-none mt-3">
-                    <div class="row mx-2">
-                        <h5>Start Date (Before): <span id="before_start_date"></span></h5>
-                    </div>
-                    <div class="row mx-2">
-                        <h5>End Date (Before): <span id="before_end_date"></span></h5>
-                    </div>
-                    <div class="row mx-2">
-                        <h5>Start Date (After): <span id="after_start_date"></span></h5>
-                    </div>
-                    <div class="row mx-2">
-                        <h5>End Date (After): <span id="after_end_date"></span></h5>
-                    </div>
-                </div>
-                <div id="date_unchange_info" class="d-none mt-3">
-                    <div class="row mx-2">
-                        <h5>Start Date: <span id="unchanged_start_date"></span></h5>
-                    </div>
-                    <div class="row mx-2">
-                        <h5>End Date: <span id="unchanged_end_date"></span></h5>
-                    </div>
-                </div>
-                <div id="price_changes_info" class="d-none mt-3">
-                    <div class="row mx-2">
-                        <h5>Booking Prices Changes: <span id="modified_price"></span></h5>
-                    </div>
-                </div> --}}
             </div>
             <div class="modal-footer">
                 <button type="button" id="undoBtn" class="btn btn-secondary" data-dismiss="modal">Undo</button>
@@ -239,6 +218,7 @@
                         </table>
                     </div>
                 </div>
+                @if (Auth::guard("employee")->user()->isAccessible("staff", "admin"))
                 <div class="row c-mx">
                     <div class="icheck-material-secondary">
                         <input type="checkbox" id="newTab" name="newTab"/>
@@ -282,6 +262,7 @@
                         <button type="button" class="btn btn-secondary w-100" name="payment"><i class="zmdi zmdi-eye text-white"></i> Payment</button>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>
@@ -295,7 +276,8 @@
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         $("button#redirectBtn").on("click", function() {
             let redirectURL = $("input#redirectURL").val();
-            window.location.href = redirectURL;
+            let newTab = $("#createNewTab").prop("checked");
+            window.open(redirectURL, (newTab ? "_blank": "_self"));
         });
 
 
@@ -598,6 +580,31 @@
                         }
                     });
                 });
+            },
+            resourceLabelClassNames: function(arg) {
+                return "resource-url";
+            },
+            resourceLabelContent: function(arg, createElement) {
+                console.log(arg);
+                const REDIRECT_ROOM_URL = "{{ route("dashboard.room.view", ":roomID") }}";
+                redirectURL = REDIRECT_ROOM_URL.replace(":roomID", arg.resource.id);
+                let status = arg.resource.extendedProps.status;
+                let status_css = "";
+                switch (status) {
+                    case 0:
+                        status_css = "status-available";
+                        break;
+                    case 2:
+                        status_css = "status-dirty";
+                        break;
+                    case 3:
+                        status_css = "status-repair";
+                        break;
+                    case 4:
+                        status_css = "status-reserved";
+                        break;
+                }
+                return createElement("a", {href: redirectURL, class: "resource-url " + status_css}, arg["fieldValue"]);
             }
         });
         calendar.render();

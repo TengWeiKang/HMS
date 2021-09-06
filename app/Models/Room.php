@@ -16,7 +16,8 @@ class Room extends Model
     const STATUS = [
         0 => ["status" => "Available", "color" => "#0f0"],
         2 => ["status" => "Dirty", "color" => "#282828"],
-        3 => ["status" => "Repairing", "color" => "#ff8484"]
+        3 => ["status" => "Repairing", "color" => "#ff8484"],
+        4 => ["status" => "Reserved", "color" => "orange"]
     ];
 
     public $table = "room";
@@ -41,22 +42,23 @@ class Room extends Model
         'created_at' => 'datetime',
     ];
 
-    public function status($withAssigned) {
+    public function status() {
         if ($this->isReserved()) {
-            return "Reserved";
+            return 4;
         }
+        return $this->status;
+    }
+
+    public function statusName($withAssigned) {
         $additional = "";
         if ($withAssigned && $this->status == 2 && $this->housekeeper != null) {
             $additional = "\n(Assigned: " . ($this->housekeeper->username) .")";
         }
-        return self::STATUS[$this->status]["status"] . $additional;
+        return self::STATUS[$this->status()]["status"] . $additional;
     }
 
     public function statusColor() {
-        if ($this->isReserved()) {
-            return "orange";
-        }
-        return self::STATUS[$this->status]["color"];
+        return self::STATUS[$this->status()]["color"];
     }
 
     /**
@@ -88,11 +90,11 @@ class Room extends Model
     }
 
     public function reservedBy() {
-        $reservation = $this->reservations->filter(function ($value, $key) {
+        $reservations = $this->reservations->filter(function ($value, $key) {
             return $value->check_in != null && $value->check_out == null;
-        });
-        if ($reservation->count() > 0) {
-            return $reservation[0];
+        })->values();
+        if ($reservations->count() > 0) {
+            return $reservations[0];
         }
         return null;
     }

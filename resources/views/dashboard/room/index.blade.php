@@ -48,7 +48,7 @@
                                     <td>{{ $room->room_id }}</td>
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
-                                    <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->status(true)) !!}</td>
+                                    <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("admin"))
@@ -67,7 +67,7 @@
                                             <i class="fa fa-user-plus text-white"></i>
                                         </a>
                                         @endif
-                                        @if ($room->status(false) != "Reserved" && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
+                                        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("staff", "admin")))
                                         <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                             <i class="icon-settings text-white"></i>
                                         </a>
