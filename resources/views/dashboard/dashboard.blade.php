@@ -487,7 +487,7 @@
                     $("#room_info, #price_unchanged_info").removeClass("d-none");
                     $("#room_changes_info, #price_changes_info").addClass("d-none");
                     $("#room_description").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)")
-                    $("#unmodified_price").html("RM " + newRoomPrice * dateDifferenceInDays(event.start, eventEnd))
+                    $("#unmodified_price").html("RM " + (newRoomPrice * dateDifferenceInDays(event.start, eventEnd)).toFixed(2))
                 }
                 let delta = eventDropInfo.delta;
 

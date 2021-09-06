@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AssignHousekeeperMail;
 use App\Models\Room;
 use App\Models\Facility;
 use App\Models\Employee;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Mail;
 
 class RoomController extends Controller
 {
     public function __construct() {
+
     }
 
     /**
@@ -151,8 +153,9 @@ class RoomController extends Controller
     }
 
     public function assign(Request $request) {
-        // TODO: notify housekeeper through email
+        $housekeeper = Employee::findOrFail($request->housekeeper);
         $room = Room::findOrFail($request->id);
+        Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
         $room->status = 2;
         $room->housekeptBy = $request->housekeeper;
         $room->save();
