@@ -12,7 +12,7 @@
         <div class="container">
             <div class="hotel_booking_table">
                 <div class="col-md-3">
-                    <h2>Book<br> Your Room</h2>
+                    <h2>Search<br> Your Room</h2>
                 </div>
                 <div class="col-md-9">
                     <div class="boking_table">
@@ -20,54 +20,39 @@
                             <div class="col-md-4">
                                 <div class="book_tabel_item">
                                     <div class="form-group">
-                                        <div class='input-group date' id='datetimepicker11'>
-                                            <input type='text' class="form-control" placeholder="Arrival Date"/>
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-calendar" aria-hidden="true"></i>
-                                            </span>
+                                        <div class='input-group'>
+                                            <input id="arrival" type='text' onfocus="(this.type='date')" class="form-control" min="{{ date("Y-m-d") }}" placeholder="Arrival Date"/>
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <div class='input-group date' id='datetimepicker1'>
-                                            <input type='text' class="form-control" placeholder="Departure Date"/>
-                                            <span class="input-group-addon">
-                                                <i class="fa fa-calendar" aria-hidden="true"></i>
-                                            </span>
+                                        <div class='input-group'>
+                                            <input id="departure" type='text' onfocus="(this.type='date')" class="form-control" min="{{ date("Y-m-d") }}" placeholder="Departure Date"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="book_tabel_item">
-                                    <div class="input-group">
-                                        <select class="wide">
-                                            <option data-display="Adult">Adult</option>
-                                            <option value="1">Old</option>
-                                            <option value="2">Younger</option>
-                                            <option value="3">Potato</option>
-                                        </select>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input id="single" type="number" step="1" min="0" class="wide form-control" placeholder="Single Bed">
+                                        </div>
                                     </div>
-                                    <div class="input-group">
-                                        <select class="wide">
-                                            <option data-display="Child">Child</option>
-                                            <option value="1">Child</option>
-                                            <option value="2">Baby</option>
-                                            <option value="3">Child</option>
-                                        </select>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input id="double" type="number" step="1" min="0" class="wide form-control" placeholder="Double Bed">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="book_tabel_item">
-                                    <div class="input-group">
-                                        <select class="wide">
-                                            <option data-display="Child">Number of Rooms</option>
-                                            <option value="1">Room 01</option>
-                                            <option value="2">Room 02</option>
-                                            <option value="3">Room 03</option>
-                                        </select>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <input id="price" type="number" step="0.01" min="0.01" class="wide form-control" placeholder="Price Below">
+                                        </div>
                                     </div>
-                                    <a class="book_now_btn button_hover" href="#">Book Now</a>
+                                    <a class="book_now_btn button_hover" id="search-btn" href="#">Search</a>
                                 </div>
                             </div>
                         </div>

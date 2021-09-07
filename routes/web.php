@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Route;
 // customer
 Route::group(["prefix" => 'customer'], function () {
     Route::get('/', [HomeController::class, "index"])->name("customer.home");
+    Route::get('/search', [HomeController::class, "search"])->name("customer.search");
 });
 
 // admin

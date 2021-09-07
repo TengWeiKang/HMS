@@ -12,23 +12,48 @@
                 <p>We all live in an age that belongs to the young at heart. Life that is becoming extremely fast, </p>
             </div>
             <div class="row mb_30" id="accomodation">
-                <div class="col-lg-3 col-sm-6">
-                    <div class="accomodation_item text-center">
-                        <div class="hotel_img">
-                            <img src="{{ asset("customer/image/room1.jpg") }}" alt="">
-                            @auth("customer")
-                                <a href="#" class="btn theme_btn button_hover">Book Now</a>
-                            @endauth
-                        </div>
-                        <a href="#"><h4 class="sec_h4">Double Deluxe Room</h4></a>
-                        <h5>$250<small>/night</small></h5>
-                    </div>
-                </div>
+                @include("customer.components.accomodations")
             </div>
         </div>
     </section>
 @endsection
 
 @push("script")
-
+    <script>
+        $(document).ready(function () {
+            $("#search-btn").on("click", function (e) {
+                e.preventDefault();
+                let arrival = $("#arrival").val();
+                let departure = $("#departure").val();
+                let single = $("#single").val();
+                let double = $("#double").val();
+                let price = $("#price").val();
+                if (arrival != "" && departure != "" && new Date(arrival) > new Date(departure)) {
+                    Swal.fire({
+                        title: "Invalid Date",
+                        text: "Arrival date must be earlier than departure date",
+                        icon: "error",
+                    });
+                }
+                else {
+                    $.ajax({
+                        type: "GET",
+                        url: "{{ route("customer.search") }}",
+                        datatype: "text",
+                        data: {
+                            "arrival": arrival,
+                            "departure": departure,
+                            "single": single,
+                            "double": double,
+                            "price": price,
+                            "_token": "{{ csrf_token() }}"
+                        },
+                        success: function (response) {
+                            $("#accomodation").html(response);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 @endpush

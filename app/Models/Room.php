@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Facility;
 use App\Models\Reservation;
-use App\Models\RoomFacility;
 use Carbon\Carbon;
 
 class Room extends Model
