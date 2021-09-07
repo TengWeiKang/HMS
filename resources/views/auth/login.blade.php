@@ -46,17 +46,22 @@
                         @enderror
                     </div>
 
-                    <div class="form-group py-2">
-                        <input type="checkbox" name="remember" checked=""/>
-                        <label for="remember">Remember me</label>
+                    <div class="form-group mt-3 custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="remember" name="remember" checked>
+                        <label class="custom-control-label" for="remember">Remember Me</label>
                     </div>
 
-                    <div class="form-group">
+                    {{-- <div class="form-group py-2">
+                        <input type="checkbox" name="remember" checked=""/>
+                        <label for="remember">Remember me</label>
+                    </div> --}}
+
+                    <div class="form-group mt-3">
                         <a href="{{ route("password.forget") }}">Forgotten Password? Click Here</a>
                     </div>
 
                     <div class="form-group mt-5">
-                        <button type="submit" class="btn btn-light btn-round px-5 w-100"><i class="icon-lock"></i> Login</button>
+                        <button type="submit" class="btn btn-primary btn-round px-5 w-100"><i class="icon-lock"></i> Login</button>
                     </div>
                 </form>
             </div>

@@ -9,13 +9,8 @@ use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
-    public function __construct() {
-        // $this->middleware("guest");
-    }
-
     public function index() {
-        // dd(Auth::guard("employee")->check(), Auth::guard("customer")->check());
-        if (Auth::guard('customer')->check()) {
+        if (Auth::guard()->check()) {
             return redirect()->route('customer.home');
         }
         else if (Auth::guard("employee")->check()) {
@@ -35,7 +30,7 @@ class LoginController extends Controller
             "password" => "required"
         ]);
 
-        if (Auth::guard('customer')->attempt($request->only('username', 'password'), $request->remember)) {
+        if (Auth::guard()->attempt($request->only('username', 'password'), $request->remember)) {
             return redirect()->route('customer.home');
         }
 
