@@ -15,7 +15,8 @@ class Guest extends Model
     public $timestamps = false;
 
     public $fillable = [
-        "username"
+        "username",
+        "phone"
     ];
 
     public function reservations() {

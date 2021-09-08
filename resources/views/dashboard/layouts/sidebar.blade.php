@@ -18,14 +18,14 @@
                 <i class="zmdi zmdi-info"></i> <span style="margin-left: 10px">Today</span>
             </a>
         </li>
-        @if(Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
         <li>
             <a href="{{ route("dashboard.reservation") }}">
                 <i class="fa fa-ticket"></i><span style="margin-left: 9px">Reservation</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
         <li>
             <a href="{{ route("dashboard.payment") }}">
                 <i class="fa fa-dollar"></i><span style="margin-left: 9px">Payment</span>
@@ -40,7 +40,7 @@
             <ul class="sidebar-submenu">
                 <li><a href="{{ route("dashboard.employee.create") }}"><i class="zmdi zmdi-account-add"></i><span>New Employee</span></a></li>
                 <li><a href="{{ route("dashboard.employee", ["role" => 0]) }}"><i class="zmdi zmdi-accounts"></i><span>Admin</span></a></li>
-                <li><a href="{{ route("dashboard.employee", ["role" => 1]) }}"><i class="zmdi zmdi-accounts"></i><span>Staff</span></a></li>
+                <li><a href="{{ route("dashboard.employee", ["role" => 1]) }}"><i class="zmdi zmdi-accounts"></i><span>Frontdesk</span></a></li>
                 <li><a href="{{ route("dashboard.employee", ["role" => 2]) }}"><i class="zmdi zmdi-accounts"></i><span>Housekeeper</span></a></li>
                 <li><a href="{{ route("dashboard.employee") }}"><i class="zmdi zmdi-accounts"></i><span>All Employees</span></a></li>
             </ul>

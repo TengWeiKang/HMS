@@ -218,7 +218,7 @@
                         </table>
                     </div>
                 </div>
-                @if (Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+                @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                 <div class="row c-mx">
                     <div class="icheck-material-secondary">
                         <input type="checkbox" id="newTab" name="newTab"/>

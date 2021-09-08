@@ -15,6 +15,7 @@ class Facility extends Model
 
     protected $fillable = [
         'name',
+        'default'
     ];
 
     public function rooms()

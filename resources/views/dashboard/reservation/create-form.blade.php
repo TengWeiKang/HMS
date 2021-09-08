@@ -53,9 +53,18 @@
                         <label for="customers">Customer (Able to custom input)</label>
                         <select class="form-control form-control-rounded" id="customers" name="customer">
                             @foreach ($customers as $customer)
-                                <option value="c||{{ $customer->id }}">{{ $customer->username }}</option>
+                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}">{{ $customer->username }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone") }}">
+                        @error("phone")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Reservation Date</label>
@@ -78,26 +87,10 @@
                         </div>
                         <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">0</span> night(s)</label>
                     </div>
-                    @if ($errors->has(["startDate", "endDate"]))
-                        <div class="col-lg-6 pl-lg-0">
-                            <div class="ml-2 text-sm text-danger">
-                                @error('startDate')
-                                    {{ $message }}
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-lg-6 pr-lg-0">
-                            <div class="ml-2 text-sm text-danger">
-                                @error('endDate')
-                                    {{ $message }}
-                                @enderror
-                            </div>
-                        </div>
-                    @endif
                     @error('dateConflict')
                         <div class="col-lg-12 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
+                                {{ dd($message) }}
                             </div>
                         </div>
                     @enderror
@@ -135,8 +128,15 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
-        $('select.form-control#rooms').select2();
-        $('select.form-control#customers').select2({
+        let phone = $("#customers").find(":selected").data("phone") ?? "";
+        $("#phone").val(phone);
+        if (phone != "") {
+            $("#phone").prop('readonly', true);
+        }
+        $roomSelect = $('select.form-control#rooms');
+        $roomSelect.select2();
+        $customerSelect = $('select.form-control#customers');
+        $customerSelect.select2({
             multiple: false,
             tags: true,
             createTag: function (params) {
@@ -151,6 +151,17 @@
                 }
             }
         });
+        $customerSelect.on("select2:select", function (e) {
+            let phone = $("#customers").find(":selected").data("phone") ?? "";
+            if (phone == "") {
+                $("#phone").prop("readonly", false);
+            }
+            else {
+                $("#phone").prop('readonly', true);
+            }
+            $("#phone").val(phone);
+        })
+
         $('.select2.select2-container').addClass('form-control form-control-rounded');
         $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 

@@ -25,8 +25,9 @@
                                 <th>#</th>
                                 <th>Room ID</th>
                                 <th>Customer</th>
-                                <th>Starting Date</th>
-                                <th>Ending Date</th>
+                                <th>Contact</th>
+                                <th>Arrival Date</th>
+                                <th>Departure Date</th>
                                 <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -37,11 +38,12 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $reservation->room->room_id }}</td>
                                     <td>{{ $reservation->reservable->username }}</td>
+                                    <td>{{ $reservation->reservable->phone }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
-                                        @if (Auth::guard("employee")->user()->isAccessible("staff", "admin"))
+                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                             @if ($reservation->check_in == null)
                                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
@@ -57,9 +59,11 @@
                                                 <i class="zmdi zmdi-plus text-white"></i>
                                             </a>
                                             @endif
+                                            @if ($reservation->check_out == null)
                                             <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Delete">
                                                 <i class="zmdi zmdi-delete text-white"></i>
                                             </a>
+                                            @endif
                                         @endif
                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
@@ -87,7 +91,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 6,
+                    "targets": 7,
                     "width": "7%",
                     "orderable": false,
                     "searchable": false

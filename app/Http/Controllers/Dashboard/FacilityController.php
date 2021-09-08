@@ -46,7 +46,8 @@ class FacilityController extends Controller
         ]);
 
         Facility::create([
-            "name" => $request->facility
+            "name" => $request->facility,
+            "default" => $request->has("default") ? 1 : 0
         ]);
         return redirect()->route('dashboard.facility.create')->with("message", "New Facility Created Successfully");
     }
@@ -86,6 +87,7 @@ class FacilityController extends Controller
             'facility' => 'required|max:255|unique:facility,name,'.$facility->id
         ]);
         $facility->name = $request->facility;
+        $facility->default = $request->has("default") ? 1 : 0;
         $facility->save();
         return redirect()->route('dashboard.facility.edit', ['facility' => $facility])->with("message", "The facility has successfully updated");
     }

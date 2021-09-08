@@ -38,6 +38,10 @@
                                             <td>{{ $reservation->reservable->username }}</td>
                                         </tr>
                                         <tr>
+                                            <td>Contact Number:</td>
+                                            <td>{{ $reservation->reservable->phone }}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Reservation Start Date:</td>
                                             <td>{{ $reservation->start_date->format("d F Y") }}</td>
                                         </tr>

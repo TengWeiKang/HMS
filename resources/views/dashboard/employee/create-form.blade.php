@@ -21,7 +21,7 @@
                 <form action="{{ route("dashboard.employee.create") }}" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Username <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Username" value="{{ old("username") }}">
                         @error("username")
                             <div class="ml-2 text-sm text-danger">
@@ -30,7 +30,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
+                        <label for="email">Email <span class="text-danger">*</span></label>
                         <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Email Address" value="{{ old("email") }}">
                         @error("email")
                             <div class="ml-2 text-sm text-danger">
@@ -39,7 +39,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number (E.g. 012-3456789)</label>
+                        <label for="phone">Phone Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Mobile Number" value="{{ old("phone") }}">
                         @error("phone")
                             <div class="ml-2 text-sm text-danger">
@@ -48,10 +48,10 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="role">Role</label>
-                        <select class="form-control form-control-rounded" name="role" @if (isset($role) && $role >= 0 && $role <= 2) disabled @endif>
+                        <label for="role">Role <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" name="role">
                             <option value="0" @if (isset($role) && $role == 0) selected @endif>Admin</option>
-                            <option value="1" @if (isset($role) && $role == 1) selected @endif>Staff</option>
+                            <option value="1" @if (isset($role) && $role == 1) selected @endif>Frontdesk</option>
                             <option value="2" @if (isset($role) && $role == 2) selected @endif>Housekeeper</option>
                         </select>
                     </div>

@@ -22,7 +22,7 @@
                     @csrf
                     @method("PUT")
                     <div class="form-group row mx-2">
-                        <label for="roomId">Room ID</label>
+                        <label for="roomId">Room ID <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("roomId") border-danger @enderror" name="roomId" placeholder="Room ID" value="{{ old("roomId", $room->room_id) }}">
                         @error("roomId")
                             <div class="ml-2 text-sm text-danger">
@@ -31,7 +31,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="name">Room Name</label>
+                        <label for="name">Room Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="Room Name" value="{{ old("name", $room->name) }}">
                         @error("name")
                             <div class="ml-2 text-sm text-danger">
@@ -40,7 +40,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="price">Room Price per Night (RM)</label>
+                        <label for="price">Room Price per Night (RM) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("price") border-danger @enderror" name="price" min="0.01" step="0.01" placeholder="Room Price" value="{{ old("price", $room->price) }}">
                         @error("price")
                             <div class="ml-2 text-sm text-danger">
@@ -49,7 +49,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="image">Room Image (Ignore to remain the same image)</label>
+                        <label for="image">Room Image (Ignore to remain the same image) <span class="text-danger">*</span></label>
                         <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg">
                         @error("image")
                             <div class="ml-2 text-sm text-danger">
@@ -58,7 +58,7 @@
                         @enderror
                     </div>
                     <div class="form-group row my-4 mx-2">
-                        <label class="col-lg-12 px-0">Bed</label>
+                        <label class="col-lg-12 px-0">Bed <span class="text-danger">*</span></label>
                         <div class="col-lg-6 pl-0">
                             <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed", $room->single_bed) }}">
                             @error("singleBed")

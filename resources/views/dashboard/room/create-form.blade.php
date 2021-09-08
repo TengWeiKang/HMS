@@ -21,7 +21,7 @@
                 <form action="{{ route("dashboard.reservation.create") }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group row mx-2">
-                        <label for="roomId">Room ID</label>
+                        <label for="roomId">Room ID <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("roomId") border-danger @enderror" name="roomId" placeholder="Room ID" value="{{ old("roomId") }}">
                         @error("roomId")
                             <div class="ml-2 text-sm text-danger">
@@ -30,7 +30,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="name">Room Name</label>
+                        <label for="name">Room Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="Room Name" value="{{ old("name") }}">
                         @error("name")
                             <div class="ml-2 text-sm text-danger">
@@ -39,7 +39,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="price">Room Price per Night (RM)</label>
+                        <label for="price">Room Price per Night (RM) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("price") border-danger @enderror" name="price" min="0.01" step="0.01" placeholder="Room Price" value="{{ old("price") }}">
                         @error("price")
                             <div class="ml-2 text-sm text-danger">
@@ -48,7 +48,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="image">Room Image</label>
+                        <label for="image">Room Image <span class="text-danger">*</span></label>
                         <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg">
                         @error("image")
                             <div class="ml-2 text-sm text-danger">
@@ -57,7 +57,7 @@
                         @enderror
                     </div>
                     <div class="form-group row my-4 mx-2">
-                        <label class="col-lg-12 px-0">Bed</label>
+                        <label class="col-lg-12 px-0">Bed <span class="text-danger">*</span></label>
                         <div class="col-lg-6 pl-lg-0">
                             <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}">
                             @error("singleBed")
@@ -79,7 +79,7 @@
                         <label for="facilities[]">Facilities</label>
                         <select class="form-control form-control-rounded" name="facilities[]" multiple="multiple">
                             @foreach ($facilities as $facility)
-                                <option value="{{ $facility->id }}" @if (is_array(old("facilities")) && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
+                                <option value="{{ $facility->id }}" @if ($errors->isEmpty() && $facility->default == 1 || $errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
                             @endforeach
                         </select>
                     </div>

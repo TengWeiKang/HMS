@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class ReservationController extends Controller
 {
     public function __construct() {
-        $this->middleware("employee:admin,staff");
+        $this->middleware("employee:admin,frontdesk");
     }
     /**
      * Display a listing of the resource.
@@ -77,28 +77,21 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        $split = explode("||", $request->customer, 2);
-        $isCustomer = $split[0] == 'c' ? 1 : 0;
-        $customerID = $split[1];
-        if (!$isCustomer) {
-            $customerID = Guest::create([
-                "username" => $customerID
-            ])->id;
-        }
-        $customerID = (int) $customerID;
         $validator = Validator::make($request->all(), [
+            "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date|after_or_equal:today",
-            "endDate" => "required|date|after_or_equal:startDate"
+            "endDate" => "required|date|after_or_equal:startDate",
         ]);
+        $validator->validate();
         $validator->after(function ($validator) use ($request) {
             $count = Reservation::where("room_id", $request->roomId)
-                ->where(function ($query) use ($request) {
-                    $query->where("start_date", "<=", $request->startDate)
-                        ->where("end_date", ">=", $request->startDate)
-                        ->orWhere("start_date", "<=", $request->endDate)
-                        ->where("end_date", ">=", $request->endDate)
-                        ->orWhere("start_date", ">=", $request->startDate)
-                        ->where("end_date", "<=", $request->endDate);
+            ->where(function ($query) use ($request) {
+                $query->where("start_date", "<=", $request->startDate)
+                    ->where("end_date", ">=", $request->startDate)
+                    ->orWhere("start_date", "<=", $request->endDate)
+                    ->where("end_date", ">=", $request->endDate)
+                    ->orWhere("start_date", ">=", $request->startDate)
+                    ->where("end_date", "<=", $request->endDate);
                 }
             )->count();
             if ($count > 0) {
@@ -106,6 +99,17 @@ class ReservationController extends Controller
             }
         });
         $validator->validate();
+
+        $split = explode("||", $request->customer, 2);
+        $isCustomer = $split[0] == 'c' ? 1 : 0;
+        $customerID = $split[1];
+        if (!$isCustomer) {
+            $customerID = Guest::create([
+                "username" => $customerID,
+                "phone" => $request->phone
+            ])->id;
+        }
+        $customerID = (int) $customerID;
         $error = "";
         if ($request->checkIn) {
             $room = Room::find($request->roomId);
@@ -164,21 +168,8 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-        $split = explode("||", $request->customer, 2);
-        $isCustomer = $split[0] == 'c' ? 1 : 0;
-        $customerID = $split[1];
-
-        // delete previous guest record
-        if ($reservation->reservable_type == Guest::class) {
-            Guest::destroy($reservation->reservable_id);
-        }
-        if (!$isCustomer) {
-            $customerID = Guest::create([
-                "username" => $customerID
-            ])->id;
-        }
-        $customerID = (int) $customerID;
         $validator = Validator::make($request->all(), [
+            "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date",
             "endDate" => "required|date"
         ]);
@@ -206,6 +197,23 @@ class ReservationController extends Controller
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
+
+        $split = explode("||", $request->customer, 2);
+        $isCustomer = $split[0] == 'c' ? 1 : 0;
+        $customerID = $split[1];
+
+        // delete previous guest record
+        if ($reservation->reservable_type == Guest::class) {
+            Guest::destroy($reservation->reservable_id);
+        }
+        if (!$isCustomer) {
+            $customerID = Guest::create([
+                "username" => $customerID,
+                "phone" => $request->phone
+            ])->id;
+        }
+        $customerID = (int) $customerID;
+
         $reservation->room_id = $request->roomId;
         $reservation->start_date = $request->startDate;
         $reservation->end_date = $request->endDate;

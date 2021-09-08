@@ -24,6 +24,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Facility</th>
+                                <th>Default</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -32,6 +33,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $facility->name }}</td>
+                                    <td>{{ ($facility->default) ? "✅" : "❌" }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.facility.edit", ["facility" => $facility]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
@@ -60,7 +62,7 @@
                     "width": "7%",
                 },
                 {
-                    "targets": 2,
+                    "targets": 3,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false

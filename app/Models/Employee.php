@@ -16,7 +16,7 @@ class Employee extends Authenticatable
 
     const ROLES = [
         0 => "Admin",
-        1 => "Staff",
+        1 => "Frontdesk",
         2 => "Housekeeper"
     ];
 
@@ -56,7 +56,7 @@ class Employee extends Authenticatable
         return ($this->role == 0) ? true : false;
     }
 
-    public function isStaff() {
+    public function isFrontdesk() {
         return ($this->role == 1) ? true : false;
     }
 

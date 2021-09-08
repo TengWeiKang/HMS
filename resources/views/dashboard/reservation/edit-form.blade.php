@@ -61,6 +61,10 @@
                             @endif
                         </select>
                     </div>
+                    <div class="form-group row mx-2">
+                        <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone", $reservation->reservable->phone) }}">
+                    </div>
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Reservation Date</label>
                         <div class="col-lg-4 pl-lg-0">

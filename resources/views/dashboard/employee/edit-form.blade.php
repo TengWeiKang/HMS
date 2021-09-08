@@ -52,7 +52,7 @@
                         <label for="role">Role</label>
                         <select class="form-control form-control-rounded" name="role">
                             <option value="0" @if ($employee->role == 0) selected @endif>Admin</option>
-                            <option value="1" @if ($employee->role == 1) selected @endif>Staff</option>
+                            <option value="1" @if ($employee->role == 1) selected @endif>Employee</option>
                             <option value="2" @if ($employee->role == 2) selected @endif>Housekeeper</option>
                         </select>
                     </div>

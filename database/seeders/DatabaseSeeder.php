@@ -40,10 +40,12 @@ class DatabaseSeeder extends Seeder
 
         Guest::create([
             "username" => "guest1",
+            "phone" => "012-12312311"
         ]);
 
         Guest::create([
             "username" => "guest2",
+            "phone" => "012-12312312"
         ]);
 
         Employee::create([
@@ -55,8 +57,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Employee::create([
-            "username" => "staff",
-            "email" => "staff@gmail.com",
+            "username" => "frontdesk",
+            "email" => "frontdesk@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
             "role" => 1
@@ -71,23 +73,26 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Facility::create([
-            "name" => "facility 1"
+            "name" => "facility 1",
+            "default" => 0
         ]);
 
         Facility::create([
-            "name" => "facility 2"
+            "name" => "facility 2",
+            "default" => 0
         ]);
 
         Facility::create([
-            "name" => "facility 3"
+            "name" => "facility 3",
+            "default" => 1
         ]);
 
         $room = Room::create([
             "room_id" => "R101",
             "name" => "Room Name 1",
             "price" => 50.5,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\hotel_placeholder.png"),
-            "image_type" => "image/png",
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
+            "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 1,
         ])->facilities()->attach([2, 3]);
@@ -96,8 +101,8 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R102",
             "name" => "Room Name 2",
             "price" => 40,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\hotel_placeholder.png"),
-            "image_type" => "image/png",
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
+            "image_type" => "image/jpg",
             "single_bed" => 1,
             "double_bed" => 2,
         ])->facilities()->attach([1, 3]);
@@ -106,8 +111,8 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R103",
             "name" => "Room Name 3",
             "price" => 70,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\hotel_placeholder.png"),
-            "image_type" => "image/png",
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
+            "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 2,
             "status" => 2
@@ -117,8 +122,8 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R104",
             "name" => "Room Name 4",
             "price" => 22,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\hotel_placeholder.png"),
-            "image_type" => "image/png",
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room4.jpg"),
+            "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 2,
             "housekeptBy" => 3,

@@ -22,7 +22,7 @@
                                     $text = "Admin";
                                     break;
                                 case 1:
-                                    $text = "Staff";
+                                    $text = "Frontdesk";
                                     break;
                                 case 2:
                                     $text = "Housekeeper";
@@ -63,7 +63,7 @@
                                             <td>Admin</td>
                                             @break
                                         @case(1)
-                                            <td>Staff</td>
+                                            <td>Frontdesk</td>
                                             @break
                                         @case(2)
                                             <td>Housekeeper</td>

@@ -30,6 +30,12 @@
                             </div>
                         @enderror
                     </div>
+                    <div class="form-group">
+                        <div class="icheck-material-white">
+                            <input type="checkbox" id="default" name="default" @if ($facility->default) checked @endif/>
+                            <label for="default">Default</label>
+                        </div>
+                    </div>
                     <div class="form-group mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
                     </div>

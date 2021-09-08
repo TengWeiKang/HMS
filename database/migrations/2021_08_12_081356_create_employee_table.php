@@ -20,7 +20,7 @@ class CreateEmployeeTable extends Migration
             $table->string('email')->unique();
             $table->string('phone');
             $table->string('password');
-            $table->integer('role'); // admin-0, staff-1, housekeeper-2
+            $table->integer('role'); // admin-0, frontdesk-1, housekeeper-2
             $table->rememberToken();
             $table->timestamps();
         });
