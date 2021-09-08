@@ -16,7 +16,7 @@
         </ul>
 
         <ul class="navbar-nav align-items-center right-nav-link">
-            <li class="nav-item dropdown-lg">
+            {{-- <li class="nav-item dropdown-lg">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown" href="javascript:void();">
                 <i class="fa fa-envelope-open-o"></i></a>
             </li>
@@ -32,7 +32,7 @@
                     <li class="dropdown-item"> <i class="flag-icon flag-icon-cn mr-2"></i> Chinese</li>
                     <li class="dropdown-item"> <i class="flag-icon flag-icon-de mr-2"></i> German</li>
                 </ul>
-            </li>
+            </li> --}}
             <li class="nav-item">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="javascript:void();">
                     <span class="user-profile">

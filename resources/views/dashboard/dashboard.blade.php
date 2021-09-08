@@ -391,6 +391,7 @@
                 }
             },
             eventClick: function (eventClickInfo) {
+                // TODO validate check-in conflict
                 let event = eventClickInfo.event;
                 let endDate = new Date(event.end.setDate(event.end.getDate() - 1));
                 let dateDiff = dateDifferenceInDays(event.start, endDate);
@@ -399,7 +400,7 @@
                 $("#display-date").html(properDateFormat(event.start) + " - " + properDateFormat(endDate));
                 $("#display-total-night").html(dateDiff + " nights");
                 $("#display-total-price").html("RM " + event.extendedProps.totalPrice.toFixed(2));
-
+                $("#button[name='check-out']")
                 $("button[name='check-in'], button[name='edit'], button[name='view'], button[name='check-out'], button[name='add-service'], button[name='payment']").unbind()
 
                 let status = event.extendedProps.status;
@@ -414,13 +415,21 @@
                     case 0:
                         $("#display-check-in").removeClass("d-none");
                         $("#display-reserved, #display-complete").addClass("d-none");
-                        $("button[name='check-in']").on("click", function() {
-                            let newTab = $("#newTab").prop("checked");
-                            window.open(CHECK_IN_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
-                            if (newTab) {
-                                calendar.refetchEvents();
-                            }
-                        });
+                        let roomStatus = event.getResources()[0].extendedProps.status;
+                        console.log(roomStatus);
+                        if (roomStatus == 4) {
+                            $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
+                        }
+                        else {
+                            $("button[name='check-in']").removeAttr("style");
+                            $("button[name='check-in']").on("click", function() {
+                                let newTab = $("#newTab").prop("checked");
+                                window.open(CHECK_IN_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                                if (newTab) {
+                                    referchCalendar();
+                                }
+                            });
+                        }
                         $("button[name='edit']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
                             window.open(EDIT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
@@ -432,6 +441,9 @@
                         $("button[name='check-out']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
                             window.open(CHECK_OUT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
+                            if (newTab) {
+                                referchCalendar();
+                            }
                         });
                         $("button[name='add-service']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
@@ -494,6 +506,7 @@
                 $("#unchanged_night").removeClass("d-none");
                 $("#changed_night").addClass("d-none");
                 $("#nights").html(dateDifferenceInDays(event.start, eventEnd) + " nights");
+                $("#customer").html(event.title);
 
                 if (delta.days == 0 && delta.months == 0 && delta.years == 0) {
                     $("#date_unchange_info").removeClass("d-none");
@@ -503,7 +516,6 @@
                 else {
                     $("#date_unchange_info").addClass("d-none");
                     $("#start_date_change_info, #end_date_change_info").removeClass("d-none");
-                    $("#customer").html(event.title);
                     $("#before_start_date").html(properDateFormat(oldEvent.start));
                     $("#before_end_date").html(properDateFormat(oldEventEnd));
                     $("#after_start_date").html(properDateFormat(event.start));
@@ -528,8 +540,9 @@
                             room_id: roomID,
                             start_date: startDateISO,
                             end_date: endDateISO
-                        }
+                        },
                     });
+                    referchCalendar();
                 });
             },
             eventResize: function(eventResizeInfo) {
@@ -585,7 +598,6 @@
                 return "resource-url";
             },
             resourceLabelContent: function(arg, createElement) {
-                console.log(arg);
                 const REDIRECT_ROOM_URL = "{{ route("dashboard.room.view", ":roomID") }}";
                 redirectURL = REDIRECT_ROOM_URL.replace(":roomID", arg.resource.id);
                 let status = arg.resource.extendedProps.status;
@@ -608,10 +620,13 @@
             }
         });
         calendar.render();
+        function referchCalendar() {
+            calendar.refetchEvents();
+            calendar.refetchResources();
+        }
         $("#refetch-event").on("click", function(e) {
             e.preventDefault();
-            calendar.refetchResources();
-            calendar.refetchEvents();
+            referchCalendar();
         });
     });
 </script>
