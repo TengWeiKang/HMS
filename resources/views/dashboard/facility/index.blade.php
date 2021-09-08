@@ -1,9 +1,5 @@
 @extends("dashboard.layouts.template")
 
-@push("css")
-
-@endpush
-
 @section("title")
     Dashboard | Facilties
 @endsection
@@ -50,7 +46,7 @@
             </div>
         </div>
     </div>
-</div><!--End Row-->
+</div>
 @endsection
 
 @push("script")

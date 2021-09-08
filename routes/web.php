@@ -12,6 +12,7 @@ use App\Http\Controllers\Dashboard\ReservationController;
 use App\Http\Controllers\Dashboard\ServiceController;
 use App\Http\Controllers\Dashboard\PaymentController;
 use App\Http\Controllers\Dashboard\HousekeeperController;
+use App\Http\Controllers\Dashboard\RoomTypeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\ForgetPasswordController;
@@ -131,6 +132,17 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         // Route::get("/{employee}/edit", [HousekeeperController::class, "edit"])->name("dashboard.housekeeper.edit");
         // Route::put("/{employee}/edit", [HousekeeperController::class, "update"]);
         // Route::delete("/{employee}", [HousekeeperController::class, "destroy"])->name("dashboard.housekeeper.destroy");
+    });
+
+    //room type management on current day
+    Route::group(["prefix" => "room-type"], function() {
+        Route::get("/", [RoomTypeController::class, "index"])->name("dashboard.room-type");
+        Route::get("/create", [RoomTypeController::class, "create"])->name("dashboard.room-type.create");
+        Route::post("/create", [RoomTypeController::class, "store"]);
+        Route::get("/{roomType}", [RoomTypeController::class, "show"])->name("dashboard.room-type.view");
+        Route::get("/{roomType}/edit", [RoomTypeController::class, "edit"])->name("dashboard.room-type.edit");
+        Route::put("/{roomType}/edit", [RoomTypeController::class, "update"]);
+        Route::delete("/{roomType}", [RoomTypeController::class, "destroy"])->name("dashboard.room-type.destroy");
     });
 });
 

@@ -18,6 +18,7 @@ class CreateRoomTable extends Migration
             $table->string("room_id")->unique();
             $table->string("name");
             $table->double("price");
+            $table->integer("room_type")->index();
             $table->integer("single_bed");
             $table->integer("double_bed");
             $table->string("image_type");

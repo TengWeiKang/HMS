@@ -7,6 +7,7 @@ use App\Mail\AssignHousekeeperMail;
 use App\Models\Room;
 use App\Models\Facility;
 use App\Models\Employee;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -36,7 +37,8 @@ class RoomController extends Controller
     public function create()
     {
         $facilities = Facility::all();
-        return view('dashboard/room/create-form', ["facilities" => $facilities]);
+        $roomTypes = RoomType::all();
+        return view('dashboard/room/create-form', ["facilities" => $facilities, "roomTypes" => $roomTypes]);
     }
 
     /**
@@ -58,14 +60,14 @@ class RoomController extends Controller
         [
             'price.regex' => 'The price can only accept 2 decimals'
         ]);
-
         $file = $request->file('image');
         $mimeType = $file->getMimeType();
 
-        $room = Room::create([
+        Room::create([
             "room_id" => $request->roomId,
             "name" => $request->name,
             "price" => $request->price,
+            "room_type" => $request->roomType,
             "room_image" => file_get_contents($request->image),
             "image_type" => $mimeType,
             "single_bed" => $request->singleBed,
@@ -84,7 +86,7 @@ class RoomController extends Controller
     {
         $room->load(["reservations" => function ($query) {
             $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
-        }, "facilities", "housekeeper", "reservations.payment", "reservations.reservable"]);
+        }, "type", "facilities", "housekeeper", "reservations.payment", "reservations.reservable"]);
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
@@ -97,8 +99,10 @@ class RoomController extends Controller
      */
     public function edit(Room $room)
     {
+        $room->load(["type", "facilities"]);
         $facilities = Facility::all();
-        return view('dashboard/room/edit-form', ["room" => $room, "facilities" => $facilities]);
+        $roomTypes = RoomType::all();
+        return view('dashboard/room/edit-form', ["room" => $room, "facilities" => $facilities, "roomTypes" => $roomTypes]);
     }
 
     /**
@@ -131,6 +135,7 @@ class RoomController extends Controller
 
         $room->room_id = $request->roomId;
         $room->name = $request->name;
+        $room->room_type = $request->roomType;
         $room->price = $request->price;
         $room->single_bed = $request->singleBed;
         $room->double_bed = $request->doubleBed;

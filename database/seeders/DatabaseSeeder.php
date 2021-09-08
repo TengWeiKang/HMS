@@ -14,6 +14,7 @@ use App\Models\Room;
 use App\Models\Service;
 use App\Models\Reservation;
 use App\Models\Payment;
+use App\Models\RoomType;
 
 class DatabaseSeeder extends Seeder
 {
@@ -87,10 +88,29 @@ class DatabaseSeeder extends Seeder
             "default" => 1
         ]);
 
-        $room = Room::create([
+        $roomType1 = RoomType::create([
+            "name" => "Deluxe Room",
+            "single_bed" => 2,
+            "double_bed" => 1,
+        ]);
+
+        $roomType2 = RoomType::create([
+            "name" => "Superior Room",
+            "single_bed" => 1,
+            "double_bed" => 2,
+        ]);
+
+        RoomType::create([
+            "name" => "Demo Delete Room",
+            "single_bed" => 1,
+            "double_bed" => 1,
+        ]);
+
+        Room::create([
             "room_id" => "R101",
             "name" => "Room Name 1",
             "price" => 50.5,
+            "room_type" => $roomType1->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
             "single_bed" => 2,
@@ -101,6 +121,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R102",
             "name" => "Room Name 2",
             "price" => 40,
+            "room_type" => $roomType2->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
             "single_bed" => 1,
@@ -111,6 +132,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R103",
             "name" => "Room Name 3",
             "price" => 70,
+            "room_type" => $roomType2->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
             "image_type" => "image/jpg",
             "single_bed" => 2,
@@ -122,6 +144,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R104",
             "name" => "Room Name 4",
             "price" => 22,
+            "room_type" => $roomType1->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room4.jpg"),
             "image_type" => "image/jpg",
             "single_bed" => 2,

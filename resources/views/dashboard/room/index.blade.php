@@ -34,6 +34,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Room ID</th>
+                                <th>Room Type</th>
                                 <th>Room Name</th>
                                 <th>Price (1 night)</th>
                                 <th>Status</th>
@@ -46,6 +47,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $room->room_id }}</td>
+                                    <td>{{ $room->type->name }}</td>
                                     <td>{{ $room->name }}</td>
                                     <td>RM {{ number_format($room->price, 2) }}</td>
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>

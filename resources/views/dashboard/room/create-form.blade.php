@@ -18,7 +18,7 @@
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
                 <hr>
-                <form action="{{ route("dashboard.reservation.create") }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route("dashboard.room.create") }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group row mx-2">
                         <label for="roomId">Room ID <span class="text-danger">*</span></label>
@@ -28,6 +28,14 @@
                                 {{ $message }}
                             </div>
                         @enderror
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="roomType">Room Type <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="roomType" name="roomType">
+                            @foreach ($roomTypes as $roomType)
+                                <option value="{{ $roomType->id }}" data-single="{{ $roomType->single_bed }}" data-double="{{ $roomType->double_bed }}" @if ($errors->isNotEmpty() && old("roomType") == $roomType->id) selected @endif>{{ $roomType->name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                     <div class="form-group row mx-2">
                         <label for="name">Room Name <span class="text-danger">*</span></label>
@@ -59,7 +67,7 @@
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Bed <span class="text-danger">*</span></label>
                         <div class="col-lg-6 pl-lg-0">
-                            <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}">
+                            <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" id="singleBed" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}">
                             @error("singleBed")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -67,7 +75,7 @@
                             @enderror
                         </div>
                         <div class="col-lg-6 pr-lg-0">
-                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}">
+                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" id="doubleBed" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}">
                             @error("doubleBed")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -76,8 +84,8 @@
                         </div>
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="facilities[]">Facilities</label>
-                        <select class="form-control form-control-rounded" name="facilities[]" multiple="multiple">
+                        <label for="facilities">Facilities</label>
+                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple">
                             @foreach ($facilities as $facility)
                                 <option value="{{ $facility->id }}" @if ($errors->isEmpty() && $facility->default == 1 || $errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
                             @endforeach
@@ -107,10 +115,22 @@
 @push("script")
     <script>
         $(document).ready(function() {
-            $('select.form-control').select2({
+            function updateDefaultBed() {
+                let selected = $("#roomType").find(":selected");
+                let single = selected.data("single");
+                let double = selected.data("double");
+                $("#singleBed").val(single);
+                $("#doubleBed").val(double);
+            };
+            $('select.form-control#facilities').select2({
                 placeholder: "Please select facilities",
                 allowClear: true
             });
+            $roomTypeSelect = $('select.form-control#roomType');
+            $roomTypeSelect.select2();
+            $roomTypeSelect.on("select2:select", function (e) {
+                updateDefaultBed();
+            })
             $('.select2.select2-container').addClass('form-control form-control-rounded');
 
             $("#image").on("change", function () {
@@ -122,6 +142,7 @@
                     $("#hotel_preview").attr("src", "{{ asset("dashboard/images/hotel_placeholder.png") }}");
                 }
             });
+            updateDefaultBed();
         });
     </script>
 @endpush

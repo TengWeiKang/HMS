@@ -28,6 +28,7 @@ class Room extends Model
         'room_id',
         'name',
         'price',
+        'room_type',
         'single_bed',
         'double_bed',
         'room_image',
@@ -51,7 +52,7 @@ class Room extends Model
     public function statusName($withAssigned) {
         $additional = "";
         if ($withAssigned && $this->status == 2 && $this->housekeeper != null) {
-            $additional = "\n(Assigned: " . ($this->housekeeper->username) .")";
+            $additional = "\n<small>(" . ($this->housekeeper->username) .")</small>";
         }
         return self::STATUS[$this->status()]["status"] . $additional;
     }
@@ -77,6 +78,16 @@ class Room extends Model
     public function reservations()
     {
         return $this->hasMany(Reservation::class, 'room_id');
+    }
+
+    /**
+     * Get the room type that owns the Room
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function type()
+    {
+        return $this->belongsTo(RoomType::class, 'room_type');
     }
 
     public function housekeeper()

@@ -15,7 +15,7 @@
         </li>
         <li>
             <a href="{{ route("dashboard.housekeeper") }}">
-                <i class="zmdi zmdi-info"></i> <span style="margin-left: 10px">Today</span>
+                <i class="zmdi zmdi-info"></i> <span style="margin-left: 9px">Today</span>
             </a>
         </li>
         @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
@@ -48,8 +48,8 @@
         @endif
         @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
-            <a href="{{ route("dashboard.facility") }}">
-                <i class="fa fa-wifi"></i><span style="margin-left: 11px">Facilities</span>
+            <a href="{{ route("dashboard.room-type") }}">
+                <i class="zmdi zmdi-home"></i><span style="margin-left: 14px">Room Types</span>
             </a>
         </li>
         @endif
@@ -57,6 +57,13 @@
         <li>
             <a href="{{ route("dashboard.room") }}">
                 <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
+            </a>
+        </li>
+        @endif
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        <li>
+            <a href="{{ route("dashboard.facility") }}">
+                <i class="fa fa-wifi"></i><span style="margin-left: 11px">Facilities</span>
             </a>
         </li>
         @endif
