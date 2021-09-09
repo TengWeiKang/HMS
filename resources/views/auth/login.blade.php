@@ -69,7 +69,3 @@
     </div>
 </div><!--End Row-->
 @endsection
-
-@section("title")
-
-@endsection

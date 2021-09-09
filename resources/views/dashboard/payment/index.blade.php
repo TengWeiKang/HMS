@@ -39,7 +39,10 @@
                                     <td class="text-center">{{ count($payment->charges) }}</td>
                                     <td>RM {{ number_format($payment->totalPrices(), 2) }}</td>
                                     <td class="text-center action-col">
-                                        <a href="{{ route("dashboard.payment.view", ["payment" => $payment]) }}" title="View">
+                                        <a href="{{ route("dashboard.reservation.view", ["reservation" => $payment->reservation]) }}" title="View Reservation">
+                                            <i class="fa fa-ticket text-white"></i>
+                                        </a>
+                                        <a href="{{ route("dashboard.payment.view", ["payment" => $payment]) }}" title="View Payment">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                     </td>

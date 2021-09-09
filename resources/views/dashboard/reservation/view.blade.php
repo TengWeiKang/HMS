@@ -109,26 +109,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if (count($reservation->services) == 0)
+                                        @forelse ($reservation->services as $service)
+                                        <tr>
+                                            <td>{{ $loop->index + 1 }}</td>
+                                            <td>{{ $service->name }}</td>
+                                            <td>RM {{ number_format($service->price, 2) }}</td>
+                                            <td>{{ $service->pivot->quantity }}</td>
+                                            <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                        </tr>
+                                        @empty
                                         <tr>
                                             <th colspan="5" class="text-center">No Room Service Found</th>
                                         </tr>
-                                        @else
-                                            @foreach ($reservation->services as $service)
-                                            <tr>
-                                                <th>{{ $loop->index + 1 }}</th>
-                                                <td>{{ $service->name }}</td>
-                                                <td>RM {{ number_format($service->price, 2) }}</td>
-                                                <td>{{ $service->pivot->quantity }}</td>
-                                                <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                            </tr>
-                                            @endforeach
-                                        @endif
+                                        @endforelse
                                     </tbody>
                                     @if (count($reservation->services) > 0)
                                     <tfoot>
                                         <tr>
-                                            <td colspan="4"></td>
+                                            <td colspan="4" class="text-right">Total Price:</td>
                                             <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
                                         </tr>
                                     </tfoot>

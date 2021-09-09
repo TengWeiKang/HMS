@@ -74,18 +74,28 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Facility::create([
-            "name" => "facility 1",
-            "default" => 0
-        ]);
-
-        Facility::create([
-            "name" => "facility 2",
-            "default" => 0
-        ]);
-
-        Facility::create([
-            "name" => "facility 3",
+            "name" => "Wi-Fi",
             "default" => 1
+        ]);
+
+        Facility::create([
+            "name" => "Air Conditioning",
+            "default" => 1
+        ]);
+
+        Facility::create([
+            "name" => "Heater",
+            "default" => 1
+        ]);
+
+        Facility::create([
+            "name" => "Refrigerator",
+            "default" => 0
+        ]);
+
+        Facility::create([
+            "name" => "Car Park",
+            "default" => 0
         ]);
 
         $roomType1 = RoomType::create([
@@ -115,7 +125,7 @@ class DatabaseSeeder extends Seeder
             "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 1,
-        ])->facilities()->attach([2, 3]);
+        ])->facilities()->attach([2, 3, 4]);
 
         Room::create([
             "room_id" => "R102",
@@ -138,7 +148,7 @@ class DatabaseSeeder extends Seeder
             "single_bed" => 2,
             "double_bed" => 2,
             "status" => 2
-        ])->facilities()->attach([1, 2, 3]);
+        ])->facilities()->attach([1, 2, 3, 4, 5]);
 
         Room::create([
             "room_id" => "R104",

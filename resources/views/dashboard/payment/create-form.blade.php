@@ -18,7 +18,7 @@
 @endpush
 
 @section("title")
-
+    Dashboard | Make Payment
 @endsection
 
 @section("content")

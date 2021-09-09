@@ -34,6 +34,15 @@ class Payment extends Model
         'end_date' => 'date',
         'payment_at' => 'datetime',
     ];
+    /**
+     * Get the reservation that owns the Payment
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id');
+    }
 
     /**
      * Get all of the items for the Payment

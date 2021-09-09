@@ -12,7 +12,7 @@
 @endpush
 
 @section("title")
-
+    Dashboard | View Payment
 @endsection
 
 @section("content")
@@ -20,7 +20,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Payment Form</div>
+                <div class="card-title">Payment Form <a class="ml-3 font-weight-normal" style="color: blue" href="{{ route("dashboard.reservation.view", ['reservation' => $payment->reservation]) }}"><u>View Reservation</u></a></div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
