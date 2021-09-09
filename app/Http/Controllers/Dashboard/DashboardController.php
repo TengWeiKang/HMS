@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Carbon\Carbon;
 use App\Models\Room;
 use App\Models\Reservation;
+use App\Models\RoomType;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -20,15 +21,29 @@ class DashboardController extends Controller
         $return = $request->return;
         $json = [];
         if ($return === "resources") {
-            $rooms = Room::with("reservations")->get();
-            foreach ($rooms as $room) {
-                $json[] = [
-                    "id" => $room->id,
-                    "room_id" => $room->room_id,
-                    "title" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
-                    "price" => $room->price,
-                    "status" => $room->status()
+            $roomtypes = RoomType::with(["rooms", "rooms.reservations"])->get();
+            foreach ($roomtypes as $roomtype) {
+                if ($roomtype->rooms->count() == 0)
+                    continue;
+                $data = [
+                    "id" => $roomtype->id * -1,
+                    "title" => $roomtype->name,
+                    "children" => [],
+                    "editable" => false,
+                    "eventOverlap" => false,
+                    "eventAllow" => false,
+                    "selectable" => false,
                 ];
+                foreach ($roomtype->rooms as $room) {
+                    $data["children"][] = [
+                        "id" => $room->id,
+                        "room_id" => $room->room_id,
+                        "title" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
+                        "price" => $room->price,
+                        "status" => $room->status()
+                    ];
+                }
+                $json[] = $data;
             }
         }
         else if ($return === "events"){

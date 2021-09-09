@@ -306,13 +306,14 @@
             displayEventTime: false,
             lazyFetching: false,
             selectable: true,
+            resourceOrder: 'title',
             slotLabelFormat: [
                 {day: 'numeric', month: 'numeric'},
             ],
             headerToolbar: {
                 left: 'prev,today,next',
                 center: 'title',
-                right: 'resourceTimelineTwoWeek,resourceTimelineMonth,resourceTimelineYear'
+                right: 'resourceTimelineTwoWeek,resourceTimelineMonths,resourceTimelineYears'
             },
             views: {
                 resourceTimelineTwoWeek: {
@@ -320,8 +321,22 @@
                     duration: { weeks: 2 },
                     slotDuration: { days: 1 },
                     buttonText: '2 weeks',
-                    dateIncrement: {weeks: 1}
-                }
+                    dateIncrement: { weeks: 1 }
+                },
+                resourceTimelineMonths: {
+                    type: 'resourceTimeline',
+                    duration: { months: 2 },
+                    slotDuration: { days: 1 },
+                    buttonText: 'month',
+                    dateIncrement: { months: 1 }
+                },
+                resourceTimelineYears: {
+                    type: 'resourceTimeline',
+                    duration: { months: 12 },
+                    slotDuration: { days: 1 },
+                    buttonText: 'year',
+                    dateIncrement: { months: 6 }
+                },
             },
             resourceAreaHeaderContent: 'Rooms',
             resources: {
@@ -391,7 +406,6 @@
                 }
             },
             eventClick: function (eventClickInfo) {
-                // TODO validate check-in conflict
                 let event = eventClickInfo.event;
                 let endDate = new Date(event.end.setDate(event.end.getDate() - 1));
                 let dateDiff = dateDifferenceInDays(event.start, endDate);
@@ -594,30 +608,43 @@
                     });
                 });
             },
-            resourceLabelClassNames: function(arg) {
-                return "resource-url";
-            },
             resourceLabelContent: function(arg, createElement) {
-                const REDIRECT_ROOM_URL = "{{ route("dashboard.room.view", ":roomID") }}";
-                redirectURL = REDIRECT_ROOM_URL.replace(":roomID", arg.resource.id);
-                let status = arg.resource.extendedProps.status;
-                let status_css = "";
-                switch (status) {
-                    case 0:
-                        status_css = "status-available";
-                        break;
-                    case 2:
-                        status_css = "status-dirty";
-                        break;
-                    case 3:
-                        status_css = "status-repair";
-                        break;
-                    case 4:
-                        status_css = "status-reserved";
-                        break;
+                const REDIRECT_ROOM_TYPE_URL = "{{ route("dashboard.room-type.view", ":id") }}";
+                const REDIRECT_ROOM_URL = "{{ route("dashboard.room.view", ":id") }}";
+                if (arg.resource.id > 0) {
+                    redirectURL = REDIRECT_ROOM_URL.replace(":id", arg.resource.id);
+                    let status = arg.resource.extendedProps.status;
+                    console.log(arg);
+                    let status_css = "";
+                    switch (status) {
+                        case 0:
+                            status_css = "status-available";
+                            break;
+                        case 2:
+                            status_css = "status-dirty";
+                            break;
+                        case 3:
+                            status_css = "status-repair";
+                            break;
+                        case 4:
+                            status_css = "status-reserved";
+                            break;
+                    }
+                    return createElement("a", {href: redirectURL, class: "resource-url " + status_css}, arg["fieldValue"]);
                 }
-                return createElement("a", {href: redirectURL, class: "resource-url " + status_css}, arg["fieldValue"]);
-            }
+                else {
+                    redirectURL = REDIRECT_ROOM_TYPE_URL.replace(":id", arg.resource.id * -1);
+                    return createElement("a", {href: redirectURL, class: "resource-url"}, arg["fieldValue"]);
+                }
+            },
+            selectAllow: function(selectInfo) {
+                if (selectInfo.resource.id < 0)
+                    return false;
+                return true;
+            },
+            // slotLabelContent: function(arg) {
+            //     return arg["fieldValue"];
+            // }
         });
         calendar.render();
         function referchCalendar() {
