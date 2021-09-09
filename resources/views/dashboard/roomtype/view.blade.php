@@ -14,7 +14,7 @@
                     <a href="javascript:void();" data-target="#info" data-toggle="pill" class="nav-link active"><i class="icon-home"></i> <span class="hidden-xs">Room Type Info</span></a>
                 </li>
                 <li class="nav-item">
-                    <a href="javascript:void();" data-target="#rooms" data-toggle="pill" class="nav-link"><i class="fa fa-hotel"></i> <span class="hidden-xs">Affecte Rooms</span></a>
+                    <a href="javascript:void();" data-target="#rooms" data-toggle="pill" class="nav-link"><i class="fa fa-hotel"></i> <span class="hidden-xs">Rooms</span></a>
                 </li>
             </ul>
             <div class="tab-content p-3">
@@ -66,7 +66,7 @@
                                                 <td>{{ $room->room_id}}</td>
                                                 <td>{{ $room->name }}</td>
                                                 <td>RM {{ number_format($room->price, 2) }}</td>
-                                                <td style="color: {{ $room->statusColor() }}">{{ $room->statusName(false) }}</td>
+                                                <td style="color: {{ $room->statusColor() }}">{!! $room->statusName(true) !!}</td>
                                                 <td class="text-center">
                                                     <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                         <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>

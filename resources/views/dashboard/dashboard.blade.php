@@ -430,7 +430,6 @@
                         $("#display-check-in").removeClass("d-none");
                         $("#display-reserved, #display-complete").addClass("d-none");
                         let roomStatus = event.getResources()[0].extendedProps.status;
-                        console.log(roomStatus);
                         if (roomStatus == 4) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
                         }
@@ -614,7 +613,6 @@
                 if (arg.resource.id > 0) {
                     redirectURL = REDIRECT_ROOM_URL.replace(":id", arg.resource.id);
                     let status = arg.resource.extendedProps.status;
-                    console.log(arg);
                     let status_css = "";
                     switch (status) {
                         case 0:
