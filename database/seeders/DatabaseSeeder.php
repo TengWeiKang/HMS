@@ -196,6 +196,24 @@ class DatabaseSeeder extends Seeder
 
         Reservation::create([
             "room_id" => 2,
+            "start_date" => Carbon::now()->today(),
+            "end_date" => Carbon::now()->today()->addDays(3),
+            "reservable_type" => Customer::class,
+            "reservable_id" => 1,
+            "status" => 0
+        ]);
+
+        Reservation::create([
+            "room_id" => 4,
+            "start_date" => Carbon::now()->today()->subDay(2),
+            "end_date" => Carbon::now()->today()->subDay(),
+            "reservable_type" => Guest::class,
+            "reservable_id" => 2,
+            "check_in" => Carbon::now()
+        ]);
+
+        Reservation::create([
+            "room_id" => 2,
             "start_date" => Carbon::now()->today()->subDay(2),
             "end_date" => Carbon::now()->today()->subDay(),
             "reservable_type" => Guest::class,

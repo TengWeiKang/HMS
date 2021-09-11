@@ -9,14 +9,15 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-            <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
-                <li class="nav-item">
-                    <a href="javascript:void();" data-target="#info" data-toggle="pill" class="nav-link active"><i class="icon-home"></i> <span class="hidden-xs">Room Type Info</span></a>
-                </li>
-                <li class="nav-item">
-                    <a href="javascript:void();" data-target="#rooms" data-toggle="pill" class="nav-link"><i class="fa fa-hotel"></i> <span class="hidden-xs">Rooms</span></a>
-                </li>
-            </ul>
+                <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#info" data-toggle="pill" class="nav-link active"><i class="icon-home"></i> <span class="hidden-xs">Room Type Info</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#rooms" data-toggle="pill" class="nav-link"><i class="fa fa-hotel"></i> <span class="hidden-xs">Rooms</span></a>
+                    </li>
+                </ul>
+            </div>
             <div class="tab-content p-3">
                 <div class="tab-pane active" id="info">
                     <h5 class="mb-3 font-weight-bold">Room Type Information</h5>

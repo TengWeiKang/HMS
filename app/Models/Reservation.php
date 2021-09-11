@@ -5,9 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Room;
-use App\Models\Services;
-use App\Models\Guest;
-use Carbon\Carbon;
 
 class Reservation extends Model
 {
@@ -42,6 +39,7 @@ class Reservation extends Model
         0 => ["status" => "Waiting for Check-in", "color" => "yellow"],
         1 => ["status" => "Checked-in", "color" => "orangered"],
         2 => ["status" => "Completed", "color" => "lightgreen"],
+        3 => ["status" => "Cancelled", "color" => "darkgray"],
     ];
 
     public function room() {
@@ -76,11 +74,13 @@ class Reservation extends Model
     }
 
     public function status() {
-        if ($this->check_in == null)
+        if ($this->status == 0) // cancelled
+            return 3;
+        if ($this->check_in == null) // awaiting to check in
             return 0;
-        else if ($this->check_out == null)
+        else if ($this->check_out == null) // checked in
             return 1;
-        else
+        else // completed
             return 2;
     }
 

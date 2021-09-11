@@ -13,14 +13,15 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-            <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
-                <li class="nav-item">
-                    <a href="javascript:void();" data-target="#reservation" data-toggle="pill" class="nav-link active"><i class="fa fa-ticket"></i> <span class="hidden-xs">Reservation</span></a>
-                </li>
-                <li class="nav-item">
-                    <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><i class="zmdi zmdi-drink"></i> <span class="hidden-xs">Room Service</span></a>
-                </li>
-            </ul>
+                <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#reservation" data-toggle="pill" class="nav-link active"><i class="fa fa-ticket"></i> <span class="hidden-xs">Reservation</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><i class="zmdi zmdi-drink"></i> <span class="hidden-xs">Room Service</span></a>
+                    </li>
+                </ul>
+            </div>
             <div class="tab-content p-3">
                 <div class="tab-pane active" id="reservation">
                     <h5 class="mb-3 font-weight-bold">Reservation Info</h5>
@@ -139,5 +140,124 @@
             </div>
         </div>
     </div>
+    @if ($reservation->status() != 2)
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                        @if ($reservation->status() == 0)
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Check in
+                            </a>
+                        </div>
+                        @endif
+                        @if (in_array($reservation->status(), [0, 1]))
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Edit
+                            </a>
+                        </div>
+                        @endif
+                        @if ($reservation->status() == 1)
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Add Service
+                            </a>
+                        </div>
+                        @endif
+                        @if ($reservation->status() != 2)
+                        <div class="col-2">
+                            <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
+                                Delete
+                            </a>
+                        </div>
+                        @endif
+                        @if ($reservation->status() == 0)
+                        <div class="col-2">
+                            <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
+                                Cancel
+                            </a>
+                        </div>
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
 @endsection
+
+@push('script')
+    <script>
+        $(document).ready(function () {
+            $(".deleteReservation").on("click", function () {
+                Swal.fire({
+                    title: "Delete Room",
+                    text: "Are you sure you want to remove this reservation?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonColor: "#E00",
+                    confirmButtonColor: "#00E",
+                    confirmButtonText: "Yes"
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: "{{ route('dashboard.reservation.destroy', ["reservation" => $reservation]) }}",
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function (response){
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: response["success"],
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                }).then(() => {
+                                    window.location.href = "{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}";
+                                });
+                            }
+                        });
+                    }
+                })
+            });
+            $(".cancelReservation").on("click", function () {
+                const DELETE_URL = "{{ route('dashboard.reservation.cancel', ':id') }}";
+                Swal.fire({
+                    title: "Delete Room",
+                    text: "Are you sure you want to cancel this reservation?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonColor: "#E00",
+                    confirmButtonColor: "#00E",
+                    confirmButtonText: "Yes"
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "PUT",
+                            url: "{{ route('dashboard.reservation.cancel', ["reservation" => $reservation]) }}",
+                            data: {
+                                "_token": "{{ csrf_token() }}"
+                            },
+                            success: function (response){
+                                Swal.fire({
+                                    title: "Updated!",
+                                    text: response["success"],
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                }).then(() => {
+                                    window.location.href = "{{ route("dashboard.reservation") }}";
+                                });
+                            }
+                        });
+                    }
+                })
+            });
+        });
+    </script>
+@endpush

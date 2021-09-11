@@ -270,7 +270,7 @@
 @endsection
 
 @push('script')
-<script src="{{ asset("dashboard/plugins/fullcalendar-v5/main.min.js") }}"></script>
+<script src="{{ asset("dashboard/plugins/fullcalendar-v5/main.js") }}"></script>
 <script>
     $(document).ready(function () {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -280,6 +280,10 @@
             window.open(redirectURL, (newTab ? "_blank": "_self"));
         });
 
+        function refetchCalendar() {
+            calendar.refetchEvents();
+            calendar.refetchResources();
+        }
 
         function properDateFormat(date) {
             return date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
@@ -338,7 +342,7 @@
                     dateIncrement: { months: 6 }
                 },
             },
-            resourceAreaHeaderContent: 'Rooms',
+            // resourceAreaHeaderContent: 'Rooms',
             resources: {
                 url: "{{ route("dashboard.json") }}",
                 method: "POST",
@@ -439,7 +443,7 @@
                                 let newTab = $("#newTab").prop("checked");
                                 window.open(CHECK_IN_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
                                 if (newTab) {
-                                    referchCalendar();
+                                    refetchCalendar();
                                 }
                             });
                         }
@@ -455,7 +459,7 @@
                             let newTab = $("#newTab").prop("checked");
                             window.open(CHECK_OUT_URL.replace(":reservationID", eventID), (newTab ? "_blank": "_self"));
                             if (newTab) {
-                                referchCalendar();
+                                refetchCalendar();
                             }
                         });
                         $("button[name='add-service']").on("click", function() {
@@ -498,7 +502,17 @@
                 let oldRoomPrice = oldResourceInfo.extendedProps.price;
                 let newRoomID = newResourceInfo.extendedProps.room_id;
                 let newRoomPrice = newResourceInfo.extendedProps.price;
+
                 if (oldRoomID != newRoomID) {
+                    if (newResourceInfo.extendedProps.status == 4 && event.extendedProps.status == 1) {
+                        eventDropInfo.revert();
+                        Swal.fire({
+                            title: "Error",
+                            text: "The room is reserved by other customer.",
+                            icon: "error",
+                        });
+                        return;
+                    }
                     $("#room_changes_info, #price_changes_info").removeClass("d-none");
                     $("#room_info, #price_unchanged_info").addClass("d-none");
                     $("#before_room").html(oldRoomID + " (RM " + oldRoomPrice.toFixed(2) +" per night)");
@@ -555,7 +569,7 @@
                             end_date: endDateISO
                         },
                     });
-                    referchCalendar();
+                    refetchCalendar();
                 });
             },
             eventResize: function(eventResizeInfo) {
@@ -605,6 +619,7 @@
                             end_date: endDateISO
                         }
                     });
+                    refetchCalendar();
                 });
             },
             resourceLabelContent: function(arg, createElement) {
@@ -640,18 +655,19 @@
                     return false;
                 return true;
             },
-            // slotLabelContent: function(arg) {
-            //     return arg["fieldValue"];
-            // }
+            eventAllow: function(dropInfo, draggedEvent) {
+                if (draggedEvent.id < 0)
+                    return false;
+                return true;
+            },
+            slotLabelContent: function(arg) {
+                return arg["fieldValue"];
+            }
         });
         calendar.render();
-        function referchCalendar() {
-            calendar.refetchEvents();
-            calendar.refetchResources();
-        }
         $("#refetch-event").on("click", function(e) {
             e.preventDefault();
-            referchCalendar();
+            refetchCalendar();
         });
     });
 </script>

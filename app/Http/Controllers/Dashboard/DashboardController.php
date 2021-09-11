@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Carbon\Carbon;
-use App\Models\Room;
 use App\Models\Reservation;
+use App\Models\Room;
 use App\Models\RoomType;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,7 +29,6 @@ class DashboardController extends Controller
                     "children" => [],
                     "editable" => false,
                     "eventOverlap" => false,
-                    "eventAllow" => false,
                     "selectable" => false,
                 ];
                 foreach ($roomtype->rooms as $room) {
@@ -50,6 +47,8 @@ class DashboardController extends Controller
             $reservations = Reservation::with("reservable", "payment")->get();
             $isHousekeeper = Auth::guard("employee")->user()->isHousekeeper();
             foreach ($reservations as $reservation) {
+                if ($reservation->status() == 3)
+                    continue;
                 $json[] = [
                     "id" => $reservation->id,
                     "resourceId" => $reservation->room_id,
@@ -59,8 +58,8 @@ class DashboardController extends Controller
                     "title" => $reservation->reservable->username,
                     "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->addDays()->format("Y-m-d"),
-                    "editable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
-                    "resourceEditable" => ($reservation->statusName() == "Completed" || $isHousekeeper) ? false : true,
+                    "editable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
+                    "resourceEditable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
                     "totalPrice" => $reservation->finalPrices(),
                     "status" => $reservation->status(),
                     "paymentId" => optional($reservation->payment)->id,
@@ -72,12 +71,17 @@ class DashboardController extends Controller
 
     public function reservation_date_update(Request $request) {
         $reservation = Reservation::findOrFail($request->id);
-        if ($request->has("room_id"))
+        if ($request->has("room_id")) {
+            if ($reservation->isReserved() == 4) {
+                $room = Room::findOrFail($request->room_id);
+                $room->status = 0;
+                $room->save();
+            }
             $reservation->room_id = $request->room_id;
+        }
         $reservation->start_date = $request->start_date;
         $reservation->end_date = $request->end_date;
         $reservation->save();
         return response()->json(['success' => "The reservation has been updated successfully"]);
-
     }
 }

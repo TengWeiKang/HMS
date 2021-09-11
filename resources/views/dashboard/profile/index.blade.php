@@ -16,11 +16,12 @@
 <div class="col-lg-12">
     <div class="card">
         <div class="card-body">
-        <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
-            <li class="nav-item">
-                <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
-            </li>
-        </ul>
+            <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+                <li class="nav-item">
+                    <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
+                </li>
+            </ul>
+        </div>
         <div class="tab-content p-3">
             <div class="tab-pane active" id="profile">
                 <h5 class="mb-3 font-weight-bold">User Profile</h5>

@@ -142,6 +142,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
+        $reservation->load("room", "reservable", "services", "payment");
         return view('dashboard/reservation/view', ["reservation" => $reservation]);
     }
 
@@ -268,8 +269,16 @@ class ReservationController extends Controller
     {
         if (!$reservation->room->isReserved()) {
             $reservation->check_in = Carbon::now();
+            $reservation->status = 0;
             $reservation->save();
         }
         return redirect()->back();
+    }
+
+    public function cancelled(Reservation $reservation)
+    {
+        $reservation->status = 0;
+        $reservation->save();
+        return response()->json(['success' => "The reservation has been updated to cancel"]);
     }
 }

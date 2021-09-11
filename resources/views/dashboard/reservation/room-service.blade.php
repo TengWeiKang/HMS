@@ -120,103 +120,105 @@
 
 @push("script")
     <script>
-        $dropdown = $("#service");
-        $dropdown.select2({
-            placeholder: {
-                id: '',
-                text: 'Choose Service to Add'
-            },
-            allowClear: true
-        });
-        $dropdown.on("select2:select", function (event) {
-            $element = $(event.params.data.element);
-            $element[0].disabled = true;
-            let serviceID = $element.val();
-            let serviceName = $element.data("name");
-            let price = parseFloat($element.data("price"));
-            let html =
-                `<tr class="service-row">
-                    <td class="text-left">` + serviceName + `</td>
-                    <td>RM ` + price.toFixed(2) + `</td>
-                    <td>
-                        <input type="hidden" name="serviceID[]" value="` + serviceID + `">
-                        <input type="number" name="qty[]" class="form-control form-control-rounded qty-input" min="1" step="1" value="1" data-price="` + price + `" required>
-                    </td>
-                    <td>RM <span>` + price.toFixed(2) + `</span></td>
-                    <td>
-                        <a class="delete-row-service" data-id="` + serviceID + `" style="cursor: pointer">
-                            <i class="zmdi zmdi-delete text-white"></i>
-                        </a>
-                    </td>
-                </tr>`;
-            $("#table-service").append(html);
-            bindListener();
-            $dropdown.val(0).trigger('change.select2');
-        });
-        $('.select2.select2-container').addClass('form-control form-control-rounded');
+        $(document).ready(function () {
+            $dropdown = $("#service");
+            $dropdown.select2({
+                placeholder: {
+                    id: '',
+                    text: 'Choose Service to Add'
+                },
+                allowClear: true
+            });
+            $dropdown.on("select2:select", function (event) {
+                $element = $(event.params.data.element);
+                $element[0].disabled = true;
+                let serviceID = $element.val();
+                let serviceName = $element.data("name");
+                let price = parseFloat($element.data("price"));
+                let html =
+                    `<tr class="service-row">
+                        <td class="text-left">` + serviceName + `</td>
+                        <td>RM ` + price.toFixed(2) + `</td>
+                        <td>
+                            <input type="hidden" name="serviceID[]" value="` + serviceID + `">
+                            <input type="number" name="qty[]" class="form-control form-control-rounded qty-input" min="1" step="1" value="1" data-price="` + price + `" required>
+                        </td>
+                        <td>RM <span>` + price.toFixed(2) + `</span></td>
+                        <td>
+                            <a class="delete-row-service" data-id="` + serviceID + `" style="cursor: pointer">
+                                <i class="zmdi zmdi-delete text-white"></i>
+                            </a>
+                        </td>
+                    </tr>`;
+                $("#table-service").append(html);
+                bindListener();
+                $dropdown.val(0).trigger('change.select2');
+            });
+            $('.select2.select2-container').addClass('form-control form-control-rounded');
 
-        $("form#service-form").submit(function (event) {
-            event.preventDefault();
-            let length = $("form#service-form input").length;
-            if (length > 1) { // ignore token input
-                Swal.fire({
-                    title: "Confirmation",
-                    text: "Are you sure you want to add these services?\nThis process cannot be undo after submit",
-                    icon: "warning",
-                    showCancelButton: true,
-                    cancelButtonColor: "#E00",
-                    confirmButtonColor: "#00E",
-                    confirmButtonText: "Yes"
-                }).then((result) => {
-                    if (result.value) {
-                        $(this).unbind("submit").submit();
-                    }
+            $("form#service-form").submit(function (event) {
+                event.preventDefault();
+                let length = $("form#service-form input").length;
+                if (length > 1) { // ignore token input
+                    Swal.fire({
+                        title: "Confirmation",
+                        text: "Are you sure you want to add these services?\nThis process cannot be undo after submit",
+                        icon: "warning",
+                        showCancelButton: true,
+                        cancelButtonColor: "#E00",
+                        confirmButtonColor: "#00E",
+                        confirmButtonText: "Yes"
+                    }).then((result) => {
+                        if (result.value) {
+                            $(this).unbind("submit").submit();
+                        }
+                    });
+                }
+                else {
+                    Swal.fire({
+                        title: "No Service Added",
+                        text: "Please add at least one service before save",
+                        icon: "error",
+                    });
+                }
+            });
+
+            function bindListener() {
+                $deleteBtn = $(".delete-row-service");
+                $deleteBtn.unbind();
+                $deleteBtn.on("click", function () {
+                    let id = $(this).data("id");
+                    $(this).parents(".service-row").remove();
+                    $("option[value='" + id + "']")[0].disabled = false;
+                    updatePrices();
                 });
-            }
-            else {
-                Swal.fire({
-                    title: "No Service Added",
-                    text: "Please add at least one service before save",
-                    icon: "error",
+
+                $inputs = $("input[name='qty[]']");
+                $inputs.unbind();
+                $inputs.on("input", function () {
+                    let qty = $(this).val();
+                    if(qty != "" && qty < 1)
+                        $(this).val(1);
+                    updatePrices();
                 });
+                updatePrices();
+            }
+
+            function updatePrices() {
+                $inputs = $("input[name='qty[]']");
+                let totalPrice = 0;
+                $inputs.each((index, input) => {
+                    let unitPrice = parseFloat(input.getAttribute("data-price"));
+                    let quantity = input.value;
+                    if (quantity == "")
+                        quantity = 0;
+                    quantity = parseInt(quantity);
+                    let price = unitPrice * quantity;
+                    totalPrice += price;
+                    input.parentElement.nextElementSibling.getElementsByTagName("span")[0].innerHTML = price.toFixed(2);
+                });
+                $("#totalPrice")[0].innerHTML = totalPrice.toFixed(2);
             }
         });
-
-        function bindListener() {
-            $deleteBtn = $(".delete-row-service");
-            $deleteBtn.unbind();
-            $deleteBtn.on("click", function () {
-                let id = $(this).data("id");
-                $(this).parents(".service-row").remove();
-                $("option[value='" + id + "']")[0].disabled = false;
-                updatePrices();
-            });
-
-            $inputs = $("input[name='qty[]']");
-            $inputs.unbind();
-            $inputs.on("input", function () {
-                let qty = $(this).val();
-                if(qty != "" && qty < 1)
-                    $(this).val(1);
-                updatePrices();
-            });
-            updatePrices();
-        }
-
-        function updatePrices() {
-            $inputs = $("input[name='qty[]']");
-            let totalPrice = 0;
-            $inputs.each((index, input) => {
-                let unitPrice = parseFloat(input.getAttribute("data-price"));
-                let quantity = input.value;
-                if (quantity == "")
-                    quantity = 0;
-                quantity = parseInt(quantity);
-                let price = unitPrice * quantity;
-                totalPrice += price;
-                input.parentElement.nextElementSibling.getElementsByTagName("span")[0].innerHTML = price.toFixed(2);
-            });
-            $("#totalPrice")[0].innerHTML = totalPrice.toFixed(2);
-        }
     </script>
 @endpush
