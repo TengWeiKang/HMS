@@ -18,8 +18,6 @@ class CreatePaymentTable extends Migration
             $table->string("reservation_id")->index();
             $table->string("room_id")->index();
             $table->string("room_name");
-            $table->string("reservable_type");
-            $table->string("reservable_id");
             $table->double("price_per_night");
             $table->string("start_date");
             $table->string("end_date");

@@ -22,7 +22,7 @@
                 <form action="{{ route("register") }}" method="POST">
                     @csrf
                     <div class="form-group">
-                        <label for="username">Username</label>
+                        <label for="username">Username <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("username") border-danger @enderror" name="username" placeholder="Enter Your Username" value="{{ old("username") }}">
                         @error("username")
                             <div class="ml-2 text-sm text-danger">
@@ -31,8 +31,8 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Enter Your Email Address" value="{{ old("username") }}">
+                        <label for="email">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control form-control-rounded @error("email") border-danger @enderror" name="email" placeholder="Enter Your Email Address" value="{{ old("email") }}">
                         @error("email")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -40,8 +40,8 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone number</label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)" value="{{ old("username") }}">
+                        <label for="phone">Phone number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Phone Number (E.g. 012-3456789)" value="{{ old("phone") }}">
                         @error("phone")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -49,7 +49,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password">Password</label>
+                        <label for="password">Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control form-control-rounded @error("password") border-danger @enderror" name="password" placeholder="Enter Password" autocomplete="off">
                         @error("password")
                             <div class="ml-2 text-sm text-danger">
@@ -58,7 +58,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="password_confirmation">Confirm Password</label>
+                        <label for="password_confirmation">Confirm Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control form-control-rounded @error("password_confirmation") border-danger @enderror" name="password_confirmation" placeholder="Confirm Password" autocomplete="off">
                         @error("password_confirmation")
                             <div class="ml-2 text-sm text-danger">

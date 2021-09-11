@@ -32,7 +32,7 @@
                             @foreach ($payments as $payment)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $payment->reservable->username }}</td>
+                                    <td>{{ $payment->reservation->reservable->username }}</td>
                                     <td>{{ $payment->start_date->format("d M Y") }}</td>
                                     <td>{{ $payment->end_date->format("d M Y") }}</td>
                                     <td>{{ $payment->payment_at->format("d M Y h:ia") }}</td>

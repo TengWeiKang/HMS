@@ -1,30 +1,28 @@
-@extends("dashboard.layouts.template")
-
-@php
-    $user = Auth::guard('employee')->user();
-@endphp
+@extends("customer.layouts.template")
 
 @push("css")
 
 @endpush
 
+@php
+    $user = Auth::user();
+@endphp
+
 @section("title")
-    Dashboard | {{ $user->username }}
+    Hotel Booking | {{ $user->username }}
+@endsection
+
+@section("title2")
+    Your Profile
 @endsection
 
 @section("content")
-<div class="col-lg-12">
-    <div class="card">
-        <div class="card-body">
-            <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
-                <li class="nav-item">
-                    <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
-                </li>
-            </ul>
-        </div>
-        <div class="tab-content p-3">
-            <div class="tab-pane active" id="profile">
-                <h5 class="mb-3 font-weight-bold">User Profile</h5>
+<div class="row mt-3 justify-content-md-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">User Profile</div>
+                <hr>
                 <div class="row">
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -41,19 +39,15 @@
                                 <td>{{ $user->phone }}</td>
                             </tr>
                             <tr>
-                                <td>Role:</td>
-                                <td>{{ $user->role() }}</td>
-                            </tr>
-                            <tr>
                                 <td>Created Date:</td>
                                 <td>{{ $user->created_at->format("d F Y") }}</td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <a href="{{ route("dashboard.profile.edit") }}" class="btn btn-primary mt-4">Edit Your Profile</a>
+                <a href="{{ route("customer.profile.edit") }}" class="btn btn-primary mt-4">Edit Your Profile</a>
             </div>
         </div>
     </div>
-</div>
+</div><!--End Row-->
 @endsection

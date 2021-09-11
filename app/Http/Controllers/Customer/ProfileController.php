@@ -1,13 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Dashboard;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EmployeeProfileController extends Controller
+class ProfileController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware("customer");
+    }
+
     /**
      * Display the specified resource.
      *
@@ -15,7 +20,7 @@ class EmployeeProfileController extends Controller
      */
     public function show()
     {
-        return view('dashboard/profile/index');
+        return view('customer.profile.index');
     }
 
     /**
@@ -25,7 +30,7 @@ class EmployeeProfileController extends Controller
      */
     public function edit()
     {
-        return view("dashboard/profile/edit-form");
+        return view("customer.profile.edit-form");
     }
 
     /**
@@ -36,7 +41,7 @@ class EmployeeProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $user = Auth::guard('employee')->user();
+        $user = Auth::user();
         $this->validate($request, [
             'username' => 'required|max:255|unique:customer,username|unique:employee,username,'.$user->id,
             'email' => 'required|email|max:255|unique:customer,email|unique:employee,email,'.$user->id,
@@ -46,7 +51,6 @@ class EmployeeProfileController extends Controller
         $user->email = $request->email;
         $user->phone = $request->phone;
         $user->save();
-
-        return redirect()->route('dashboard.profile.edit')->with("message", "Your profile has successfully updated");
+        return redirect()->route("customer.profile.edit")->with("message", "Your profile has successfully modified");
     }
 }

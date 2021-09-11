@@ -96,8 +96,4 @@ class Payment extends Model
     public function totalPrices() {
         return $this->totalSubPrices() + $this->totalChargesPrice();
     }
-
-    public function reservable() {
-        return $this->morphTo();
-    }
 }

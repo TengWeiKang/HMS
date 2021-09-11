@@ -656,13 +656,10 @@
                 return true;
             },
             eventAllow: function(dropInfo, draggedEvent) {
-                if (draggedEvent.id < 0)
+                if (dropInfo.resource.id < 0)
                     return false;
                 return true;
             },
-            slotLabelContent: function(arg) {
-                return arg["fieldValue"];
-            }
         });
         calendar.render();
         $("#refetch-event").on("click", function(e) {

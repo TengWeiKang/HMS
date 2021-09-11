@@ -17,7 +17,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::with("reservable", "items", "charges")->get();
+        $payments = Payment::with("items", "charges", "reservation.reservable")->get();
         return view('dashboard/payment/index', ["payments" => $payments]);
     }
 
@@ -67,8 +67,6 @@ class PaymentController extends Controller
             "reservation_id" => $reservation->id,
             "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-            "reservable_type" => $reservation->reservable_type,
-            "reservable_id" => $reservation->reservable_id,
             "price_per_night" => $reservation->room->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,

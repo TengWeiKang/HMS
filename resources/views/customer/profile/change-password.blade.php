@@ -1,24 +1,28 @@
-@extends("dashboard.layouts.template")
+@extends("customer.layouts.template")
 
 @push("css")
 
 @endpush
 
 @section("title")
-    Dashboard | {{ Auth::guard('employee')->user()->username }}
+    Hotel Booking | {{ Auth::user()->username }}
+@endsection
+
+@section("title2")
+    Change Your Password
 @endsection
 
 @section("content")
 <div class="row mt-3 justify-content-md-center">
-    <div class="col-lg-8">
+    <div class="col-lg-10">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Change Password Form</div>
+                <div class="card-title">User Profile</div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
                 <hr>
-                <form action="{{ route("dashboard.profile.password") }}" method="POST">
+                <form action="{{ route("customer.profile.password") }}" method="POST">
                     @csrf
                     @method("PUT")
                     <div class="form-group">
@@ -48,12 +52,12 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group mt-4">
-                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
+                    <div class="form-group mt-5">
+                        <button type="submit" class="btn btn-primary btn-round px-5 w-100">Update</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</div><!--End Row-->
 @endsection

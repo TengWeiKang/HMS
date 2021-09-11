@@ -163,6 +163,18 @@ class DatabaseSeeder extends Seeder
             "status" => 2
         ])->facilities()->attach([2]);
 
+        Room::create([
+            "room_id" => "R105",
+            "name" => "Room Name 5",
+            "price" => 22,
+            "room_type" => $roomType1->id,
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
+            "image_type" => "image/jpg",
+            "single_bed" => 2,
+            "double_bed" => 2,
+            "status" => 2
+        ])->facilities()->attach([2]);
+
         Service::create([
             "name" => "food",
             "price" => 7
@@ -224,7 +236,7 @@ class DatabaseSeeder extends Seeder
             ["service_id" => 3, "quantity" => 2],
         ]);
 
-        Reservation::create([
+        $reservation = Reservation::create([
             "room_id" => 1,
             "start_date" => Carbon::now()->today()->subDays(5),
             "end_date" => Carbon::now()->today()->subDays(2),
@@ -232,18 +244,16 @@ class DatabaseSeeder extends Seeder
             "reservable_id" => 1,
             "check_in" => Carbon::now()->subDays(7),
             "check_out" => Carbon::now()
-        ])->services()->attach([
+        ]);
+        $reservation->services()->attach([
             ["service_id" => 1, "quantity" => 5],
             ["service_id" => 3, "quantity" => 10],
         ]);
 
-        $reservation = Reservation::with("room")->find(4);
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
             "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-            "reservable_type" => $reservation->reservable_type,
-            "reservable_id" => $reservation->reservable_id,
             "price_per_night" => $reservation->room->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,

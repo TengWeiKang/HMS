@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
+use App\Http\Controllers\Customer\ProfileController;
+use App\Http\Controllers\Customer\ChangePasswordController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
@@ -33,6 +35,15 @@ use Illuminate\Support\Facades\Route;
 Route::group(["prefix" => 'customer'], function () {
     Route::get('/', [HomeController::class, "index"])->name("customer.home");
     Route::get('/search', [HomeController::class, "search"])->name("customer.search");
+
+    //profile
+    Route::group(["prefix" => "profile"], function() {
+        Route::get("/", [ProfileController::class, "show"])->name("customer.profile.view");
+        Route::get("/edit", [ProfileController::class, "edit"])->name("customer.profile.edit");
+        Route::put("/edit", [ProfileController::class, "update"]);
+        Route::get("/change-password", [ChangePasswordController::class, "edit"])->name("customer.profile.password");
+        Route::put("/change-password", [ChangePasswordController::class, "update"]);
+    });
 });
 
 // admin

@@ -133,8 +133,8 @@
                                             @foreach ($room->reservations as $history)
                                                 <tr>
                                                     <td>{{ $history->reservable->username}}</td>
-                                                    <td>{{ $history->start_date->format("d M Y") }}</td>
-                                                    <td>{{ $history->end_date->format("d M Y") }}</td>
+                                                    <td>{{ $history->start_date->format("d F Y") }}</td>
+                                                    <td>{{ $history->end_date->format("d F Y") }}</td>
                                                     <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>
                                                     <td class="text-center">
                                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $history]) }}">

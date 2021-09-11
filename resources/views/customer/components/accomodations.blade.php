@@ -7,7 +7,8 @@
                     <a href="#" class="btn theme_btn button_hover">Book Now</a>
                 @endauth
             </div>
-            <a href="#"><h4 class="sec_h4">{{ $room->name }}</h4></a>
+            <a href="#"><h3 class="sec_h4">{{ $room->name }}</h3></a>
+            <h4>{{ $room->type->name }}</h4>
             <h5>RM {{ number_format($room->price, 2) }}<small>/night</small></h5>
         </div>
     </div>

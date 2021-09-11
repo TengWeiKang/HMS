@@ -10,12 +10,12 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     public function index() {
-        $rooms = Room::all();
+        $rooms = Room::with("type")->get();
         return view("customer/index", ["rooms" => $rooms]);
     }
 
     public function search(Request $request) {
-        $rooms = Room::with("reservations")->get();
+        $rooms = Room::with("reservations", "type")->get();
         $arrival = "";
         $departure = "";
         if (!empty($request->arrival) && empty($request->departure)) {
@@ -52,7 +52,6 @@ class HomeController extends Controller
             }
             return true;
         });
-        // dd($rooms);
         return view("customer/components/accomodations", ["rooms" => $rooms]);
     }
 }
