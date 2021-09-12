@@ -16,8 +16,14 @@
     .fc {
         text-align: center !important;
     }
+    .fc-unthemed td.fc-today {
+        background: rgba(0, 255, 50, 0.3)
+    }
     .bg-red {
         background-color: red;
+    }
+    .fc-highlight {
+        background: #aaa;
     }
 </style>
 @endpush
@@ -90,7 +96,7 @@
                     @error('dateConflict')
                         <div class="col-lg-12 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
-                                {{ dd($message) }}
+                                {{ $message }}
                             </div>
                         </div>
                     @enderror

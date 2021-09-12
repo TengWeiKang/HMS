@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\ChangePasswordController;
+use App\Http\Controllers\Customer\RoomController as CustomerRoomController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
@@ -43,6 +45,20 @@ Route::group(["prefix" => 'customer'], function () {
         Route::put("/edit", [ProfileController::class, "update"]);
         Route::get("/change-password", [ChangePasswordController::class, "edit"])->name("customer.profile.password");
         Route::put("/change-password", [ChangePasswordController::class, "update"]);
+    });
+
+    //rooms
+    Route::group(["prefix" => "room"], function() {
+        // Route::get("/", [RoomController::class, "index"])->name("customer.room");
+        Route::get("/{room}", [CustomerRoomController::class, "show"])->name("customer.room.view");
+    });
+
+    //booking
+    Route::group(["prefix" => "booking"], function() {
+        Route::get("/", [BookingController::class, "index"])->name("customer.booking");
+        Route::post("/json", [BookingController::class, "json"])->name("customer.booking.json");
+        Route::get("/{room}/create", [BookingController::class, "create"])->name("customer.booking.create");
+        Route::post("/{room}/create", [BookingController::class, "store"])->name("customer.booking.create");
     });
 });
 

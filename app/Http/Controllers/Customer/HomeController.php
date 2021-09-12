@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Room;
+use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,10 @@ class HomeController extends Controller
 {
     public function index() {
         $rooms = Room::with("type")->get();
-        return view("customer/index", ["rooms" => $rooms]);
+        $roomTypes = RoomType::with("rooms")->get()->filter(function ($value, $key) {
+            return $value->rooms->count() > 0;
+        });
+        return view("customer/index", ["rooms" => $rooms, "roomTypes" => $roomTypes]);
     }
 
     public function search(Request $request) {
@@ -47,7 +51,7 @@ class HomeController extends Controller
             if (!empty($request->double) && $value->double_bed != $request->double) {
                 return false;
             }
-            if (!empty($request->price) && $request->price < $value->price) {
+            if (!empty($request->roomType) && $request->roomType != $value->type->id) {
                 return false;
             }
             return true;

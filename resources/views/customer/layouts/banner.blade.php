@@ -49,7 +49,12 @@
                                 <div class="book_tabel_item">
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <input id="price" type="number" step="0.01" min="0.01" class="wide form-control" placeholder="Price Below">
+                                            <select class="wide" id="roomType">
+                                                <option data-display="Room Type">Room Type</option>
+                                                @foreach ($roomTypes as $roomType)
+                                                    <option value="{{ $roomType->id }}">{{ $roomType->name }}</option>
+                                                @endforeach
+                                            </select>
                                         </div>
                                     </div>
                                     <a class="book_now_btn button_hover" id="search-btn" href="#">Search</a>

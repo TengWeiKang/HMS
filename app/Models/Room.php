@@ -51,7 +51,7 @@ class Room extends Model
 
     public function statusName($withAssigned) {
         $additional = "";
-        if ($withAssigned && $this->status == 2 && $this->housekeeper != null) {
+        if ($withAssigned && $this->status() == 2 && $this->housekeeper != null) {
             $additional = "<br><small>(" . ($this->housekeeper->username) .")</small>";
         }
         return self::STATUS[$this->status()]["status"] . $additional;
