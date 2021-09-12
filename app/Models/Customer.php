@@ -43,7 +43,7 @@ class Customer extends Authenticatable
         'updated_at' => 'datetime',
     ];
 
-    public function reservations() {
+    public function bookings() {
         return $this->morphMany(Reservation::class, "reservable");
     }
 }

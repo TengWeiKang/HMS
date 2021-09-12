@@ -37,6 +37,9 @@ class ReservationController extends Controller
     {
         $roomID = $request->roomID;
         $reservations = Room::find($roomID)->reservations;
+        $reservations = $reservations->filter(function ($value, $key) {
+            return $value->status == 1;
+        });
         if ($request->has("ignoreID")) {
             $ignoreID = $request->ignoreID;
             $reservations = $reservations->filter(function ($value, $key) use ($ignoreID) {
@@ -195,9 +198,7 @@ class ReservationController extends Controller
                 }
             }
         });
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
+        $validator->validate();
 
         $split = explode("||", $request->customer, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;

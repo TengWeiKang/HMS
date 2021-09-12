@@ -5,11 +5,11 @@
 @endpush
 
 @section("title")
-    Hotel Booking | Bookings
+    Hotel Booking | Histories
 @endsection
 
 @section("title2")
-    Bookings
+    Histories
 @endsection
 
 @section("content")
@@ -46,14 +46,10 @@
                                         <a href="{{ route("customer.booking.view", ["booking" => $booking]) }}" title="View">
                                             <i class="lnr lnr-eye"></i>
                                         </a>
-                                        @if ($booking->status() == 0)
-                                            <a href="{{ route("customer.booking.edit", ["booking" => $booking]) }}" title="Edit">
-                                                <i class="lnr lnr-pencil"></i>
-                                            </a>
-                                            <a class="deleteBooking" data-id="{{ $booking->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Delete">
-                                                <i class="lnr lnr-trash"></i>
-                                            </a>
-                                        @endif
+                                        {{ dd($booking->payment) }}
+                                        <a href="{{ route("customer.booking.payment", ["payment" => $booking->payment]) }}" title="Payment">
+                                            <i class="lnr lnr-checkmark-circle"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 @endforeach

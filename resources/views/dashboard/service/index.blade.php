@@ -50,7 +50,7 @@
             </div>
         </div>
     </div>
-</div><!--End Row-->
+</div>
 @endsection
 
 @push("script")

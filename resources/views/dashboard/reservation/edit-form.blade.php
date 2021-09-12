@@ -138,7 +138,6 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
-        let initialize = false;
         $('select.form-control#rooms').select2();
         $('select.form-control#customers').select2({
             multiple: false,

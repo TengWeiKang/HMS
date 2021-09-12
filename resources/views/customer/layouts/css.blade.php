@@ -1,6 +1,7 @@
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" href="{{ asset("customer/css/bootstrap.min.css") }}">
 <link rel="stylesheet" href="{{ asset("customer/css/sweetalert2.min.css") }}">
+<link rel="stylesheet" href="{{ asset("customer/css/datatable.min.css") }}">
 <link rel="stylesheet" href="{{ asset("customer/vendors/linericon/style.css") }}">
 <link rel="stylesheet" href="{{ asset("customer/css/font-awesome.min.css") }}">
 <link rel="stylesheet" href="{{ asset("customer/vendors/owl-carousel/owl.carousel.min.css") }}">

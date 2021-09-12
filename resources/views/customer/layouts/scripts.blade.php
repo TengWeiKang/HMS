@@ -2,6 +2,7 @@
 <script src="{{ asset("customer/js/popper.js") }}"></script>
 <script src="{{ asset("customer/js/bootstrap.min.js") }}"></script>
 <script src="{{ asset("customer/js/sweetalert2.min.js") }}"></script>
+<script src="{{ asset("customer/js/datatable.min.js") }}"></script>
 <script src="{{ asset("customer/vendors/owl-carousel/owl.carousel.min.js") }}"></script>
 <script src="{{ asset("customer/js/jquery.ajaxchimp.min.js") }}"></script>
 <script src="{{ asset("customer/js/mail-script.js") }}"></script>

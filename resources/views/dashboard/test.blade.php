@@ -150,7 +150,7 @@
                 </div>
             </div>
         </div>
-    </div><!--End Row-->
+    </div>
 
     <div class="row">
         <div class="col-12 col-lg-12">
@@ -261,7 +261,7 @@
                 </div>
             </div>
         </div>
-    </div><!--End Row-->
+    </div>
 @endsection
 
 @push('script')

@@ -1,18 +1,15 @@
-@extends("dashboard.layouts.template")
+@extends("customer.layouts.template")
 
 @push("css")
-<style>
-.table-input {
-    padding: 0 .75rem;
-    width: 80px;
-    height: 1.75rem;
-    display: inherit;
-}
-</style>
+
 @endpush
 
 @section("title")
-    Dashboard | View Payment
+    Hotel Booking | Payment
+@endsection
+
+@section("title2")
+    View Payment
 @endsection
 
 @section("content")
@@ -20,7 +17,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Payment Information <a class="ml-3 font-weight-normal" style="color: blue" href="{{ route("dashboard.reservation.view", ['reservation' => $payment->reservation]) }}"><u>View Reservation</u></a></div>
+                <div class="card-title">Payment Information <a class="ml-3 font-weight-normal" style="color: blue" href="{{ route("customer.booking.view", ['booking' => $payment->reservation]) }}"><u>View Booking</u></a></div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
@@ -46,7 +43,7 @@
                     </table>
                 </div>
                 @if ($payment->items->count())
-                <div class="card-title mt-5">Room Services</div>
+                <div class="card-title mt-4">Room Services</div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -89,7 +86,7 @@
                     </table>
                 </div>
                 @if ($payment->charges->count())
-                <div class="card-title mt-5">Additional Charges</div>
+                <div class="card-title mt-4">Additional Charges</div>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>

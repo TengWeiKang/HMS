@@ -36,9 +36,9 @@ class Reservation extends Model
     ];
 
     const STATUS = [
-        0 => ["status" => "Waiting for Check-in", "color" => "yellow"],
+        0 => ["status" => "Waiting for Check-in", "color" => "mediumvioletred"],
         1 => ["status" => "Checked-in", "color" => "orangered"],
-        2 => ["status" => "Completed", "color" => "lightgreen"],
+        2 => ["status" => "Completed", "color" => "mediumspringgreen"],
         3 => ["status" => "Cancelled", "color" => "darkgray"],
     ];
 

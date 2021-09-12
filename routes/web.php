@@ -49,7 +49,6 @@ Route::group(["prefix" => 'customer'], function () {
 
     //rooms
     Route::group(["prefix" => "room"], function() {
-        // Route::get("/", [RoomController::class, "index"])->name("customer.room");
         Route::get("/{room}", [CustomerRoomController::class, "show"])->name("customer.room.view");
     });
 
@@ -57,8 +56,14 @@ Route::group(["prefix" => 'customer'], function () {
     Route::group(["prefix" => "booking"], function() {
         Route::get("/", [BookingController::class, "index"])->name("customer.booking");
         Route::post("/json", [BookingController::class, "json"])->name("customer.booking.json");
+        Route::get("/history", [BookingController::class, "history"])->name("customer.booking.history");
         Route::get("/{room}/create", [BookingController::class, "create"])->name("customer.booking.create");
-        Route::post("/{room}/create", [BookingController::class, "store"])->name("customer.booking.create");
+        Route::post("/{room}/create", [BookingController::class, "store"]);
+        Route::get("/{booking}", [BookingController::class, "show"])->name("customer.booking.view");
+        Route::get("/{booking}/edit", [BookingController::class, "edit"])->name("customer.booking.edit");
+        Route::put("/{booking}/edit", [BookingController::class, "update"]);
+        Route::get("/{payment}/payment", [BookingController::class, "payment"])->name("customer.booking.payment");
+        Route::delete("/{booking}", [BookingController::class, "destroy"])->name("customer.booking.destroy");
     });
 });
 
@@ -84,7 +89,6 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/", [FacilityController::class, "index"])->name("dashboard.facility");
         Route::get("/create", [FacilityController::class, "create"])->name("dashboard.facility.create");
         Route::post("/create", [FacilityController::class, "store"]);
-        // Route::get("/{facility}", [FacilityController::class, "show"])->name("dashboard.facility.view");
         Route::get("/{facility}/edit", [FacilityController::class, "edit"])->name("dashboard.facility.edit");
         Route::put("/{facility}/edit", [FacilityController::class, "update"]);
         Route::delete("/{facility}", [FacilityController::class, "destroy"])->name("dashboard.facility.destroy");
@@ -104,7 +108,6 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/", [RoomController::class, "index"])->name("dashboard.room");
         Route::post("/assign", [RoomController::class, "assign"])->name("dashboard.room.assign");
         Route::post("/status", [RoomController::class, "updateStatus"])->name("dashboard.room.status");
-        // Route::post("/repair", [RoomController::class, "repair"])->name("dashboard.room.repair");
         Route::get("/create", [RoomController::class, "create"])->name("dashboard.room.create");
         Route::post("/create", [RoomController::class, "store"]);
         Route::get("/{room}", [RoomController::class, "show"])->name("dashboard.room.view");
@@ -135,9 +138,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/{reservation}/edit", [ReservationController::class, "edit"])->name("dashboard.reservation.edit");
         Route::put("/{reservation}/edit", [ReservationController::class, "update"]);
         Route::put("/{reservation}/cancel", [ReservationController::class, "cancelled"])->name("dashboard.reservation.cancel");
-        // Route::get("/{reservation}/cancel/redirect", [ReservationController::class, "cancelledRedirect"])->name("dashboard.reservation.cancel-r");
         Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");
-        // Route::get("/{reservation}/redirect", [ReservationController::class, "destroyRedirect"])->name("dashboard.reservation.destroy-r");
         Route::get("/{reservation}/service", [ReservationController::class, "createService"])->name("dashboard.reservation.service");
         Route::post("/{reservation}/service", [ReservationController::class, "storeService"]);
     });
@@ -148,20 +149,12 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("{reservation}/create", [PaymentController::class, "create"])->name("dashboard.payment.create");
         Route::post("{reservation}/create", [PaymentController::class, "store"]);
         Route::get("/{payment}", [PaymentController::class, "show"])->name("dashboard.payment.view");
-        // Route::get("/{payment}/edit", [PaymentController::class, "edit"])->name("dashboard.payment.edit");
-        // Route::put("/{payment}/edit", [PaymentController::class, "update"]);
         Route::delete("/{payment}", [PaymentController::class, "destroy"])->name("dashboard.payment.destroy");
     });
 
     //housekeeper management on current day
     Route::group(["prefix" => "housekeeper"], function() {
         Route::get("/", [HousekeeperController::class, "index"])->name("dashboard.housekeeper");
-        // Route::get("/create", [HousekeeperController::class, "create"])->name("dashboard.housekeeper.create");
-        // Route::post("/create", [HousekeeperController::class, "store"]);
-        // Route::get("/{employee}", [HousekeeperController::class, "show"])->name("dashboard.housekeeper.view");
-        // Route::get("/{employee}/edit", [HousekeeperController::class, "edit"])->name("dashboard.housekeeper.edit");
-        // Route::put("/{employee}/edit", [HousekeeperController::class, "update"]);
-        // Route::delete("/{employee}", [HousekeeperController::class, "destroy"])->name("dashboard.housekeeper.destroy");
     });
 
     //room type management on current day

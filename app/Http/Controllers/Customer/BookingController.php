@@ -7,6 +7,7 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Customer;
+use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,7 +24,30 @@ class BookingController extends Controller
      */
     public function index()
     {
-        //
+        Auth::user()->load("bookings", "bookings.room", "bookings.services");
+        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value, $key){
+            return in_array($value->status(), [0, 1]);
+        });
+        return view("customer.booking.index");
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function history()
+    {
+        Auth::user()->load("bookings", "bookings.room", "bookings.services", "bookings.payment");
+        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value, $key){
+            return $value->status() == 2;
+        })->sortByDesc("check_out");
+        return view("customer.booking.history");
+    }
+
+    public function payment(Payment $payment)
+    {
+        $payment->load("items", "charges", "reservation");
+        return view("customer.booking.payment", ["payment" => $payment]);
     }
 
     /**
@@ -42,6 +66,9 @@ class BookingController extends Controller
     {
         $roomID = $request->roomID;
         $reservations = Room::find($roomID)->reservations;
+        $reservations = $reservations->filter(function ($value, $key) {
+            return $value->status == 1;
+        });
         if ($request->has("ignoreID")) {
             $ignoreID = $request->ignoreID;
             $reservations = $reservations->filter(function ($value, $key) use ($ignoreID) {
@@ -106,45 +133,72 @@ class BookingController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Room  $room
+     * @param  \App\Models\Reservation  $booking
      * @return \Illuminate\Http\Response
      */
-    public function show(Room $room)
+    public function show(Reservation $booking)
     {
-        //
+        $booking->load("room", "services", "payment");
+        return view("customer.booking.view", ["booking" => $booking]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Room  $room
+     * @param  \App\Models\Reservation  $booking
      * @return \Illuminate\Http\Response
      */
-    public function edit(Room $room)
+    public function edit(Reservation $booking)
     {
-        //
+        return view("customer.booking.edit-form", ["booking" => $booking]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Room  $room
+     * @param  \App\Models\Reservation  $booking
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Room $room)
+    public function update(Request $request, Reservation $booking)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            "startDate" => "required|date",
+            "endDate" => "required|date"
+        ]);
+        $validator->after(function ($validator) use ($request, $booking) {
+            $count = Reservation::where("id", "!=", $booking->id)->where("room_id", $request->roomId)
+                ->where(function ($query) use ($request) {
+                    $query->where("start_date", "<=", $request->startDate)
+                        ->where("end_date", ">=", $request->startDate)
+                        ->orWhere("start_date", "<=", $request->endDate)
+                        ->where("end_date", ">=", $request->endDate)
+                        ->orWhere("start_date", ">=", $request->startDate)
+                        ->where("end_date", "<=", $request->endDate);
+                }
+            )->count();
+            if ($count > 0) {
+                $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
+            }
+        });
+        $validator->validate();
+
+        $booking->start_date = $request->startDate;
+        $booking->end_date = $request->endDate;
+        $booking->save();
+
+        return redirect()->route('customer.booking.edit', ["booking" => $booking])->with("message", "The Booking Updated Successfully");
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Room  $room
+     * @param  \App\Models\Reservation  $booking
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Room $room)
+    public function destroy(Reservation $booking)
     {
-        //
+        $booking->delete();
+        return response()->json(['success' => "The booking has been deleted"]);
     }
 }

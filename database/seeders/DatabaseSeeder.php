@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Models\Customer;
@@ -261,8 +260,8 @@ class DatabaseSeeder extends Seeder
             "discount" => 20,
         ]);
         $payment->items()->createMany([
-            ["service_name" => "food", "quantity" => 4, "unit_price" => 7],
-            ["service_name" => "drink", "quantity" => 8, "unit_price" => 5],
+            ["service_name" => "food", "quantity" => 5, "unit_price" => 7],
+            ["service_name" => "food 2", "quantity" => 10, "unit_price" => 9],
         ]);
         $payment->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],

@@ -92,7 +92,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->load("items", "charges");
+        $payment->load("items", "charges", "reservation");
         return view('dashboard/payment/view', ["payment" => $payment]);
     }
 

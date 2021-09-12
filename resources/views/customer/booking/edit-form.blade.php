@@ -33,11 +33,11 @@
 @endpush
 
 @section("title")
-    Hotel Booking | {{ $room->name }}
+    Hotel Booking | Edit Booking
 @endsection
 
 @section("title2")
-    {{ $room->name }}
+    Edit Booking
 @endsection
 
 @section("content")
@@ -46,13 +46,13 @@
         <div class="card">
             <div class="card-body">
                 @if (session('message'))
-                <div class="text-success text-center">{{ session('message') }}</div>
+                <div class="text-success text-center my-2">{{ session('message') }}</div>
 				@endif
                 <div class="row">
                     <div class="col-4">
                         <div class="accomodation_item mb-0">
                             <div class="hotel_img text-center border border-secondary">
-                                <img src="data:{{ $room->image_type }};base64,{{ base64_encode($room->room_image) }}" alt="Hotel PlaceHolder">
+                                <img src="data:{{ $booking->room->image_type }};base64,{{ base64_encode($booking->room->room_image) }}" alt="Hotel PlaceHolder">
                             </div>
                         </div>
                     </div>
@@ -61,24 +61,24 @@
                             <table class="table table-hover">
                                 <tr>
                                     <td width="30%">Room Type:</td>
-                                    <td>{{ $room->type->name }}</td>
+                                    <td>{{ $booking->room->type->name }}</td>
                                 </tr>
                                 <tr>
                                     <td>Price <small>/night</small>:</td>
-                                    <td>RM {{ number_format($room->price, 2) }}</td>
+                                    <td>RM {{ number_format($booking->room->price, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Single Bed:</td>
-                                    <td>{{ $room->single_bed }}</td>
+                                    <td>{{ $booking->room->single_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Double Bed:</td>
-                                    <td>{{ $room->double_bed }}</td>
+                                    <td>{{ $booking->room->double_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Facilities:</td>
                                     <td>
-                                        @forelse ($room->facilities->pluck("name")->toArray() as $facility)
+                                        @forelse ($booking->room->facilities->pluck("name")->toArray() as $facility)
                                             {{ $facility }}<br>
                                         @empty
                                             <span style="color: #F33">No Facilities for this room</span>
@@ -92,12 +92,13 @@
                 <hr>
                 <div class="card-title">Booking Form</div>
                 <hr>
-                <form action="{{ route("customer.booking.create", ["room" => $room]) }}" method="POST">
+                <form action="{{ route("customer.booking.edit", ["booking" => $booking]) }}" method="POST">
                     @csrf
+                    @method("PUT")
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Booking Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $booking->start_date->format("Y-m-d")) }}">
                             @error("startDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -106,7 +107,7 @@
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $booking->end_date->format("Y-m-d")) }}">
                             @error("endDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -126,7 +127,7 @@
                         <label class="h6">Booking Price: RM <span id="totalPrice">0.00</span></label>
                     </div>
                     <div class="form-group col-12 mt-4">
-                        <button type="submit" class="btn btn-primary btn-round w-100"><i class="icon-plus"></i> Book Now</button>
+                        <button type="submit" class="btn btn-primary btn-round w-100"><i class="icon-plus"></i> Update</button>
                     </div>
                 </form>
             </div>
@@ -178,7 +179,7 @@
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
             }
         }
-
+        var initialize = false;
         $("#calendar").fullCalendar({
             selectable: true,
             unselectAuto: false,
@@ -194,21 +195,24 @@
                 type: "POST",
                 data: {
                     "_token": "{{ csrf_token() }}",
-                    "roomID": {{ $room->id }}
+                    "roomID": "{{ $booking->room->id }}",
+                    "ignoreID": "{{ $booking->id }}"
                 }
             }],
             select: function(startDate, endDate) {
                 let dateNow = moment().startOf('day');
-                if (dateNow > startDate) {
+                console.log(initialize);
+                if (dateNow > startDate && initialize) {
                     updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
                 }
-                else if (dateNow > endDate) {
+                else if (dateNow > endDate && initialize) {
                     updateAndTriggerSwal("Invalid Date", "The ending date cannot be the passed date");
                 }
-                else if (startDate >= endDate) {
+                else if (startDate >= endDate && initialize) {
                     updateAndTriggerSwal("Invalid Date", "The starting date cannot be over than ending date")
                 }
                 else {
+                    initialize = true;
                     let events = $("#calendar").fullCalendar("clientEvents");
                     let isValid = true;
                     endDate.subtract(1, "days");
@@ -224,11 +228,13 @@
                         let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
                         endDate.subtract(1, "days");
                         $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
-                        $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
                         $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
-                        $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
+                        if (startDate >= dateNow && endDate >= dateNow) {
+                            $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
+                            $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
+                        }
                         $("#numDays")[0].innerHTML = numberOfDays;
-                        $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $room->price }}).toFixed(2);
+                        $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $booking->room->price }}).toFixed(2);
                     }
                     else {
                         updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
