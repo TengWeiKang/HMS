@@ -92,8 +92,15 @@ class Payment extends Model
         return $this->subPrice() * (100 - $this->discount) / 100;
     }
 
-
     public function totalPrices() {
         return $this->totalSubPrices() + $this->totalChargesPrice();
+    }
+
+    public function bookingPriceWithDiscount() {
+        return $this->bookingPrice() * (100 - $this->discount) / 100;
+    }
+
+    public function totalItemPricesWithDiscount() {
+        return $this->totalItemPrices() * (100 - $this->discount) / 100;
     }
 }

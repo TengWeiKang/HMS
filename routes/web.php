@@ -6,6 +6,7 @@ use App\Http\Controllers\Customer\HomeController;
 use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\ChangePasswordController;
 use App\Http\Controllers\Customer\RoomController as CustomerRoomController;
+use App\Http\Controllers\Dashboard\AnalysisController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
@@ -167,6 +168,13 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::put("/{roomType}/edit", [RoomTypeController::class, "update"]);
         Route::delete("/{roomType}", [RoomTypeController::class, "destroy"])->name("dashboard.room-type.destroy");
     });
+
+    Route::group(["prefix" => "analysis"], function() {
+        Route::get("/", [AnalysisController::class, "index"])->name("dashboard.analysis");
+        Route::get("/json", [AnalysisController::class, "json"])->name("dashboard.analysis.json");
+    });
+
+
 });
 
 Route::get('/register', [RegisterController::class, "index"])->name("register");

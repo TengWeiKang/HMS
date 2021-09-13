@@ -267,5 +267,39 @@ class DatabaseSeeder extends Seeder
             ["description" => "late charge", "price" => 20.5],
             ["description" => "another charges", "price" => 40],
         ]);
+
+
+        $reservation2 = Reservation::create([
+            "room_id" => 2,
+            "start_date" => Carbon::now()->today()->subDay(34),
+            "end_date" => Carbon::now()->today()->subDay(31),
+            "reservable_type" => Customer::class,
+            "reservable_id" => 1,
+            "check_in" => Carbon::now()->subDay(34),
+            "check_out" => Carbon::now()->subDay(31)
+        ]);
+        $reservation2->services()->attach([
+            ["service_id" => 2, "quantity" => 3],
+            ["service_id" => 3, "quantity" => 2],
+        ]);
+
+        $payment2 = Payment::create([
+            "reservation_id" => $reservation2->id,
+            "room_id" => $reservation2->room->id,
+            "room_name" => $reservation2->room->room_id . " - " . $reservation2->room->name,
+            "price_per_night" => $reservation2->room->price,
+            "start_date" => $reservation2->start_date,
+            "end_date" => $reservation2->end_date,
+            "payment_at" => Carbon::now()->subDays(31),
+            "discount" => 20,
+        ]);
+        $payment2->items()->createMany([
+            ["service_name" => "drink", "quantity" => 3, "unit_price" => 5],
+            ["service_name" => "food 2", "quantity" => 2, "unit_price" => 9],
+        ]);
+        $payment2->charges()->createMany([
+            ["description" => "late charge", "price" => 20.5],
+            ["description" => "another charges", "price" => 40],
+        ]);
     }
 }

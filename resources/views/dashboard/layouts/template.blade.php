@@ -19,6 +19,7 @@
                 </div>
             </div>
             @include('dashboard.layouts.footer')
+            @yield('right-sidebar')
         </div>
         @include('dashboard.layouts.scripts')
     </body>

@@ -38,3 +38,7 @@ table td.action-col {
 .select2-results__group {
     color: darkslategray;
 }
+
+.right-sidebar, .switcher-icon {
+    background: cornflowerblue;
+}
