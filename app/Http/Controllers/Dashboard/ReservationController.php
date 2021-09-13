@@ -8,6 +8,7 @@ use App\Models\Room;
 use App\Models\Customer;
 use App\Models\Guest;
 use App\Models\Service;
+use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -67,9 +68,9 @@ class ReservationController extends Controller
      */
     public function create()
     {
-        $rooms = Room::with("reservations")->get();
+        $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
         $customers = Customer::all();
-        return view('dashboard/reservation/create-form', ["rooms" => $rooms, "customers" => $customers]);
+        return view('dashboard/reservation/create-form', ["roomTypes" => $roomTypes, "customers" => $customers]);
     }
 
     /**
@@ -158,9 +159,9 @@ class ReservationController extends Controller
     public function edit(Reservation $reservation)
     {
         $reservation->load("room", "reservable");
-        $rooms = Room::with("reservations")->get();
+        $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
         $customers = Customer::all();
-        return view('dashboard/reservation/edit-form', ["rooms" => $rooms, "customers" => $customers, "reservation" => $reservation]);
+        return view('dashboard/reservation/edit-form', ["roomTypes" => $roomTypes, "customers" => $customers, "reservation" => $reservation]);
     }
 
     /**

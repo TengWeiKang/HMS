@@ -50,8 +50,15 @@
                     <div class="form-group row mx-2">
                         <label for="roomId">Room</label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
-                            @foreach ($rooms as $room)
-                                <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                            @foreach ($roomTypes as $roomType)
+                                @if ($roomType->rooms->count() == 0)
+                                    @continue
+                                @endif
+                                <optgroup label="{{ $roomType->name }}">
+                                @foreach($roomType->rooms as $room)
+                                    <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                @endforeach
+                                </optgroup>
                             @endforeach
                         </select>
                     </div>

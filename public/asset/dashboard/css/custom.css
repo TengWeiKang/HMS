@@ -34,3 +34,7 @@ table td.action-col {
     text-transform: initial;
     font-size: inherit;
 }
+
+.select2-results__group {
+    color: darkslategray;
+}
