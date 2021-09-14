@@ -393,7 +393,7 @@
                         fontColor: "white",
                     },
                     tooltips: {
-                        displayColors:false,
+                        displayColors: false,
                         callbacks: {
                             label: function (context, constant) {
                                 return constant.datasets[context.datasetIndex].label + ": RM " + context.yLabel.toFixed(2);
@@ -407,13 +407,16 @@
                                 fontColor: '#ddd'
                             },
                             gridLines: {
-                                display: true ,
+                                display: true,
                                 color: "rgba(221, 221, 221, 0.08)"
                             },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Month',
+                                fontColor: "white",
+                            }
                         }],
                         yAxes: [{
-                            title: "Revenue",
-                            display: true,
                             ticks: {
                                 beginAtZero:true,
                                 fontColor: '#ddd',
@@ -422,9 +425,14 @@
                                 }
                             },
                             gridLines: {
-                                display: true ,
+                                display: true,
                                 color: "rgba(221, 221, 221, 0.08)"
                             },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Revenue',
+                                fontColor: "white",
+                            }
                         }]
                     }
                 }

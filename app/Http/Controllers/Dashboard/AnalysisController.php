@@ -41,7 +41,7 @@ class AnalysisController extends Controller
         });
 
         foreach ($bookingRevenues as $key => $value) {
-            $month = (int) explode("-", $key)[1];
+            $month = (int) explode("-", $key)[1] - 1;
             $json["bookings"][$month] = $value->sum(function ($payment) {
                 return $payment->bookingPriceWithDiscount();
             });
