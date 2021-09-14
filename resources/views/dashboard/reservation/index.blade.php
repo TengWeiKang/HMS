@@ -36,8 +36,12 @@
                             @foreach ($reservations as $reservation)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $reservation->room->room_id }}</td>
-                                    <td>{{ $reservation->reservable->username }}</td>
+                                    <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a></td>
+                                    @if ($reservation->reservable instanceof App\Models\Customer)
+                                        <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->reservable]) }}">{{ $reservation->reservable->username }}</td>
+                                    @else
+                                        <td>{{ $reservation->reservable->username }}</td>
+                                    @endif
                                     <td>{{ $reservation->reservable->phone }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>

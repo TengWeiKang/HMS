@@ -36,7 +36,11 @@
                                         </tr>
                                         <tr>
                                             <td>Customer:</td>
-                                            <td>{{ $reservation->reservable->username }}</td>
+                                            @if ($reservation->reservable instanceof App\Models\Customer)
+                                                <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->reservable]) }}">{{ $reservation->reservable->username }}</td>
+                                            @else
+                                                <td>{{ $reservation->reservable->username }}</td>
+                                            @endif
                                         </tr>
                                         <tr>
                                             <td>Contact Number:</td>

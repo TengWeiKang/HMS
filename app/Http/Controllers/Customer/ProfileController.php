@@ -43,8 +43,8 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
         $this->validate($request, [
-            'username' => 'required|max:255|unique:customer,username|unique:employee,username,'.$user->id,
-            'email' => 'required|email|max:255|unique:customer,email|unique:employee,email,'.$user->id,
+            'username' => 'required|max:255|unique:customer,username,'.$user->id.'|unique:employee,username,'.$user->id,
+            'email' => 'required|email|max:255|unique:customer,email,'.$user->id.'|unique:employee,email,'.$user->id,
             'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14'
         ]);
         $user->username = $request->username;

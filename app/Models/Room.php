@@ -124,14 +124,14 @@ class Room extends Model
     public function departure() {
         $today = Carbon::today();
         return $this->reservations->filter(function ($value, $key) use ($today) {
-            return !is_null($value->check_in) && is_null($value->check_out) && $value->end_date->addDays() == $today;
+            return !is_null($value->check_in) && is_null($value->check_out) && $value->end_date->addDays() == $today && $value->status == 1;
         });
     }
 
     public function arrival() {
         $today = Carbon::today();
         return $this->reservations->filter(function ($value, $key) use ($today) {
-            return is_null($value->check_in) && $value->start_date == $today;
+            return is_null($value->check_in) && $value->start_date == $today && $value->status == 1;
         });
     }
 }

@@ -150,6 +150,7 @@ class BookingController extends Controller
      */
     public function edit(Reservation $booking)
     {
+        $booking->load("room", "room.type", "room.facilities");
         return view("customer.booking.edit-form", ["booking" => $booking]);
     }
 

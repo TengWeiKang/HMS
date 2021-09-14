@@ -47,7 +47,7 @@
                     </div>
                 </div>
                 <div class="tab-pane" id="rooms">
-                    <h5 class="mb-3 font-weight-bold">Information</h5>
+                    <h5 class="mb-3 font-weight-bold">Rooms</h5>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">

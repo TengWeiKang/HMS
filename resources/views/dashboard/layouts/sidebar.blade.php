@@ -13,6 +13,13 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span style="margin-left: 10px">Dashboard</span>
             </a>
         </li>
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        <li>
+            <a href="{{ route("dashboard.reservation") }}">
+                <i class="fa fa-line-chart"></i><span style="margin-left: 9px">Statistic</span>
+            </a>
+        </li>
+        @endif
         <li>
             <a href="{{ route("dashboard.housekeeper") }}">
                 <i class="zmdi zmdi-info"></i> <span style="margin-left: 9px">Today</span>
@@ -71,6 +78,13 @@
         <li>
             <a href="{{ route("dashboard.service") }}">
                 <i class="zmdi zmdi-drink"></i><span style="margin-left: 17px">Room Services</span>
+            </a>
+        </li>
+        @endif
+        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        <li>
+            <a href="{{ route("dashboard.service") }}">
+                <i class="zmdi zmdi-accounts"></i><span style="margin-left: 17px">Customer</span>
             </a>
         </li>
         @endif

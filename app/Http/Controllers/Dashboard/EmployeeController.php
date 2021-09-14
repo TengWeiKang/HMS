@@ -106,8 +106,8 @@ class EmployeeController extends Controller
     public function update(Request $request, Employee $employee)
     {
         $this->validate($request, [
-            'username' => 'required|max:255|unique:customer,username|unique:employee,username,'.$employee->id,
-            'email' => 'required|email|max:255|unique:customer,email|unique:employee,email,'.$employee->id,
+            'username' => 'required|max:255|unique:customer,username'.$employee->id.'|unique:employee,username,'.$employee->id,
+            'email' => 'required|email|max:255|unique:customer,email'.$employee->id.'|unique:employee,email,'.$employee->id,
             'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14',
             'role' => 'required',
         ]);

@@ -48,6 +48,7 @@ class ReservationFactory extends Factory
             "end_date" => $endDate,
             "check_in" => ($startDate < $today) ? $startDate : null,
             "check_out" => ($endDate < $today) ? $endDate : null,
+            "created_at" => $startDate,
         ];
     }
 }

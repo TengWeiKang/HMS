@@ -43,12 +43,12 @@
                                 <td>{{ $room->room_id }}</td>
                             </tr>
                             <tr>
-                                <td>Room Type:</td>
-                                <td>{{ $room->type->name }}</td>
-                            </tr>
-                            <tr>
                                 <td>Room Name:</td>
                                 <td>{{ $room->name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Room Type:</td>
+                                <td>{{ $room->type->name }}</td>
                             </tr>
                             <tr>
                                 <td>Price:</td>

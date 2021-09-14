@@ -27,7 +27,7 @@ class RoomFactory extends Factory
             "price" => $this->faker->randomFloat(2, 0, 100),
             "single_bed" => $this->faker->randomDigit(),
             "double_bed" => $this->faker->randomDigit(),
-            "room_image" => file_get_contents($this->faker->image()),
+            "room_image" => file_get_contents($this->faker->image(null, 300, 300)),
             "image_type" => "image/jpg"
         ];
     }

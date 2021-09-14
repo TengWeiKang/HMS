@@ -28,6 +28,7 @@
                                     <th>Room ID</th>
                                     <th>Arrival Date</th>
                                     <th>Departure Date</th>
+                                    <th>Night(s)</th>
                                     <th>Status</th>
                                     <th>Total Price</th>
                                     <th class="text-center">Action</th>
@@ -40,6 +41,7 @@
                                     <td>{{ $booking->room->room_id }}</td>
                                     <td>{{ $booking->start_date->format("d M Y") }}</td>
                                     <td>{{ $booking->end_date->format("d M Y") }}</td>
+                                    <td>{{ $booking->dateDifference() }}</td>
                                     <td class="font-weight-lighter" style="color: {{ $booking->statusColor() }}">{{ $booking->statusName() }}</td>
                                     <td>RM {{ number_format($booking->finalPrices(), 2) }}</td>
                                     <td class="text-center action-col">

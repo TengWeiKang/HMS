@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\Facility;
 use App\Models\PaymentCharge;
 use App\Models\Reservation;
 use App\Models\Room;
@@ -62,12 +63,18 @@ class RandomSeeder extends Seeder
             "password" => Hash::make("123456789")
         ]);
 
+        $facilities = Facility::factory()->count(10)->create();
+
         Customer::factory()->count(5)->create();
 
         Service::factory()->count(5)->create();
 
-        RoomType::factory()->times($faker->numberBetween(6, 8))->create()->each(function ($roomType) use ($faker) {
+        RoomType::factory()->times($faker->numberBetween(6, 8))->create()->each(function ($roomType) use ($faker, $facilities) {
             $roomType->rooms()->saveMany(Room::factory()->times($faker->numberBetween(0, 5))->make());
+            $roomType->rooms->each(function ($room) use ($faker, $facilities) {
+                $selectedFacilities = $facilities->random($faker->numberBetween(0, $facilities->count()))->pluck("id");
+                $room->facilities()->sync($selectedFacilities);
+            });
         });
         $services = Service::all();
         Reservation::factory()->count(400)->create()->each(function($reservation) use ($faker, $services) {

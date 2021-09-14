@@ -61,12 +61,12 @@
                                         <td>{{ $room->room_id }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Room Type:</td>
-                                        <td>{{ $room->type->name }}</td>
-                                    </tr>
-                                    <tr>
                                         <td>Room Name:</td>
                                         <td>{{ $room->name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Room Type:</td>
+                                        <td><a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a></td>
                                     </tr>
                                     <tr>
                                         <td>Price:</td>
@@ -132,7 +132,11 @@
                                         @if ($room->reservations->count())
                                             @foreach ($room->reservations as $history)
                                                 <tr>
-                                                    <td>{{ $history->reservable->username}}</td>
+                                                    @if ($history->reservable instanceof App\Models\Customer)
+                                                        <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->reservable) }}">{{ $history->reservable->username}}</a></td>
+                                                    @else
+                                                        <td>{{ $history->reservable->username}}</td>
+                                                    @endif
                                                     <td>{{ $history->start_date->format("d F Y") }}</td>
                                                     <td>{{ $history->end_date->format("d F Y") }}</td>
                                                     <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>

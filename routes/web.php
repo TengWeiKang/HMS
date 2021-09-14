@@ -7,6 +7,7 @@ use App\Http\Controllers\Customer\ProfileController;
 use App\Http\Controllers\Customer\ChangePasswordController;
 use App\Http\Controllers\Customer\RoomController as CustomerRoomController;
 use App\Http\Controllers\Dashboard\AnalysisController;
+use App\Http\Controllers\Dashboard\CustomerController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\EmployeeController;
 use App\Http\Controllers\Dashboard\EmployeeProfileController;
@@ -122,7 +123,6 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/", [ServiceController::class, "index"])->name("dashboard.service");
         Route::get("/create", [ServiceController::class, "create"])->name("dashboard.service.create");
         Route::post("/create", [ServiceController::class, "store"]);
-        // Route::get("/{service}", [ServiceController::class, "show"])->name("dashboard.service.view");
         Route::get("/{service}/edit", [ServiceController::class, "edit"])->name("dashboard.service.edit");
         Route::put("/{service}/edit", [ServiceController::class, "update"]);
         Route::delete("/{service}", [ServiceController::class, "destroy"])->name("dashboard.service.destroy");
@@ -158,7 +158,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::get("/", [HousekeeperController::class, "index"])->name("dashboard.housekeeper");
     });
 
-    //room type management on current day
+    //room type management
     Route::group(["prefix" => "room-type"], function() {
         Route::get("/", [RoomTypeController::class, "index"])->name("dashboard.room-type");
         Route::get("/create", [RoomTypeController::class, "create"])->name("dashboard.room-type.create");
@@ -169,12 +169,17 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::delete("/{roomType}", [RoomTypeController::class, "destroy"])->name("dashboard.room-type.destroy");
     });
 
+    //customer management
+    Route::group(["prefix" => "customer"], function() {
+        Route::get("/", [CustomerController::class, "index"])->name("dashboard.customer");
+        Route::get("/{customer}", [CustomerController::class, "show"])->name("dashboard.customer.view");
+    });
+
+    //data analysis controller
     Route::group(["prefix" => "analysis"], function() {
         Route::get("/", [AnalysisController::class, "index"])->name("dashboard.analysis");
         Route::get("/json", [AnalysisController::class, "json"])->name("dashboard.analysis.json");
     });
-
-
 });
 
 Route::get('/register', [RegisterController::class, "index"])->name("register");

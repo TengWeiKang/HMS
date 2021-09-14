@@ -72,8 +72,8 @@ class DashboardController extends Controller
     public function reservation_date_update(Request $request) {
         $reservation = Reservation::findOrFail($request->id);
         if ($request->has("room_id")) {
-            if ($reservation->isReserved() == 4) {
-                $room = Room::findOrFail($request->room_id);
+            $room = Room::findOrFail($request->room_id);
+            if ($room->isReserved() == 4) {
                 $room->status = 0;
                 $room->save();
             }

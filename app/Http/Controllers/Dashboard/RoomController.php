@@ -24,7 +24,7 @@ class RoomController extends Controller
      */
     public function index()
     {
-        $rooms = Room::with("housekeeper", "reservations")->get();
+        $rooms = Room::with("type", "housekeeper", "reservations")->get();
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/index', ["rooms" => $rooms, "housekeepers" => $housekeepers]);
     }

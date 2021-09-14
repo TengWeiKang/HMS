@@ -50,10 +50,12 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <select class="wide" id="roomType">
-                                                <option data-display="Room Type">Room Type</option>
-                                                @foreach ($roomTypes as $roomType)
+                                                <option data-display="Room Type" value="">All</option>
+                                                <optgroup label="Room Type">
+                                                    @foreach ($roomTypes as $roomType)
                                                     <option value="{{ $roomType->id }}">{{ $roomType->name }}</option>
-                                                @endforeach
+                                                    @endforeach
+                                                </optgroup>
                                             </select>
                                         </div>
                                     </div>

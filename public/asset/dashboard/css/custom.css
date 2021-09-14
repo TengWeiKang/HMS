@@ -42,3 +42,11 @@ table td.action-col {
 .right-sidebar, .switcher-icon {
     background: cornflowerblue;
 }
+.dataTables_length select {
+    color: white;
+}
+
+a.hyperlink {
+    color:blue;
+    text-decoration: underline;;
+}

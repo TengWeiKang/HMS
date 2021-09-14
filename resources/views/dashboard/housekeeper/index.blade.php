@@ -46,7 +46,7 @@
                                     @foreach ($turnovers as $room)
                                         <tr>
                                             <td>{{ $loop->index + 1 }}</td>
-                                            <td><a href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
+                                            <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
                                             <td>{{ $room->name }}</td>
                                             <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                             <td style="white-space:break-spaces">{!! $room->note !!}</td>
@@ -95,7 +95,7 @@
                                     @foreach ($departures as $room)
                                         <tr>
                                             <td>{{ $loop->index + 1 }}</td>
-                                            <td><a href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
+                                            <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
                                             <td>{{ $room->name }}</td>
                                             <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                             <td style="white-space:break-spaces">{!! $room->note !!}</td>
@@ -144,7 +144,7 @@
                                     @foreach ($arrivals as $room)
                                         <tr>
                                             <td>{{ $loop->index + 1 }}</td>
-                                            <td><a href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
+                                            <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
                                             <td>{{ $room->name }}</td>
                                             <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                             <td style="white-space:break-spaces">{!! $room->note !!}</td>
