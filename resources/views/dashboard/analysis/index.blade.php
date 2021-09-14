@@ -254,24 +254,20 @@
     <div class="right-sidebar-content">
         <p class="mb-0">Year</p>
         <hr>
-        <div class="row">
-            <div class="col-12">
-                <div class="form-group">
-                    <select class="form-control" name="year" id="year">
-                        <option value="{{ $yearNow }}" selected>{{ $yearNow }}</option>
-                        @foreach ($years as $year)
-                            @if ($year == $yearNow)
-                                @continue
-                            @endif
-                            <option value="{{ $year }}">{{ $year }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
+        <div class="form-group">
+            <select class="form-control" name="year" id="year">
+                <option value="{{ $yearNow }}" selected>{{ $yearNow }}</option>
+                @foreach ($years as $year)
+                    @if ($year == $yearNow)
+                        @continue
+                    @endif
+                    <option value="{{ $year }}">{{ $year }}</option>
+                @endforeach
+            </select>
         </div>
+
         <p class="mb-0 mt-5">Month</p>
         <hr>
-
         <div class="form-group">
             <select class="form-control w-100" name="month" id="month">
                 <option value="01" @if ($monthNow == 1) selected @endif>January</option>
@@ -288,6 +284,17 @@
                 <option value="12" @if ($monthNow == 12) selected @endif>December</option>
             </select>
         </div>
+
+        <p class="mb-0 mt-5">Room Type</p>
+        <hr>
+        <div class="form-group">
+            <select class="form-control w-100" name="roomType" id="roomType">
+                <option value="">All</option>
+                @foreach ($roomTypes as $roomType)
+                    <option value="{{ $roomType->id }}">{{ $roomType->name }}</option>
+                @endforeach
+            </select>
+        </div>
     </div>
 </div>
 
@@ -298,7 +305,7 @@
 {{-- <script src="{{ asset("dashboard/js/index.js") }}"></script> --}}
 <script>
     $(document).ready(function () {
-        $("#year, #month").select2();
+        $("#year, #month, #roomType").select2();
         $('.select2.select2-container').addClass('form-control');
         const MONTH = {
             1: "January",
@@ -322,7 +329,7 @@
             return accumulator + value;
         }
 
-        function generateRevenueYearChart(info, year) {
+        function generateRevenueYearChart(info, year, roomType) {
             let bookings = info["bookings"];
             let services = info["services"];
             let charges = info["charges"];
@@ -389,7 +396,7 @@
                     },
                     title: {
                         display: true,
-                        text: "Revenue Chart in Year " + year,
+                        text: "Revenue Chart in Year " + year + " (" + roomType + ")",
                         fontColor: "white",
                     },
                     tooltips: {
@@ -439,7 +446,7 @@
             });
         }
 
-        function generateRevenueMonthChart(info, year, month) {
+        function generateRevenueMonthChart(info, year, month, roomType) {
             let revenueMonthCanvas = document.getElementById("revenueMonthChart").getContext("2d");
             revenueMonthChart = new Chart(revenueMonthCanvas, {
                 type: 'pie',
@@ -467,7 +474,7 @@
                     },
                     title: {
                         display: true,
-                        text: "Revenue of " + MONTH[month] + " " + year,
+                        text: "Revenue of " + MONTH[month] + " " + year + " (" + roomType + ")",
                         fontColor: "white",
                     },
                     tooltips: {
@@ -490,7 +497,7 @@
             });
         }
 
-        function updateRevenueYearChart(info, year) {
+        function updateRevenueYearChart(info, year, roomType) {
             let bookings = info["bookings"];
             let services = info["services"];
             let charges = info["charges"];
@@ -507,45 +514,47 @@
             revenueYearChart.data.datasets[1].data = bookings;
             revenueYearChart.data.datasets[2].data = services;
             revenueYearChart.data.datasets[3].data = charges;
-            revenueYearChart.options.title.text = "Revenue Chart in Year " + year;
+            revenueYearChart.options.title.text = "Revenue Chart in Year " + year + " (" + roomType + ")";
             revenueYearChart.update();
         }
 
-        function updateRevenueMonthChart(info, year, month) {
-            console.log(revenueMonthChart);
+        function updateRevenueMonthChart(info, year, month, roomType) {
             revenueMonthChart.data.datasets[0].data = info;
-            revenueMonthChart.options.title.text = "Revenue of " + MONTH[month] + " " + year;
+            revenueMonthChart.options.title.text = "Revenue of " + MONTH[month] + " " + year + " (" + roomType + ")";
             revenueMonthChart.update();
         }
 
         function dateModified(isInitialize) {
             let year = $("#year").val();
             let month = $("#month").val();
+            let roomTypeID = $("#roomType").val();
+            let roomType = $("#roomType").children("option:selected").html();
+            roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
                 type: "GET",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
                     "year": year,
-                    "month": month
+                    "month": month,
+                    "roomType": roomTypeID
                 },
                 success: function (response) {
                     year = parseInt(year);
                     month = parseInt(month);
                     if (isInitialize) {
-                        generateRevenueYearChart(response["revenueYearChart"], year);
-                        generateRevenueMonthChart(response["revenueMonthChart"], year, month);
+                        generateRevenueYearChart(response["revenueYearChart"], year, roomType);
+                        generateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                     }
                     else {
-                        updateRevenueYearChart(response["revenueYearChart"], year)
-                        updateRevenueMonthChart(response["revenueMonthChart"], year, month)
+                        updateRevenueYearChart(response["revenueYearChart"], year, roomType);
+                        updateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                     }
-                    response = undefined;
                 }
             });
         }
 
-        $("#year, #month").on("change", function() {
+        $("#year, #month, #roomType").on("change", function() {
             dateModified(false);
         });
         dateModified(true);

@@ -15,7 +15,7 @@
         </li>
         @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
-            <a href="{{ route("dashboard.reservation") }}">
+            <a href="{{ route("dashboard.analysis") }}">
                 <i class="fa fa-line-chart"></i><span style="margin-left: 9px">Statistic</span>
             </a>
         </li>

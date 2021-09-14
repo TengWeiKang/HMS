@@ -49,9 +49,16 @@ class DashboardController extends Controller
             $end = new Carbon(explode("T", $request->end)[0]);
             $end->subDay();
             $reservations = Reservation::with("reservable", "payment")
-                ->where("end_date", ">=", $start)
-                ->where("start_date", "<=", $end)
-                ->where("status", 1)->get();
+                ->where("status", 1)
+                ->where(function ($query) use ($start, $end) {
+                $query->where("start_date", "<=", $start)
+                    ->where("end_date", ">=", $start)
+                    ->orWhere("start_date", "<=", $end)
+                    ->where("end_date", ">=", $end)
+                    ->orWhere("start_date", ">=", $start)
+                    ->where("end_date", "<=", $end);
+                }
+            )->get();
             $isHousekeeper = Auth::guard("employee")->user()->isHousekeeper();
             foreach ($reservations as $reservation) {
                 $json[] = [

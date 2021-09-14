@@ -61,11 +61,6 @@
                 <div id="calendar"></div>
             </div>
         </div>
-        <div class="row text-center mt-4" id="emptyRoom" style="display: none">
-            <div class="col-lg-12">
-                <h6 class="text-center">No Room is detected. <a href="{{ route("dashboard.room.create") }}" style="color:blue; text-decoration: underline">Click Here to Add</a></h6>
-            </div>
-        </div>
     </div>
 </div>
 <!-- Confirmation Create Reservation Modal -->
@@ -360,11 +355,6 @@
                     "return": "events"
                 }
             }],
-            eventSourceSuccess: function(rawEvents, xhr) {
-                if (rawEvents.length == 0) {
-                    $("#emptyRoom").removeAttr("style");
-                }
-            },
             loading: function(isLoading) {
                 let loadingSpan = $("#loading");
                 if (isLoading) {

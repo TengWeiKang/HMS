@@ -23,7 +23,7 @@ class PaymentChargeFactory extends Factory
     {
         return [
             "description" => $this->faker->word(3),
-            "price" => $this->faker->randomFloat(2, 1, 50),
+            "price" => $this->faker->randomFloat(0, 1, 50),
         ];
     }
 }

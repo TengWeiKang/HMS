@@ -85,7 +85,7 @@
                                         </tr>
                                         @endif
                                         <tr>
-                                            <td>Total Payment:</td>
+                                            <td>Total Payment (Expected):</td>
                                             <td>RM {{ number_format($reservation->finalPrices(), 2) }}
                                                 @if ($reservation->payment != null)
                                                 <a class="pl-3" style="color:blue; text-decoration: underline" href="{{ route("dashboard.payment.view", ["payment" => $reservation->payment]) }}">View Payment</a>
