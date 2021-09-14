@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\RoomType;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -44,11 +45,15 @@ class DashboardController extends Controller
             }
         }
         else if ($return === "events"){
-            $reservations = Reservation::with("reservable", "payment")->get();
+            $start = new Carbon(explode("T", $request->start)[0]);
+            $end = new Carbon(explode("T", $request->end)[0]);
+            $end->subDay();
+            $reservations = Reservation::with("reservable", "payment")
+                ->where("end_date", ">=", $start)
+                ->where("start_date", "<=", $end)
+                ->where("status", 1)->get();
             $isHousekeeper = Auth::guard("employee")->user()->isHousekeeper();
             foreach ($reservations as $reservation) {
-                if ($reservation->status() == 3)
-                    continue;
                 $json[] = [
                     "id" => $reservation->id,
                     "resourceId" => $reservation->room_id,

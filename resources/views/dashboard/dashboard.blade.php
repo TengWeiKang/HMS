@@ -311,6 +311,7 @@
             lazyFetching: false,
             selectable: true,
             resourceOrder: 'title',
+            refetchResourcesOnNavigate: true,
             slotLabelFormat: [
                 {day: 'numeric', month: 'numeric'},
             ],
@@ -342,7 +343,7 @@
                     dateIncrement: { months: 6 }
                 },
             },
-            // resourceAreaHeaderContent: 'Rooms',
+            resourceAreaHeaderContent: 'Rooms',
             resources: {
                 url: "{{ route("dashboard.json") }}",
                 method: "POST",

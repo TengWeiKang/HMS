@@ -84,7 +84,7 @@
         @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.service") }}">
-                <i class="zmdi zmdi-accounts"></i><span style="margin-left: 17px">Customer</span>
+                <i class="zmdi zmdi-accounts"></i><span style="margin-left: 15px">Customers</span>
             </a>
         </li>
         @endif
