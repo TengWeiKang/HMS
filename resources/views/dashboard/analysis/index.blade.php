@@ -15,7 +15,7 @@
 @endpush
 
 @section("title")
-
+    Dashboard | Statistics
 @endsection
 
 @section("content")
@@ -302,7 +302,8 @@
 
 @push("script")
 <script src="{{ asset("dashboard/plugins/Chart.js/Chart.min.js") }}"></script>
-{{-- <script src="{{ asset("dashboard/js/index.js") }}"></script> --}}
+<script src="{{ asset("dashboard/plugins/Chart.js/datalabels.min.js") }}"></script>
+
 <script>
     $(document).ready(function () {
         $("#year, #month, #roomType").select2();
@@ -441,6 +442,11 @@
                                 fontColor: "white",
                             }
                         }]
+                    },
+                    plugins: {
+                        datalabels: {
+                            display: false
+                        }
                     }
                 }
             });
@@ -493,6 +499,23 @@
                             }
                         }
                     },
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                let total = dataArr.reduce(sum, 0);
+                                if (total == 0)
+                                    return "No Data Available";
+                                let percentage = (value * 100 / total).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: 'darkgray',
+                            font: {
+                                size: 14,
+                                weight: "bolder",
+                            }
+                        }
+                    }
                 }
             });
         }
