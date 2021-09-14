@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Models\Guest;
+use App\Models\Service;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class GuestFactory extends Factory
+class ServiceFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Guest::class;
+    protected $model = Service::class;
 
     /**
      * Define the model's default state.
@@ -22,8 +22,8 @@ class GuestFactory extends Factory
     public function definition()
     {
         return [
-            "username" => $this->faker->name(),
-            "phone" => $this->faker->regexify("/^(\+6)?01[0-46-9]-[0-9]{7,8}$/"),
+            "name" => $this->faker->unique()->word(),
+            "price" => $this->faker->randomFloat(2, 1, 10),
         ];
     }
 }

@@ -21,8 +21,6 @@ class Payment extends Model
         'reservation_id',
         'room_id',
         'room_name',
-        'reservable_type',
-        'reservable_id',
         'price_per_night',
         'start_date',
         'end_date',
