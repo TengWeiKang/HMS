@@ -11,6 +11,10 @@
         position: relative;
         height: 300px;
     }
+    .roomStatusChart {
+        position: relative;
+        height: 300px;
+    }
 </style>
 @endpush
 
@@ -22,7 +26,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <div class="card">
-            <div class="card-header">Revenue (Year)</div>
+            <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Room Type</span></div>
             <div class="card-body">
                 <div class="revenueYearChart">
                     <canvas id="revenueYearChart"></canvas>
@@ -61,7 +65,7 @@
 <div class="row mt-3">
     <div class="col-6">
         <div class="card">
-            <div class="card-header">Revenue (Month)</div>
+            <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
             <div class="card-body">
                 <div class="revenueMonthChart">
                     <canvas id="revenueMonthChart"></canvas>
@@ -69,175 +73,17 @@
             </div>
         </div>
     </div>
-
-    <div class="col-12 col-lg-4 col-xl-4">
+    <div class="col-6">
         <div class="card">
-            <div class="card-header">Weekly sales
-                <div class="card-action">
-                    <div class="dropdown">
-                        <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                            <i class="icon-options"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="javascript:void();">Action</a>
-                            <a class="dropdown-item" href="javascript:void();">Another action</a>
-                            <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="card-header"><span class="mr-2">Room Status</span><span class="badge badge-primary mx-1">Room Type</span></div>
             <div class="card-body">
-                <div class="chart-container-2">
-                    <canvas id="chart2"></canvas>
+                <div class="roomStatusChart">
+                    <canvas id="roomStatusChart"></canvas>
                 </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-items-center">
-                    <tbody>
-                        <tr>
-                            <td><i class="fa fa-circle text-white mr-2"></i> Direct</td>
-                            <td>$5856</td>
-                            <td>+55%</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-circle text-light-1 mr-2"></i>Affiliate</td>
-                            <td>$2602</td>
-                            <td>+25%</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-circle text-light-2 mr-2"></i>E-mail</td>
-                            <td>$1802</td>
-                            <td>+15%</td>
-                        </tr>
-                        <tr>
-                            <td><i class="fa fa-circle text-light-3 mr-2"></i>Other</td>
-                            <td>$1105</td>
-                            <td>+5%</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
 </div>
-<div class="row">
-    <div class="col-12 col-lg-12">
-        <div class="card">
-            <div class="card-header">Recent Order Tables
-                <div class="card-action">
-                    <div class="dropdown">
-                        <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                            <i class="icon-options"></i>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="javascript:void();">Action</a>
-                            <a class="dropdown-item" href="javascript:void();">Another action</a>
-                            <a class="dropdown-item" href="javascript:void();">Something else here</a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="javascript:void();">Separated link</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="table align-items-center table-flush table-borderless">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Photo</th>
-                            <th>Product ID</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Shipping</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Iphone 5</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405822</td>
-                            <td>$ 1250.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 90%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Earphone GL</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405820</td>
-                            <td>$ 1500.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 60%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>HD Hand Camera</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405830</td>
-                            <td>$ 1400.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 70%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Clasic Shoes</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405825</td>
-                            <td>$ 1200.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 100%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Hand Watch</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405840</td>
-                            <td>$ 1800.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 40%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Clasic Shoes</td>
-                            <td><img src="https://via.placeholder.com/110x110" class="product-img" alt="product img"></td>
-                            <td>#9405825</td>
-                            <td>$ 1200.00</td>
-                            <td>03 Aug 2017</td>
-                            <td>
-                                <div class="progress shadow" style="height: 3px;">
-                                    <div class="progress-bar" role="progressbar" style="width: 100%"></div>
-                                </div>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div><!--End Row-->
 @endsection
 
 @php
@@ -256,12 +102,8 @@
         <hr>
         <div class="form-group">
             <select class="form-control" name="year" id="year">
-                <option value="{{ $yearNow }}" selected>{{ $yearNow }}</option>
                 @foreach ($years as $year)
-                    @if ($year == $yearNow)
-                        @continue
-                    @endif
-                    <option value="{{ $year }}">{{ $year }}</option>
+                    <option value="{{ $year }}" @if ($year == $yearNow) selected @endif>{{ $year }}</option>
                 @endforeach
             </select>
         </div>
@@ -325,6 +167,7 @@
 
         var revenueYearChart = null;
         var revenueMonthChart = null;
+        var roomStatusChart = null;
 
         function sum(accumulator, value) {
             return accumulator + value;
@@ -506,6 +349,79 @@
                                 let total = dataArr.reduce(sum, 0);
                                 if (total == 0)
                                     return "No Data Available";
+                                if (value == 0)
+                                    return "";
+                                let percentage = (value * 100 / total).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: 'darkgray',
+                            font: {
+                                size: 14,
+                                weight: "bolder",
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateRoomStatusChart(info, roomType) {
+            let roomStatusCanvas = document.getElementById("roomStatusChart").getContext("2d");
+            roomStatusChart = new Chart(roomStatusCanvas, {
+                type: 'pie',
+                data: {
+                    labels: ["Available", "Dirty", "Repairing", "Reserved"],
+                    datasets: [{
+                        backgroundColor: [
+                            "#0f0",
+                            "#282828",
+                            "#ff8484",
+                            "orange"
+                        ],
+                        data: info
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: true,
+                        position: "right",
+                        labels: {
+                            fontColor: '#ddd',
+                            boxWidth: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Room Status (" + roomType + ")",
+                        fontColor: "white",
+                    },
+                    tooltips: {
+                        displayColors:false,
+                        callbacks: {
+                            label: function (context, constant) {
+                                let index = context.index;
+                                return constant.labels[index] + ": ";
+                            },
+                            afterLabel: function (context, constant) {
+                                let datasetIndex = context.datasetIndex;
+                                let index = context.index;
+                                let amount = constant.datasets[datasetIndex].data[index];
+                                let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
+                                return amount + " room" + (amount == 1 ? "" : "s") + " (" + (amount / total * 100).toFixed(2) + "%)";
+                            }
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            formatter: (value, ctx) => {
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                let total = dataArr.reduce(sum, 0);
+                                if (total == 0)
+                                    return "No Data Available";
+                                if (value == 0)
+                                    return "";
                                 let percentage = (value * 100 / total).toFixed(2) + "%";
                                 return percentage;
                             },
@@ -547,6 +463,12 @@
             revenueMonthChart.update();
         }
 
+        function updateRoomStatusChart(info, roomType) {
+            roomStatusChart.data.datasets[0].data = info;
+            roomStatusChart.options.title.text = "Room Status (" + roomType + ")";
+            roomStatusChart.update();
+        }
+
         function dateModified(isInitialize) {
             let year = $("#year").val();
             let month = $("#month").val();
@@ -568,10 +490,12 @@
                     if (isInitialize) {
                         generateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         generateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
+                        generateRoomStatusChart(response["roomStatusChart"], roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
+                        updateRoomStatusChart(response["roomStatusChart"], roomType);
                     }
                 }
             });
