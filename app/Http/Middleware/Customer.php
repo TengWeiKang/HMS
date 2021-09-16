@@ -17,7 +17,8 @@ class Customer
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::guard()->check());
+        if (Auth::check())
             return $next($request);
+        return abort(404);
     }
 }

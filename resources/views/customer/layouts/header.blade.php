@@ -16,8 +16,8 @@
                     <li class="nav-item submenu dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Bookings</a>
                         <ul class="dropdown-menu">
-                            <li class="nav-item"><a class="nav-link" href="{{ route("customer.booking") }}">Current Progress</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ route("customer.booking.history") }}">History</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route("customer.booking") }}">View Ongoing Booking</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ route("customer.booking.history") }}">View Booking History</a></li>
                         </ul>
                     </li>
                     @endauth

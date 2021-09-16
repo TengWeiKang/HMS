@@ -33,7 +33,7 @@
     <div class="col-lg-9">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">User Profile</div>
+                <div class="card-title">Room Information</div>
                 <hr>
                 <div class="row">
                     <div class="table-responsive">

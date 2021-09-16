@@ -17,7 +17,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">User Profile</div>
+                <div class="card-title">View Ongoing Booking</div>
                 <hr>
                 <div class="row">
                     <div class="table-responsive col-12">

@@ -17,7 +17,7 @@
     <div class="col-lg-10">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">User Profile</div>
+                <div class="card-title">Change Password</div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif

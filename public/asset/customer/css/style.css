@@ -26,14 +26,14 @@ Table of Content:
 06/ breadcrumb
 07/ about
 08/ team
-09/ project 
-10/ price 
-11/ team 
-12/ blog 
-13/ video  
-14/ features  
-15/ career  
-16/ contact 
+09/ project
+10/ price
+11/ team
+12/ blog
+13/ video
+14/ features
+15/ career
+16/ contact
 17/ footer
 
 =====================================================================*/
@@ -370,7 +370,7 @@ button:focus {
   .navbar .menu_nav .nav-item.submenu ul {
     position: absolute;
     top: 100%;
-    left: 0px;
+    left: -125px;
     min-width: 220px;
     text-align: left;
     opacity: 0;
