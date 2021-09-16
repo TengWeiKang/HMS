@@ -14,6 +14,7 @@ class PaymentItem extends Model
 
     protected $fillable = [
         'payment_id',
+        'service_id',
         'service_name',
         'quantity',
         'unit_price',

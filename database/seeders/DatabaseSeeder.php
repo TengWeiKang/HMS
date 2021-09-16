@@ -174,17 +174,17 @@ class DatabaseSeeder extends Seeder
             "status" => 2
         ])->facilities()->attach([2]);
 
-        Service::create([
+        $service1 = Service::create([
             "name" => "food",
             "price" => 7
         ]);
 
-        Service::create([
+        $service2 = Service::create([
             "name" => "drink",
             "price" => 5
         ]);
 
-        Service::create([
+        $service3 = Service::create([
             "name" => "food 2",
             "price" => 9
         ]);
@@ -260,8 +260,8 @@ class DatabaseSeeder extends Seeder
             "discount" => 20,
         ]);
         $payment->items()->createMany([
-            ["service_name" => "food", "quantity" => 5, "unit_price" => 7],
-            ["service_name" => "food 2", "quantity" => 10, "unit_price" => 9],
+            ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price],
+            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 10, "unit_price" => $service3->price],
         ]);
         $payment->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],
@@ -294,8 +294,8 @@ class DatabaseSeeder extends Seeder
             "discount" => 20,
         ]);
         $payment2->items()->createMany([
-            ["service_name" => "drink", "quantity" => 3, "unit_price" => 5],
-            ["service_name" => "food 2", "quantity" => 2, "unit_price" => 9],
+            ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 3, "unit_price" => $service2->price],
+            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 5, "unit_price" => $service3->price],
         ]);
         $payment2->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],

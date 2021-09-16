@@ -86,6 +86,7 @@ class RandomSeeder extends Seeder
                     "quantity" => $random
                 ]);
                 $items[] = [
+                    "service_id" => $service->id,
                     "service_name" => $service->name,
                     "quantity" => $random,
                     "unit_price" => $service->price

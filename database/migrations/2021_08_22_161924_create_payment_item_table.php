@@ -16,6 +16,7 @@ class CreatePaymentItemTable extends Migration
         Schema::create('payment_item', function (Blueprint $table) {
             $table->id();
             $table->integer("payment_id")->index();
+            $table->integer("service_id")->index();
             $table->string("service_name");
             $table->integer("quantity");
             $table->double("unit_price");

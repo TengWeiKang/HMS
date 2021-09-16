@@ -49,6 +49,7 @@ class PaymentController extends Controller
         $items = [];
         foreach ($reservation->services as $service) {
             $items[] = [
+                "service_id" => $service->id,
                 "service_name" => $service->name,
                 "quantity" => $service->pivot->quantity,
                 "unit_price" => $service->price
