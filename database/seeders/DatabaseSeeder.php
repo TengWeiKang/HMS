@@ -158,7 +158,7 @@ class DatabaseSeeder extends Seeder
             "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 2,
-            "housekeptBy" => 3,
+            "housekeeper" => 3,
             "status" => 2
         ])->facilities()->attach([2]);
 
@@ -251,7 +251,6 @@ class DatabaseSeeder extends Seeder
 
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
-            "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
             "price_per_night" => $reservation->room->price,
             "start_date" => $reservation->start_date,
@@ -285,7 +284,6 @@ class DatabaseSeeder extends Seeder
 
         $payment2 = Payment::create([
             "reservation_id" => $reservation2->id,
-            "room_id" => $reservation2->room->id,
             "room_name" => $reservation2->room->room_id . " - " . $reservation2->room->name,
             "price_per_night" => $reservation2->room->price,
             "start_date" => $reservation2->start_date,

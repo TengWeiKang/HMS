@@ -162,7 +162,7 @@ class RoomController extends Controller
         $room = Room::findOrFail($request->id);
         Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
         $room->status = 2;
-        $room->housekeptBy = $request->housekeeper;
+        $room->housekeeper = $request->housekeeper;
         $room->save();
         return redirect()->back();
     }
@@ -170,7 +170,7 @@ class RoomController extends Controller
     public function updateStatus(Request $request) {
         $room = Room::findOrFail($request->id);
         $room->status = $request->status;
-        $room->housekeptBy = null;
+        $room->housekeeper = null;
         $room->note = $request->note;
         $room->save();
         return redirect()->back();

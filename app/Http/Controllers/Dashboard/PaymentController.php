@@ -66,7 +66,6 @@ class PaymentController extends Controller
         }
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
-            "room_id" => $reservation->room->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
             "price_per_night" => $reservation->room->price,
             "start_date" => $reservation->start_date,
@@ -77,7 +76,7 @@ class PaymentController extends Controller
         $payment->charges()->createMany($charges);
 
         $reservation->room->status = 2;
-        $reservation->room->housekeptBy = null;
+        $reservation->room->housekeeper = null;
         $reservation->room->save();
         $reservation->check_out = Carbon::now();
         $reservation->save();

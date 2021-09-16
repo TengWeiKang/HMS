@@ -62,11 +62,11 @@ class RandomSeeder extends Seeder
             "password" => Hash::make("123456789")
         ]);
 
-        $facilities = Facility::factory()->count(10)->create();
+        $facilities = Facility::factory()->times(10)->create();
 
-        Customer::factory()->count(5)->create();
+        Customer::factory()->times(5)->create();
 
-        Service::factory()->count(100)->create();
+        Service::factory()->times(100 )->create();
 
         RoomType::factory()->times($faker->numberBetween(5, 8))->create()->each(function ($roomType) use ($faker, $facilities) {
             $roomType->rooms()->saveMany(Room::factory()->times($faker->numberBetween(1, 5))->make());
@@ -76,7 +76,7 @@ class RandomSeeder extends Seeder
             });
         });
         $services = Service::all();
-        Reservation::factory()->count(500)->create()->each(function($reservation) use ($faker, $services) {
+        Reservation::factory()->times(1000)->create()->each(function($reservation) use ($faker, $services) {
             $selectedServices = $services->random($faker->numberBetween(0, min($services->count(), 20)));
             $items = [];
             foreach ($selectedServices as $service) {
@@ -95,7 +95,6 @@ class RandomSeeder extends Seeder
                 return;
             $payment = $reservation->payment()->create([
                 "reservation_id" => $reservation->id,
-                "room_id" => $reservation->room_id,
                 "room_name" => $reservation->room->name,
                 "price_per_night" => $reservation->room->price,
                 "start_date" => $reservation->start_date,
@@ -104,9 +103,8 @@ class RandomSeeder extends Seeder
                 "payment_at" => $reservation->check_out,
             ]);
 
-            $randomCharge = $faker->numberBetween(0, 5);
             $payment->items()->createMany($items);
-            $payment->charges()->saveMany(PaymentCharge::factory()->times($randomCharge)->make());
+            $payment->charges()->saveMany(PaymentCharge::factory()->times($faker->numberBetween(0, 5))->make());
         });
     }
 }

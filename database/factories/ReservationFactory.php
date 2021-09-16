@@ -8,6 +8,7 @@ use App\Models\Room;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Collection;
 
 class ReservationFactory extends Factory
 {
@@ -17,6 +18,7 @@ class ReservationFactory extends Factory
      * @var string
      */
     protected $model = Reservation::class;
+    private $collections = null;
 
     /**
      * Define the model's default state.
@@ -25,6 +27,8 @@ class ReservationFactory extends Factory
      */
     public function definition()
     {
+        if (is_null($this->collections))
+            $this->collections = collect();
         $reservables = [
             Customer::class,
             Guest::class,
@@ -36,14 +40,30 @@ class ReservationFactory extends Factory
         else {
             $customer = Customer::all()->random();
         }
-        $startDate = new Carbon($this->faker->dateTimeBetween("2020-01-01", "2021-12-31"));
-        $days = $this->faker->numberBetween(0, 15);
-        $endDate = $startDate->copy()->addDays($days);
+        $rooms = Room::all();
+        $startDate = $endDate = $roomID = null;
+        do {
+            $startDate = new Carbon($this->faker->dateTimeBetween("2020-01-01", "2021-12-31"));
+            $startDate->setHour(0);
+            $startDate->setMinute(0);
+            $startDate->setSecond(0);
+            $days = $this->faker->numberBetween(0, 15);
+            $endDate = $startDate->copy()->addDays($days);
+            $roomID = $rooms->random()->id;
+            $collections = $this->collections->filter(function ($reservation) use ($roomID, $startDate, $endDate) {
+                return $reservation["room_id"] == $roomID &&
+                ($reservation["start_date"] <= $startDate && $reservation["end_date"] >= $startDate ||
+                $reservation["start_date"] <= $endDate && $reservation["end_date"] >= $endDate ||
+                $reservation["start_date"] >= $startDate && $reservation["end_date"] <= $endDate);
+            });
+            $count = $collections->count();
+        } while ($count > 0);
         $today = Carbon::today();
+        $this->collections->push(["room_id" => $roomID, "start_date" => $startDate, "end_date" => $endDate]);
         return [
             "reservable_type" => get_class($customer),
             "reservable_id" => $customer,
-            "room_id" => Room::all()->random()->id,
+            "room_id" => $roomID,
             "start_date" => $startDate,
             "end_date" => $endDate,
             "check_in" => ($startDate < $today) ? $startDate : null,

@@ -18,7 +18,7 @@ class CreateReservationTable extends Migration
             $table->integer("room_id")->index();
             $table->string("reservable_type");
             $table->integer("reservable_id")->index();
-            $table->string("status")->default(1); // 0 - cancelled, 1 - available
+            $table->integer("status")->default(1); // 0 - cancelled, 1 - available
             $table->date("start_date");
             $table->date("end_date");
             $table->timestamp("check_in")->nullable();

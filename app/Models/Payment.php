@@ -19,7 +19,6 @@ class Payment extends Model
 
     protected $fillable = [
         'reservation_id',
-        'room_id',
         'room_name',
         'price_per_night',
         'start_date',
