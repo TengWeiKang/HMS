@@ -16,4 +16,14 @@ class Service extends Model
         'name',
         'price',
     ];
+
+    /**
+     * Get all of the paymentItem for the Service
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function paymentItems()
+    {
+        return $this->hasMany(PaymentItem::class, 'service_id');
+    }
 }

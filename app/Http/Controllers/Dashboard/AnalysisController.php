@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
+use App\Models\PaymentItem;
 use App\Models\Room;
 use App\Models\RoomType;
+use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -20,7 +22,7 @@ class AnalysisController extends Controller
     public function index() {
         $roomTypes = RoomType::all();
         $payments = Payment::all();
-        $years = $payments->groupBy(function ($value, $key) {
+        $years = $payments->groupBy(function ($value) {
             return $value->payment_at->format("Y");
         })->keys();
         $yearNow = Carbon::now()->year;
@@ -32,12 +34,15 @@ class AnalysisController extends Controller
 
     public function json(Request $request) {
         $json = [];
-        $payments = Payment::with("items", "charges", "reservation", "reservation.room")->get();
+        $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
+        $paymentItems = PaymentItem::with("payment", "payment.reservation.room", "service")->get();
+        $servicesArray = Service::all()->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
+
         $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);
         $json["revenueMonthChart"] = $this->revenueMonthChart($payments, $request->year, $request->month, $request->roomType);
         $json["roomStatusChart"] = $this->roomStatusChart($rooms, $request->roomType);
-
+        $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month, $request->roomType);
         return $json;
     }
 
@@ -47,9 +52,7 @@ class AnalysisController extends Controller
         $json["charges"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $payments = $this->paymentsFilterByYear($payments, $year);
         $payments = $this->paymentsFilterByRoomType($payments, $roomType);
-        $bookingRevenues = $payments->groupBy(function ($value, $key) {
-            return $value->payment_at->format("Y-m");
-        });
+        $bookingRevenues = $this->paymentsGroupByMonth($payments);
         foreach ($bookingRevenues as $key => $value) {
             $month = (int) explode("-", $key)[1] - 1;
             $json["bookings"][$month] = $value->sum(function ($payment) {
@@ -68,9 +71,7 @@ class AnalysisController extends Controller
     private function revenueMonthChart($payments, $year, $month, $roomType) {
         $payments = $this->paymentsFilterByYear($payments, $year);
         $payments = $this->paymentsFilterByRoomType($payments, $roomType);
-        $info = $payments->groupBy(function ($value, $key) {
-            return $value->payment_at->format("Y-m");
-        })->get($year . "-" . $month, collect());
+        $info = $this->paymentsGroupByMonth($payments)->get($year . "-" . $month, collect());
         $json = [
             $info->sum(function ($payment) {
                 return $payment->bookingPriceWithDiscount();
@@ -100,11 +101,31 @@ class AnalysisController extends Controller
         return $json;
     }
 
+    private function roomServiceChart($paymentItems, $services, $year, $month, $roomType) {
+        $json["labels"] = $services;
+        $json["items"] = [];
+        $paymentItems = $this->paymentItemsFilterByYear($paymentItems, $year);
+        $paymentItems = $this->paymentItemsFilterByRoomType($paymentItems, $roomType);
+        $paymentItems = $this->paymentItemsGroupByMonthAndItem($paymentItems);
+        foreach ($services as $service) {
+            $key = $year . "-" . $month;
+            array_push($json["items"], round(optional($paymentItems->get($key))->get($service) ?? 0, 2));
+        }
+        return $json;
+    }
+
     private function paymentsFilterByYear($payments, $year) {
         return $payments->filter(function ($value) use ($year) {
             return Str::startsWith($value->payment_at, $year);
         });
     }
+
+    private function paymentsGroupByMonth($payments) {
+        return $payments->groupBy(function ($value) {
+            return $value->payment_at->format("Y-m");
+        });
+    }
+
     private function paymentsFilterByRoomType($payments, $roomType) {
         if (!empty($roomType)) {
             $payments = $payments->filter(function ($value) use ($roomType) {
@@ -112,6 +133,33 @@ class AnalysisController extends Controller
             });
         }
         return $payments;
+    }
+
+    private function paymentItemsFilterByYear($paymentItems, $year) {
+        return $paymentItems->filter(function ($paymentItem) use ($year) {
+            return Str::startsWith($paymentItem->payment->payment_at, $year);
+        });
+    }
+
+    private function paymentItemsGroupByMonthAndItem($paymentItems) {
+        return $paymentItems->groupBy([function ($paymentItem) {
+            return $paymentItem->payment->payment_at->format("Y-m");
+        }, "service.name"])->map(function ($services) {
+            return $services->map(function($paymentItem) {
+                return $paymentItem->sum(function ($paymentItem) {
+                    return $paymentItem->discountedPrice();
+                });
+            });
+        });
+    }
+
+    private function paymentItemsFilterByRoomType($paymentItems, $roomType) {
+        if (!empty($roomType)) {
+            $paymentItems = $paymentItems->filter(function ($paymentItem) use ($roomType) {
+                return $paymentItem->payment->reservation->room->room_type == $roomType;
+            });
+        }
+        return $paymentItems;
     }
 
     private function roomsFilterByRoomType($rooms, $roomType) {

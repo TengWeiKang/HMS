@@ -2,18 +2,12 @@
 
 @push("css")
 <style>
-    .revenueYearChart {
+    .revenueYearChart,
+    .revenueMonthChart,
+    .roomStatusChart,
+    .roomServiceChart {
         position: relative;
-        height: 300px;
-    }
-
-    .revenueMonthChart {
-        position: relative;
-        height: 300px;
-    }
-    .roomStatusChart {
-        position: relative;
-        height: 300px;
+        height: 350px;
     }
 </style>
 @endpush
@@ -62,7 +56,7 @@
         </div>
     </div>
 </div>
-<div class="row mt-3">
+<div class="row">
     <div class="col-6">
         <div class="card">
             <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
@@ -79,6 +73,18 @@
             <div class="card-body">
                 <div class="roomStatusChart">
                     <canvas id="roomStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header"><span class="mr-2">Room Service Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-body">
+                <div class="roomServiceChart">
+                    <canvas id="roomServiceChart"></canvas>
                 </div>
             </div>
         </div>
@@ -147,9 +153,14 @@
 <script src="{{ asset("dashboard/plugins/Chart.js/datalabels.min.js") }}"></script>
 
 <script>
+    var revenueYearChart = null;
+    var revenueMonthChart = null;
+    var roomStatusChart = null;
+    var roomServiceChart = null;
     $(document).ready(function () {
         $("#year, #month, #roomType").select2();
         $('.select2.select2-container').addClass('form-control');
+        const COLORS = ['#4dc9f6', '#f67019', '#f53794', '#537bc4', '#acc236', '#166a8f', '#00a950', '#58595b', '#8549ba'];
         const MONTH = {
             1: "January",
             2: "February",
@@ -165,13 +176,16 @@
             12: "December"
         }
 
-        var revenueYearChart = null;
-        var revenueMonthChart = null;
-        var roomStatusChart = null;
-
         function sum(accumulator, value) {
             return accumulator + value;
         }
+
+        function dynamicColor() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        };
 
         function generateRevenueYearChart(info, year, roomType) {
             let bookings = info["bookings"];
@@ -191,7 +205,7 @@
             revenueYearChart = new Chart(revenueYearCanvas, {
                 type: 'line',
                 data: {
-                    labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                    labels: Object.values(MONTH),
                     datasets: [
                         {
                             label: 'Total',
@@ -244,7 +258,7 @@
                         fontColor: "white",
                     },
                     tooltips: {
-                        displayColors: false,
+                        displayColors: true,
                         callbacks: {
                             label: function (context, constant) {
                                 return constant.datasets[context.datasetIndex].label + ": RM " + context.yLabel.toFixed(2);
@@ -327,7 +341,7 @@
                         fontColor: "white",
                     },
                     tooltips: {
-                        displayColors:false,
+                        displayColors:true,
                         callbacks: {
                             label: function (context, constant) {
                                 let index = context.index;
@@ -338,7 +352,8 @@
                                 let index = context.index;
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
-                                return "RM " + amount.toFixed(2) + " (" + (amount / total * 100).toFixed(2) + "%)";
+                                let percentage = amount / total * 100;
+                                return "RM " + amount.toFixed(2) + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -347,7 +362,7 @@
                             formatter: (value, ctx) => {
                                 let dataArr = ctx.chart.data.datasets[0].data;
                                 let total = dataArr.reduce(sum, 0);
-                                if (total == 0)
+                                if (total == 0 && ctx.dataIndex == 0)
                                     return "No Data Available";
                                 if (value == 0)
                                     return "";
@@ -398,7 +413,7 @@
                         fontColor: "white",
                     },
                     tooltips: {
-                        displayColors:false,
+                        displayColors: true,
                         callbacks: {
                             label: function (context, constant) {
                                 let index = context.index;
@@ -409,7 +424,8 @@
                                 let index = context.index;
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
-                                return amount + " room" + (amount == 1 ? "" : "s") + " (" + (amount / total * 100).toFixed(2) + "%)";
+                                let percentage = amount / total * 100;
+                                return amount + " room" + (amount == 1 ? "" : "s") + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -418,7 +434,82 @@
                             formatter: (value, ctx) => {
                                 let dataArr = ctx.chart.data.datasets[0].data;
                                 let total = dataArr.reduce(sum, 0);
-                                if (total == 0)
+                                if (total == 0 && ctx.dataIndex == 0)
+                                    return "No Data Available";
+                                if (value == 0)
+                                    return "";
+                                let percentage = (value * 100 / total).toFixed(2) + "%";
+                                return percentage;
+                            },
+                            color: 'darkgray',
+                            font: {
+                                size: 14,
+                                weight: "bolder",
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateRoomServiceChart(info, year, month, roomType) {
+            let labels = info["labels"];
+            let data = info["items"];
+            let colors = []
+            for (let i = 0; i < data.length; i++) {
+                colors.push(dynamicColor());
+            }
+            let roomServiceCanvas = document.getElementById("roomServiceChart").getContext("2d");
+            roomServiceChart = new Chart(roomServiceCanvas, {
+                type: 'pie',
+                data: {
+                    labels: info["labels"],
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: (data.length > 10) ? false : true,
+                        position: "right",
+                        labels: {
+                            fontColor: '#ddd',
+                            boxWidth: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Room Service Revenue in " + MONTH[month] + " " + year + " (" + roomType + ")",
+                        fontColor: "white",
+                    },
+                    tooltips: {
+                        displayColors: true,
+                        callbacks: {
+                            label: function (context, constant) {
+                                let index = context.index;
+                                return constant.labels[index] + ": ";
+                            },
+                            afterLabel: function (context, constant) {
+                                let datasetIndex = context.datasetIndex;
+                                let index = context.index;
+                                let amount = constant.datasets[datasetIndex].data[index];
+                                let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
+                                let percentage = amount / total * 100;
+                                return "RM " + amount + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
+                            }
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            display: (data.length > 10 && data.reduce(sum, 0) != 0) ? false: true,
+                            formatter: (value, ctx) => {
+                                console.log(ctx);
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                let total = dataArr.reduce(sum, 0);
+                                if (total == 0 && ctx.dataIndex == 0)
                                     return "No Data Available";
                                 if (value == 0)
                                     return "";
@@ -469,6 +560,22 @@
             roomStatusChart.update();
         }
 
+        function updateRoomServiceChart(info, year, month, roomType) {
+            let labels = info["labels"];
+            let data = info["items"];
+            // let colors = []
+            // for (let i = 0; i < data.length; i++) {
+            //     colors.push(dynamicColor());
+            // }
+            roomServiceChart.data.labels = labels;
+            roomServiceChart.data.datasets[0].data = data;
+            // roomServiceChart.data.datasets[0].backgroundColor = colors;
+            roomServiceChart.options.title.text = "Room Service Revenue in " + MONTH[month] + " " + year + " (" + roomType + ")";
+            roomServiceChart.options.legend.display = (data.length > 10) ? false: true;
+            roomServiceChart.options.plugins.datalabels.display = (data.length > 10 && data.reduce(sum, 0) != 0) ? false: true;
+            roomServiceChart.update();
+        }
+
         function dateModified(isInitialize) {
             let year = $("#year").val();
             let month = $("#month").val();
@@ -491,11 +598,13 @@
                         generateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         generateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
+                        generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
+                        updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                     }
                 }
             });

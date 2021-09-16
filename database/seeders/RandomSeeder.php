@@ -11,7 +11,6 @@ use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\Service;
 use Faker\Factory;
-use Faker\Generator;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -67,7 +66,7 @@ class RandomSeeder extends Seeder
 
         Customer::factory()->count(5)->create();
 
-        Service::factory()->count(10)->create();
+        Service::factory()->count(100)->create();
 
         RoomType::factory()->times($faker->numberBetween(5, 8))->create()->each(function ($roomType) use ($faker, $facilities) {
             $roomType->rooms()->saveMany(Room::factory()->times($faker->numberBetween(1, 5))->make());
@@ -78,7 +77,7 @@ class RandomSeeder extends Seeder
         });
         $services = Service::all();
         Reservation::factory()->count(500)->create()->each(function($reservation) use ($faker, $services) {
-            $selectedServices = $services->random($faker->numberBetween(0, $services->count()));
+            $selectedServices = $services->random($faker->numberBetween(0, min($services->count(), 20)));
             $items = [];
             foreach ($selectedServices as $service) {
                 $random = $faker->numberBetween(1, 10);

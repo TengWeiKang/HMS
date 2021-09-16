@@ -23,4 +23,28 @@ class PaymentItem extends Model
     public function servicePrice() {
         return $this->quantity * $this->unit_price;
     }
+
+    /**
+     * Get the payment that owns the PaymentItem
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function payment()
+    {
+        return $this->belongsTo(Payment::class, 'payment_id');
+    }
+
+    /**
+     * Get the service that owns the PaymentItem
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function service()
+    {
+        return $this->belongsTo(Service::class, 'service_id');
+    }
+
+    public function discountedPrice() {
+        return $this->servicePrice() * (100 - $this->payment->discount) / 100;
+    }
 }
