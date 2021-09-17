@@ -55,9 +55,9 @@
                                     @continue
                                 @endif
                                 <optgroup label="{{ $roomType->name }}">
-                                @foreach($roomType->rooms as $room)
-                                    <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
-                                @endforeach
+                                    @foreach($roomType->rooms as $room)
+                                        <option value="{{ $room->id }}" data-price="{{ $room->price }}" data-status="{{ $room->status() }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                    @endforeach
                                 </optgroup>
                             @endforeach
                         </select>
@@ -173,10 +173,9 @@
                 $("#phone").prop('readonly', true);
             }
             $("#phone").val(phone);
-        })
+        });
 
         $('.select2.select2-container').addClass('form-control form-control-rounded');
-        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
         $('input[type="date"]').on('focusin', function(){
             $(this).data('prev', $(this).val());
@@ -303,10 +302,21 @@
                         isReserved = true;
                     }
                 });
+                let roomStatus = $("#rooms").find(':selected').data('status');
                 if (isReserved) {
                     checkbox.checked = false;
                     checkbox.disabled = true;
                     msgElement.innerHTML = "The room has been reserved by other customer";
+                }
+                else if (roomStatus == 2) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    msgElement.innerHTML = "The room is currently dirty";
+                }
+                else if (roomStatus == 3) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    msgElement.innerHTML = "The room is currently on repairing";
                 }
                 else {
                     checkbox.disabled = false;

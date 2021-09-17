@@ -3,9 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Reservation;
-use App\Models\Customer;
-use Carbon\Carbon;
 
 class CreateRoomServiceTable extends Migration
 {
@@ -21,6 +18,7 @@ class CreateRoomServiceTable extends Migration
             $table->integer("reservation_id")->index();
             $table->integer("service_id")->index();
             $table->integer("quantity");
+            $table->timestamp('created_at')->nullable();
         });
     }
 

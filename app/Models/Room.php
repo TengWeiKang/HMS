@@ -34,7 +34,7 @@ class Room extends Model
         'room_image',
         'image_type',
         'note',
-        'housekeeper',
+        'housekeep_by',
         'status',
     ];
 
@@ -92,7 +92,7 @@ class Room extends Model
 
     public function housekeeper()
     {
-        return $this->belongsTo(Employee::class, "housekeeper");
+        return $this->belongsTo(Employee::class, "housekeep_by");
     }
 
     public function isReserved() {

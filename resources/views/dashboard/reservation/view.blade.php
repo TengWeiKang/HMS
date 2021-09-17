@@ -32,7 +32,7 @@
                                     <tbody>
                                         <tr>
                                             <td width="20%">Room:</td>
-                                            <td><a href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}" style="color:blue; text-decoration: underline">{{ $reservation->room->room_id . " - " . $reservation->room->name}}</a></td>
+                                            <td><a href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}" style="color:blue; text-decoration: underline">{{ $reservation->room->room_id . " - " . $reservation->room->name}}</a> <span style="color: {{ $reservation->room->statusColor() }}">({{ $reservation->room->statusName(false) }})</span></td>
                                         </tr>
                                         <tr>
                                             <td>Customer:</td>
@@ -150,7 +150,7 @@
             <div class="card-body">
                 <div class="row">
                     @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                        @if ($reservation->status() == 0)
+                        @if ($reservation->status() == 0 && $reservation->room->status() == 0)
                         <div class="col-2">
                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
                                 Check in

@@ -57,15 +57,14 @@ class Reservation extends Model
      */
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity");
+        return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity", "created_at");
     }
 
     public function totalServicePrices()
     {
-        $totalPrice = 0;
-        foreach ($this->services as $service) {
-            $totalPrice += $service->price * $service->pivot->quantity;
-        }
+        $totalPrice = $this->services->sum(function ($service) {
+            return $service->price * $service->pivot->quantity;
+        });
         return $totalPrice;
     }
 

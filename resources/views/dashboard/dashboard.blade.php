@@ -425,7 +425,7 @@
                         $("#display-check-in").removeClass("d-none");
                         $("#display-reserved, #display-complete").addClass("d-none");
                         let roomStatus = event.getResources()[0].extendedProps.status;
-                        if (roomStatus == 4) {
+                        if (roomStatus != 0) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
                         }
                         else {
@@ -545,6 +545,7 @@
                     eventDropInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
+                    $("#undoBtn").unbind();
                     let eventID = event.id;
                     let roomID = newResourceInfo.id;
                     let startDateISO = dateISOString(event.start);
@@ -597,6 +598,7 @@
                     eventResizeInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
+                    $("#undoBtn").unbind();
                     let eventID = event.id;
                     let startDateISO = dateISOString(event.start);
                     let endDateISO = dateISOString(eventEnd);

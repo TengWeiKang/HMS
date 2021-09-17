@@ -76,7 +76,7 @@ class PaymentController extends Controller
         $payment->charges()->createMany($charges);
 
         $reservation->room->status = 2;
-        $reservation->room->housekeeper = null;
+        $reservation->room->housekeep_by = null;
         $reservation->room->save();
         $reservation->check_out = Carbon::now();
         $reservation->save();

@@ -30,7 +30,7 @@
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
-                <form action="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" method="POST">
+                <form id="payment-form" action="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" method="POST">
                     @csrf
                     <div class="card-title mt-4">Initial Payment</div>
                     <div class="table-responsive">
@@ -139,7 +139,7 @@
                                     <div class="form-group row mx-2">
                                         <div class="col-12">
                                             <label for="cardNumber">Card Number</label>
-                                            <input type="text" name="cardNumber" class="form-control" placeholder="Card Number" required>
+                                            <input type="number" id="cardNumber" name="cardNumber" class="form-control" placeholder="Card Number" required>
                                         </div>
                                     </div>
                                     <div class="form-group row mx-2">
@@ -149,7 +149,7 @@
                                         </div>
                                         <div class="col-6">
                                             <label for="cvv">CVV/CVV2</label>
-                                            <input type="password" class="form-control" name="cvv" placeholder="Card Number" required>
+                                            <input type="password" class="form-control" id="cvv" name="cvv" placeholder="Card Number" required>
                                         </div>
                                     </div>
                                     <div class="form-group row mx-2">
@@ -174,7 +174,6 @@
 
 @push("script")
     <script>
-
         $(document).ready(function () {
             function updatePrices() {
                 let price = parseFloat("{{ $reservation->finalPrices() }}");
@@ -223,6 +222,42 @@
 					updatePrices();
 				});
             }
+
+            $("#cvv").on("input", function() {
+                this.setCustomValidity("");
+                this.value = this.value.substr(0, 3);
+            });
+
+            $("#cardNumber").on("input", function() {
+                this.setCustomValidity("");
+                this.value = this.value.substr(0, 16);
+            });
+
+            $("#payment-form").on("submit", function(e) {
+                console.log("debug")
+                let cvv = $("#cvv")[0];
+                let cardNumber = $("#cardNumber")[0];
+                if (cvv.value.length != 3) {
+                    console.log(cvv.value);
+                    console.log(cvv.value.length);
+                    cvv.setCustomValidity("CVV must be exact 3 character");
+                    cardNumber.reportValidity();
+                    e.preventDefault();
+                }
+                else {
+                    console.log("cvv correct");
+                }
+                if (cardNumber.value.length != 16) {
+                    console.log(cardNumber.value);
+                    console.log(cardNumber.value.length);
+                    cardNumber.setCustomValidity("Card number must be exact 16 number");
+                    cardNumber.reportValidity();
+                    e.preventDefault();
+                }
+                else {
+                    console.log("card number correct");
+                }
+            })
 
             $(".add-charge-row").on("click", function () {
                 let chargeInput = `<tr>

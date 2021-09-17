@@ -66,7 +66,7 @@ class DatabaseSeeder extends Seeder
 
         Employee::create([
             "username" => "housekeeper",
-            "email" => "housekeeper@gmail.com",
+            "email" => "weikangteng@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
             "role" => 2
@@ -158,7 +158,7 @@ class DatabaseSeeder extends Seeder
             "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 2,
-            "housekeeper" => 3,
+            "housekeep_by" => 3,
             "status" => 2
         ])->facilities()->attach([2]);
 

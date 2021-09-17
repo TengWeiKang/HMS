@@ -34,7 +34,8 @@ class AnalysisController extends Controller
     public function json(Request $request) {
         $json = [];
         $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
-        $paymentItems = PaymentItem::with(["payment:id,discount,payment_at", "payment.reservation.room:id,type", "service:id,name"])->get();
+        // $paymentItems = PaymentItem::with(["payment", "payment.reservation", "payment.reservation.room", "service"])->get();
+        $paymentItems = PaymentItem::with(["payment:id,discount,payment_at,reservation_id", "payment.reservation:id,room_id", "payment.reservation.room:id,room_type", "service:id,name"])->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
 

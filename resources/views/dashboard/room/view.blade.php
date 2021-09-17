@@ -118,7 +118,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Customer</th>
@@ -129,34 +129,28 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @if ($room->reservations->count())
-                                            @foreach ($room->reservations as $history)
-                                                <tr>
-                                                    @if ($history->reservable instanceof App\Models\Customer)
-                                                        <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->reservable) }}">{{ $history->reservable->username}}</a></td>
-                                                    @else
-                                                        <td>{{ $history->reservable->username}}</td>
-                                                    @endif
-                                                    <td>{{ $history->start_date->format("d F Y") }}</td>
-                                                    <td>{{ $history->end_date->format("d F Y") }}</td>
-                                                    <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>
-                                                    <td class="text-center">
-                                                        <a href="{{ route("dashboard.reservation.view", ["reservation" => $history]) }}">
-                                                            <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
-                                                        </a>
-                                                        @if ($history->payment != null)
-                                                        <a href="{{ route("dashboard.payment.view", ["payment" => $history->payment]) }}">
-                                                            <i class="fa fa-dollar text-white" style="font-size: 18px"></i>
-                                                        </a>
-                                                        @endif
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
+                                        @foreach ($room->reservations as $history)
                                             <tr>
-                                                <td colspan="5" class="text-center">No Reservation is made by any customers</td>
+                                                @if ($history->reservable instanceof App\Models\Customer)
+                                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->reservable) }}">{{ $history->reservable->username}}</a></td>
+                                                @else
+                                                    <td>{{ $history->reservable->username}}</td>
+                                                @endif
+                                                <td>{{ $history->start_date->format("d F Y") }}</td>
+                                                <td>{{ $history->end_date->format("d F Y") }}</td>
+                                                <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>
+                                                <td class="text-center">
+                                                    <a href="{{ route("dashboard.reservation.view", ["reservation" => $history]) }}">
+                                                        <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
+                                                    </a>
+                                                    @if ($history->payment != null)
+                                                    <a href="{{ route("dashboard.payment.view", ["payment" => $history->payment]) }}">
+                                                        <i class="fa fa-dollar text-white" style="font-size: 18px"></i>
+                                                    </a>
+                                                    @endif
+                                                </td>
                                             </tr>
-                                        @endif
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -240,6 +234,14 @@
     <script>
         $(document).ready(function () {
             $('select#housekeeper, select#status').select2();
+            $("#table").DataTable({
+                columnDefs: [
+                {
+                    "targets": 4,
+                    "orderable": false,
+                    "searchable": false
+                }]
+            });
             $('.select2.select2-container').addClass('form-control');
         });
     </script>

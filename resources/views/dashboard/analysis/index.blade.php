@@ -30,8 +30,8 @@
             <div class="row m-0 row-group text-center border-top border-light-3">
                 <div class="col-3">
                     <div class="p-3">
-                        <h5 class="mb-2">Booking</h5>
-                        <h6 class="mb-0">RM <span id="bookingRevenue"></span></h6>
+                        <h5 class="mb-2">Sales</h5>
+                        <h6 class="mb-0">RM <span id="salesRevenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
@@ -195,7 +195,7 @@
             let totalRoomService = services.reduce(sum, 0);
             let totalCharge = charges.reduce(sum, 0);
             let totalRevenue = revenues.reduce(sum, 0);
-            $("#bookingRevenue").html(totalBooking.toFixed(2));
+            $("#salesRevenue").html(totalBooking.toFixed(2));
             $("#roomServiceRevenue").html(totalRoomService.toFixed(2));
             $("#chargeRevenue").html(totalCharge.toFixed(2));
             $("#totalRevenue").html(totalRevenue.toFixed(2));
@@ -535,7 +535,7 @@
             let totalRoomService = services.reduce(sum, 0);
             let totalCharge = charges.reduce(sum, 0);
             let totalRevenue = revenues.reduce(sum, 0);
-            $("#bookingRevenue").html(totalBooking.toFixed(2));
+            $("#salesRevenue").html(totalBooking.toFixed(2));
             $("#roomServiceRevenue").html(totalRoomService.toFixed(2));
             $("#chargeRevenue").html(totalCharge.toFixed(2));
             $("#totalRevenue").html(totalRevenue.toFixed(2));
@@ -582,7 +582,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",

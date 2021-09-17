@@ -36,7 +36,7 @@
                             @foreach ($reservations as $reservation)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a></td>
+                                    <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
                                     @if ($reservation->reservable instanceof App\Models\Customer)
                                         <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->reservable]) }}">{{ $reservation->reservable->username }}</td>
                                     @else
@@ -48,7 +48,7 @@
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            @if ($reservation->status() == 0)
+                                            @if ($reservation->status() == 0 && $reservation->room->status() == 0)
                                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>

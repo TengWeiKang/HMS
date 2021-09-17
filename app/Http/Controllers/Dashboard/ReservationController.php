@@ -11,6 +11,7 @@ use App\Models\Service;
 use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
@@ -246,30 +247,27 @@ class ReservationController extends Controller
     public function createService(Reservation $reservation)
     {
         $services = Service::all();
+        $reservation->load(["services" => function ($query) {
+            $query->orderBy("created_at", "DESC");
+        }]);
         return view('dashboard/reservation/room-service', ["reservation" => $reservation, "services" => $services]);
     }
 
     public function storeService(Request $request, Reservation $reservation)
     {
         $arr = array_combine($request->serviceID, $request->qty);
+        $arr = array_map(function ($value) {
+            return ["quantity" => $value[0]];
+        }, $arr);
 
-        foreach ($arr as $key => $value) {
-            if ($reservation->services()->where("service_id", $key)->exists()) {
-                $reservation->services()->where("service_id", $key)->increment("quantity", $value);
-            }
-            else {
-                $reservation->services()->attach($key, [
-                    "quantity" => $value
-                ]);
-            }
-        }
+        $reservation->services()->attach($arr);
         $services = Service::all();
         return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation, "services" => $services])->with("message", "The Room Services Added Successfully");
     }
 
     public function checkIn(Reservation $reservation)
     {
-        if (!$reservation->room->isReserved()) {
+        if ($reservation->room->status() == 0) {
             $reservation->check_in = Carbon::now();
             $reservation->status = 0;
             $reservation->save();

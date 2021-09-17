@@ -53,14 +53,14 @@
             </ul>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.room-type") }}">
                 <i class="zmdi zmdi-home"></i><span style="margin-left: 14px">Room Types</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.room") }}">
                 <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
@@ -81,9 +81,9 @@
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
-            <a href="{{ route("dashboard.service") }}">
+            <a href="{{ route("dashboard.customer") }}">
                 <i class="zmdi zmdi-accounts"></i><span style="margin-left: 15px">Customers</span>
             </a>
         </li>

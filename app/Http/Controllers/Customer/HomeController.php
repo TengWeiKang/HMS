@@ -54,6 +54,9 @@ class HomeController extends Controller
             if (!empty($request->roomType) && $request->roomType != $value->type->id) {
                 return false;
             }
+            if (!empty($request->person) && $request->person != $value->single_bed + $value->double_bed * 2) {
+                return false;
+            }
             return true;
         });
         return view("customer/components/accomodations", ["rooms" => $rooms]);

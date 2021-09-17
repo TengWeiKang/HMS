@@ -43,25 +43,25 @@
                     @csrf
                     @method("PUT")
                     <div class="form-group row mx-2">
-                        <label for="roomId">Room</label>
+                        <label for="roomId">Room <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($roomTypes as $roomType)
                                 @if ($roomType->rooms->count() == 0)
                                     @continue
                                 @endif
                                 <optgroup label="{{ $roomType->name }}">
-                                @foreach($roomType->rooms as $room)
-                                    <option value="{{ $room->id }}" data-price="{{ $room->price }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
-                                @endforeach
+                                    @foreach($roomType->rooms as $room)
+                                        <option value="{{ $room->id }}" data-price="{{ $room->price }}" data-status="{{ $room->status() }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                    @endforeach
                                 </optgroup>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="customer">Customer (Able to custom input)</label>
+                        <label for="customer">Customer (Able to custom input) <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="customers" name="customer">
                             @foreach ($customers as $customer)
-                                <option value="c||{{ $customer->id }}" @if ($reservation->reservable instanceof App\Models\Customer && $customer->id == $reservation->reservable->id) selected @endif>{{ $customer->username }}</option>
+                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}" @if ($reservation->reservable instanceof App\Models\Customer && $customer->id == $reservation->reservable->id) selected @endif>{{ $customer->username }}</option>
                             @endforeach
                             @if ($reservation->reservable instanceof App\Models\Guest)
                                 <option value="g||{{ $reservation->reservable->username }}" selected>{{ $reservation->reservable->username }}</option>
@@ -70,10 +70,10 @@
                     </div>
                     <div class="form-group row mx-2">
                         <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone", $reservation->reservable->phone) }}">
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone", $reservation->reservable->phone) }}" @if ($reservation->reservable instanceof App\Models\Customer) readonly @endif>
                     </div>
                     <div class="form-group row my-4 mx-2">
-                        <label class="col-lg-12 px-0">Reservation Date</label>
+                        <label class="col-lg-12 px-0">Reservation Date <span class="text-danger">*</span></label>
                         <div class="col-lg-4 pl-lg-0">
                             <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $reservation->start_date->format("Y-m-d")) }}" required>
                         </div>
@@ -146,7 +146,8 @@
 <script>
     $(document).ready(function() {
         $('select.form-control#rooms').select2();
-        $('select.form-control#customers').select2({
+        $customerSelect = $('select.form-control#customers');
+        $customerSelect.select2({
             multiple: false,
             tags: true,
             createTag: function (params) {
@@ -161,8 +162,17 @@
                 }
             }
         });
+        $customerSelect.on("select2:select", function (e) {
+            let phone = $("#customers").find(":selected").data("phone") ?? "";
+            if (phone == "") {
+                $("#phone").prop("readonly", false);
+            }
+            else {
+                $("#phone").prop('readonly', true);
+            }
+            $("#phone").val(phone);
+        });
         $('.select2.select2-container').addClass('form-control form-control-rounded');
-        $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
         $('input[type="date"]').on('focusin', function(){
             $(this).data('prev', $(this).val());
@@ -286,10 +296,21 @@
                         isReserved = true;
                     }
                 });
+                let roomStatus = $("#rooms").find(':selected').data('status');
                 if (isReserved) {
                     checkbox.checked = false;
                     checkbox.disabled = true;
                     msgElement.innerHTML = "The room has been reserved by other customer";
+                }
+                else if (roomStatus == 2) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    msgElement.innerHTML = "The room is currently dirty";
+                }
+                else if (roomStatus == 3) {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                    msgElement.innerHTML = "The room is currently on repairing";
                 }
                 else {
                     checkbox.disabled = false;

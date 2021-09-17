@@ -49,6 +49,11 @@
                                 <div class="book_tabel_item">
                                     <div class="form-group">
                                         <div class="input-group">
+                                            <input id="person" type="number" step="1" min="0" class="wide form-control" placeholder="Number of Person">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group">
                                             <select class="wide" id="roomType">
                                                 <option data-display="Room Type" value="">All</option>
                                                 <optgroup label="Room Type">

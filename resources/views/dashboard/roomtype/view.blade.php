@@ -51,7 +51,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>Room ID</th>
@@ -62,26 +62,22 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($roomType->rooms as $room)
+                                        @foreach ($roomType->rooms as $room)
                                             <tr>
                                                 <td>{{ $room->room_id}}</td>
                                                 <td>{{ $room->name }}</td>
                                                 <td>RM {{ number_format($room->price, 2) }}</td>
                                                 <td style="color: {{ $room->statusColor() }}">{!! $room->statusName(true) !!}</td>
                                                 <td class="text-center">
-                                                    <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
-                                                        <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
-                                                    </a>
                                                     <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
                                                         <i class="zmdi zmdi-edit text-white" style="font-size: 18px"></i>
                                                     </a>
+                                                    <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
+                                                        <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
+                                                    </a>
                                                 </td>
                                             </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center">No Room is under this room type</td>
-                                            </tr>
-                                        @endforelse
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -93,3 +89,19 @@
     </div>
 </div>
 @endsection
+
+@push('script')
+    <script>
+        $(document).ready(function () {
+            $("#table").DataTable({
+                columnDefs: [
+                    {
+                        targets: 4,
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            });
+        });
+    </script>
+@endpush

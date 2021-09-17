@@ -50,3 +50,6 @@ a.hyperlink {
     color:blue;
     text-decoration: underline;;
 }
+select[name=table_length] option {
+    color: black;
+}

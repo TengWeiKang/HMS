@@ -19,6 +19,9 @@
     cursor: pointer;
     font-size: 15px;
 }
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color:#fff;
+}
 </style>
 @endpush
 
@@ -27,90 +30,100 @@
 @endsection
 
 @section("content")
-<div class="row mt-3">
-    <div class="col-lg-6">
+<div class="row mt-3 justify-content-center">
+    <div class="col-lg-10">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Room Service for a Reservation</div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
+                    <hr>
 				@endif
-                <hr>
-                <div class="form-group row mx-2">
-                    <label for="service">Search for services</label>
-                    <select id="service" class="form-control form-control-rounded row-mx-2">
-                        <option value=""></option>
-                        @foreach ($services as $service)
-                            <option value="{{ $service->id }}" data-name="{{ $service->name }}" data-price="{{ $service->price }}">{{ $service->name . " - RM " . $service->price }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <form id="service-form" action="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" method="POST">
-                    @csrf
-                    <div class="form-group row mx-2">
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center">Service Name</th>
-                                        <th class="text-center">Price</th>
-                                        <th class="text-center">Quantity</th>
-                                        <th class="text-center">Total</th>
-                                        <th class="text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-service">
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="text-right" colspan="3">Total:</td>
-                                        <td class="text-center">RM <span id="totalPrice">0.00</span></td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="form-group row mt-3 mx-2">
-                        <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Add</button>
-                    </div>
-                </form>
+                <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#add-services" data-toggle="pill" class="nav-link active"><i class="icon-plus"></i> <span class="hidden-xs">Add Services</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="javascript:void();" data-target="#existing-services" data-toggle="pill" class="nav-link"><i class="fa fa-history"></i> <span class="hidden-xs">Existing Services</span></a>
+                    </li>
+                </ul>
             </div>
-        </div>
-    </div>
-    <div class="col-lg-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Existing Services</div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Service Name</th>
-                                <th>Unit Price</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($reservation->services as $service)
-                            <tr>
-                                <th>{{ $loop->index + 1 }}</th>
-                                <td>{{ $service->name }}</td>
-                                <td>RM {{ number_format($service->price, 2) }}</td>
-                                <td>{{ $service->pivot->quantity }}</td>
-                                <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                            </tr>
+            <div class="tab-content p-3">
+                <div class="tab-pane active" id="add-services">
+                    <h5 class="mb-5 ml-2 font-weight-bold">Room Service for a Reservation</h5>
+                    <div class="form-group row mx-2">
+                        <label for="service">Search for services</label>
+                        <select id="service" class="form-control form-control-rounded row-mx-2">
+                            <option value=""></option>
+                            @foreach ($services as $service)
+                                <option value="{{ $service->id }}" data-name="{{ $service->name }}" data-price="{{ $service->price }}">{{ $service->name . " - RM " . $service->price }}</option>
                             @endforeach
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="4"></td>
-                                <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
-                            </tr>
-                        </tfoot>
-                    </table>
+                        </select>
+                    </div>
+                    <form id="service-form" action="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" method="POST">
+                        @csrf
+                        <div class="form-group row mx-2">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center">Service Name</th>
+                                            <th class="text-center">Price</th>
+                                            <th class="text-center">Quantity</th>
+                                            <th class="text-center">Total</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-service">
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td class="text-right" colspan="3">Total:</td>
+                                            <td class="text-center">RM <span id="totalPrice">0.00</span></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group row mt-3 mx-2 float-right">
+                            <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Add</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tab-pane" id="existing-services">
+                    <h5 class="mb-5 ml-2 font-weight-bold">Existing Services</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Service Name</th>
+                                    <th>Unit Price</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Purchased On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($reservation->services as $service)
+                                <tr>
+                                    <th>{{ $loop->index + 1 }}</th>
+                                    <td>{{ $service->name }}</td>
+                                    <td>RM {{ number_format($service->price, 2) }}</td>
+                                    <td>{{ $service->pivot->quantity }}</td>
+                                    <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                    <td>{{ $service->pivot->created_at->format("d M Y H:i:s") }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4"></td>
+                                    <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

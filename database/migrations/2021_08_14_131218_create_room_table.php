@@ -24,7 +24,7 @@ class CreateRoomTable extends Migration
             $table->integer("double_bed");
             $table->string("image_type");
             $table->string("note")->nullable();
-            $table->integer("housekeeper")->nullable()->index();
+            $table->integer("housekeep_by")->nullable()->index();
             $table->integer("status")->default(0);
             $table->timestamp('created_at')->nullable();
         });

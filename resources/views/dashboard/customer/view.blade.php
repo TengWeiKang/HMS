@@ -78,7 +78,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -90,7 +90,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($customer->bookings as $booking)
+                                        @foreach ($customer->bookings as $booking)
                                             <tr>
                                                 <td>{{ $loop->index + 1 }}</td>
                                                 <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $booking->room]) }}">{{ $booking->room->room_id }}</a></td>
@@ -108,11 +108,7 @@
                                                     @endif
                                                 </td>
                                             </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="5" class="text-center">No Reservation is made by any customers</td>
-                                            </tr>
-                                        @endforelse
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -124,3 +120,19 @@
     </div>
 </div>
 @endsection
+
+@push('script')
+    <script>
+        $(document).ready(function () {
+            $("#table").DataTable({
+                columnDefs: [
+                    {
+                        targets: 5,
+                        orderable: false,
+                        searchable: false
+                    }
+                ]
+            })
+        });
+    </script>
+@endpush
