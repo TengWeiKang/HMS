@@ -10,7 +10,6 @@ use App\Models\RoomType;
 use App\Models\Service;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class AnalysisController extends Controller
 {
@@ -35,8 +34,8 @@ class AnalysisController extends Controller
     public function json(Request $request) {
         $json = [];
         $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
-        $paymentItems = PaymentItem::with("payment", "payment.reservation.room", "service")->get();
-        $servicesArray = Service::all()->pluck("name")->toArray();
+        $paymentItems = PaymentItem::with(["payment:id,discount,payment_at", "payment.reservation.room:id,type", "service:id,name"])->get();
+        $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
 
         $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);
@@ -116,7 +115,7 @@ class AnalysisController extends Controller
 
     private function paymentsFilterByYear($payments, $year) {
         return $payments->filter(function ($value) use ($year) {
-            return Str::startsWith($value->payment_at, $year);
+            return $value->payment_at->format("Y") == $year;
         });
     }
 
@@ -137,7 +136,7 @@ class AnalysisController extends Controller
 
     private function paymentItemsFilterByYear($paymentItems, $year) {
         return $paymentItems->filter(function ($paymentItem) use ($year) {
-            return Str::startsWith($paymentItem->payment->payment_at, $year);
+            return $paymentItem->payment->payment_at->format("Y") == $year;
         });
     }
 

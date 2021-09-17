@@ -66,7 +66,7 @@ class RandomSeeder extends Seeder
 
         Customer::factory()->times(5)->create();
 
-        Service::factory()->times(100 )->create();
+        Service::factory()->times(30)->create();
 
         RoomType::factory()->times($faker->numberBetween(5, 8))->create()->each(function ($roomType) use ($faker, $facilities) {
             $roomType->rooms()->saveMany(Room::factory()->times($faker->numberBetween(1, 5))->make());
@@ -77,7 +77,7 @@ class RandomSeeder extends Seeder
         });
         $services = Service::all();
         Reservation::factory()->times(1000)->create()->each(function($reservation) use ($faker, $services) {
-            $selectedServices = $services->random($faker->numberBetween(0, min($services->count(), 20)));
+            $selectedServices = $services->random($faker->numberBetween(0, min($services->count(), 5)));
             $items = [];
             foreach ($selectedServices as $service) {
                 $random = $faker->numberBetween(1, 10);
