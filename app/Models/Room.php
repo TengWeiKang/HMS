@@ -100,7 +100,7 @@ class Room extends Model
 
     public function imageSrc() {
         if ($this->room_image == null)
-            return "data:" . $this->type->image_type . ";base64," . base64_encode($this->type->room_image);
+            return $this->type->imageSrc();
         return "data:" . $this->image_type . ";base64," . base64_encode($this->room_image);
     }
 

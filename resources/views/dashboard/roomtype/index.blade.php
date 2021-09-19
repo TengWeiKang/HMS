@@ -21,9 +21,10 @@
                                 <th>#</th>
                                 <th>Room Type Name</th>
                                 <th>Price</th>
-                                <th>Ssingle bed (Default)</th>
-                                <th>Double bed (Default)</th>
-                                <th>Number of rooms</th>
+                                <th>Single bed</th>
+                                <th>Double bed</th>
+                                <th># of rooms</th>
+                                <th># of facilities</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -36,6 +37,7 @@
                                     <td>{{ $roomType->single_bed }}</td>
                                     <td>{{ $roomType->double_bed }}</td>
                                     <td>{{ $roomType->rooms->count() }}</td>
+                                    <td>{{ $roomType->facilities->count() }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room-type.view", ["roomType" => $roomType]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
@@ -66,7 +68,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 5,
+                    "targets": 6,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false

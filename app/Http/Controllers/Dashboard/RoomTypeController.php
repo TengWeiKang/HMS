@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Models\Facility;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ class RoomTypeController extends Controller
      */
     public function index()
     {
-        $roomTypes = RoomType::with("rooms")->get();
+        $roomTypes = RoomType::with("rooms", "facilities")->get();
         return view("dashboard.roomtype.index", ["roomTypes" => $roomTypes]);
     }
 
@@ -26,7 +27,8 @@ class RoomTypeController extends Controller
      */
     public function create()
     {
-        return view("dashboard.roomtype.create-form");
+        $facilities = Facility::all();
+        return view("dashboard.roomtype.create-form", ["facilities" => $facilities]);
     }
 
     /**
@@ -49,7 +51,7 @@ class RoomTypeController extends Controller
         ]);
         $file = $request->file('image');
         $mimeType = $file->getMimeType();
-        RoomType::create([
+        $roomType = RoomType::create([
             "name" => $request->name,
             "single_bed" => $request->singleBed,
             "double_bed" => $request->doubleBed,
@@ -57,6 +59,7 @@ class RoomTypeController extends Controller
             "image_type" => $mimeType,
             "price" => $request->price,
         ]);
+        $roomType->facilities()->sync($request->facilities);
 
         return redirect()->route('dashboard.room-type.create')->with("message", "The new room type has created successfully");
     }
@@ -69,7 +72,7 @@ class RoomTypeController extends Controller
      */
     public function show(RoomType $roomType)
     {
-        $roomType->load("rooms");
+        $roomType->load("facilities", "rooms", "rooms.reservations");
         return view('dashboard.roomtype.view', ["roomType" => $roomType]);
     }
 
@@ -81,7 +84,9 @@ class RoomTypeController extends Controller
      */
     public function edit(RoomType $roomType)
     {
-        return view("dashboard.roomtype.edit-form", ["roomType" => $roomType]);
+        $roomType->load("facilities");
+        $facilities = Facility::all();
+        return view("dashboard.roomtype.edit-form", ["roomType" => $roomType, "facilities" => $facilities]);
     }
 
     /**
@@ -113,6 +118,7 @@ class RoomTypeController extends Controller
         $roomType->price = $request->price;
         $roomType->single_bed = $request->singleBed;
         $roomType->double_bed = $request->doubleBed;
+        $roomType->facilities()->sync($request->facilities);
         $roomType->save();
         return redirect()->route('dashboard.room-type.edit', ["roomType" => $roomType])->with("message", "The room type has updated successfully");
     }
@@ -126,6 +132,7 @@ class RoomTypeController extends Controller
     public function destroy(RoomType $roomType)
     {
         $roomType->delete();
+        $roomType->facilities()->detach();
         return response()->json(['success' => "The room type has been removed"]);
     }
 }

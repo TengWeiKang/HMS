@@ -67,7 +67,7 @@ class PaymentController extends Controller
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-            "price_per_night" => $reservation->room->price,
+            "price_per_night" => $reservation->room->type->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,
             "discount" => $request->discount

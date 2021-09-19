@@ -96,7 +96,7 @@ class Reservation extends Model
     }
 
     public function bookingPrice() {
-        return $this->dateDifference() * $this->room->price;
+        return $this->dateDifference() * $this->room->type->price;
     }
 
     /**

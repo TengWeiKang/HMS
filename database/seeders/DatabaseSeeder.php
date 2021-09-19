@@ -74,27 +74,22 @@ class DatabaseSeeder extends Seeder
 
         Facility::create([
             "name" => "Wi-Fi",
-            "default" => 1
         ]);
 
         Facility::create([
             "name" => "Air Conditioning",
-            "default" => 1
         ]);
 
         Facility::create([
             "name" => "Heater",
-            "default" => 1
         ]);
 
         Facility::create([
             "name" => "Refrigerator",
-            "default" => 0
         ]);
 
         Facility::create([
             "name" => "Car Park",
-            "default" => 0
         ]);
 
         $roomType1 = RoomType::create([

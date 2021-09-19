@@ -20,24 +20,22 @@ class DashboardController extends Controller
         $return = $request->return;
         $json = [];
         if ($return === "resources") {
-            $roomtypes = RoomType::with(["rooms", "rooms.reservations"])->get();
-            foreach ($roomtypes as $roomtype) {
-                if ($roomtype->rooms->count() == 0)
+            $roomTypes = RoomType::with(["rooms", "rooms.reservations"])->get();
+            foreach ($roomTypes as $roomType) {
+                if ($roomType->rooms->count() == 0)
                     continue;
                 $data = [
-                    "id" => $roomtype->id * -1,
-                    "title" => $roomtype->name,
+                    "id" => $roomType->id * -1,
+                    "title" => $roomType->name . " (RM " . number_format($roomType->price, 2) . ")",
                     "children" => [],
                     "editable" => false,
-                    "eventOverlap" => false,
-                    "selectable" => false,
                 ];
-                foreach ($roomtype->rooms as $room) {
+                foreach ($roomType->rooms as $room) {
                     $data["children"][] = [
                         "id" => $room->id,
                         "room_id" => $room->room_id,
                         "title" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
-                        "price" => $room->price,
+                        "price" => $roomType->price,
                         "status" => $room->status()
                     ];
                 }

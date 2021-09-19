@@ -34,7 +34,7 @@
                         <label for="roomType">Room Type <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="roomType" name="roomType">
                             @foreach ($roomTypes as $roomType)
-                                <option value="{{ $roomType->id }}" data-single="{{ $roomType->single_bed }}" data-double="{{ $roomType->double_bed }}" data-image-src="{{ $roomType->imageSrc() }}" @if ($errors->isEmpty() && $roomType->id == $room->type->id ||$errors->isNotEmpty() && old("roomType") == $roomType->id) selected @endif>{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }})</option>
+                                <option value="{{ $roomType->id }}" data-single="{{ $roomType->single_bed }}" data-double="{{ $roomType->double_bed }}" data-facilities="[{{ implode(", ",$roomType->facilities->pluck("id")->toArray()) }}]" data-image-src="{{ $roomType->imageSrc() }}" @if ($errors->isEmpty() && $roomType->id == $room->type->id ||$errors->isNotEmpty() && old("roomType") == $roomType->id) selected @endif>{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -128,15 +128,18 @@
                 let selected = $("#roomType").find(":selected");
                 let single = selected.data("single");
                 let double = selected.data("double");
+                let facilities = selected.data("facilities");
                 let [file] = $("#image")[0].files;
                 $("#singleBed").val(single);
                 $("#doubleBed").val(double);
+                $("#facilities").val(facilities).change();
                 if (!file) {
                     let src = selected.data("image-src");
                     $("#hotel_preview").attr("src", src);
                 }
             });
             $('.select2.select2-container').addClass('form-control form-control-rounded');
+            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
 
             $("#default").on("change", function () {
                 let checked = this.checked;

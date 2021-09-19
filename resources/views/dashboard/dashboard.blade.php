@@ -265,7 +265,7 @@
 @endsection
 
 @push('script')
-<script src="{{ asset("dashboard/plugins/fullcalendar-v5/main.js") }}"></script>
+<script src="{{ asset("dashboard/plugins/fullcalendar-v5/main.min.js") }}"></script>
 <script>
     $(document).ready(function () {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -488,7 +488,6 @@
 
                 let oldResourceInfo = oldEvent.getResources()[0];
                 let newResourceInfo = event.getResources()[0];
-
                 let oldRoomID = oldResourceInfo.extendedProps.room_id;
                 let oldRoomPrice = oldResourceInfo.extendedProps.price;
                 let newRoomID = newResourceInfo.extendedProps.room_id;
@@ -500,6 +499,15 @@
                         Swal.fire({
                             title: "Error",
                             text: "The room is reserved by other customer.",
+                            icon: "error",
+                        });
+                        return;
+                    }
+                    else if ((newResourceInfo.extendedProps.status == 2 || newResourceInfo.extendedProps.status == 3) && event.extendedProps.status == 1) {
+                        eventDropInfo.revert();
+                        Swal.fire({
+                            title: "Error",
+                            text: "The room is not ready to reserved to any customer.",
                             icon: "error",
                         });
                         return;
@@ -545,7 +553,6 @@
                     eventDropInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
-                    $("#undoBtn").unbind();
                     let eventID = event.id;
                     let roomID = newResourceInfo.id;
                     let startDateISO = dateISOString(event.start);
@@ -598,7 +605,6 @@
                     eventResizeInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
-                    $("#undoBtn").unbind();
                     let eventID = event.id;
                     let startDateISO = dateISOString(event.start);
                     let endDateISO = dateISOString(eventEnd);
@@ -659,6 +665,9 @@
             e.preventDefault();
             refetchCalendar();
         });
+        $("#drag-drop-modal").on("hide.bs.modal", function () {
+            $("#undoBtn, #saveBtn").unbind();
+        })
     });
 </script>
 @endpush

@@ -6,7 +6,18 @@
 
 @section("content")
 <div class="row mt-3">
-    <div class="col-lg-12">
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">Image Preview</div>
+                <hr>
+                <div class="hotel_img text-center">
+                    <img id="hotel_preview" class="mw-100" src="{{ $roomType->imageSrc() }}" alt="Hotel PlaceHolder">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9">
         <div class="card">
             <div class="card-body">
                 <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
@@ -30,16 +41,26 @@
                                         <td>{{ $roomType->name }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Single Bed Default Value:</td>
+                                        <td>Single Bed (Default):</td>
                                         <td>{{ $roomType->single_bed }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Double Bed Default Value:</td>
+                                        <td>Double Bed (Default):</td>
                                         <td>{{ $roomType->double_bed }}</td>
                                     </tr>
                                     <tr>
                                         <td>Number of Rooms:</td>
                                         <td>{{ $roomType->rooms->count() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Facilities (Default):</td>
+                                        <td>
+                                            @forelse ($roomType->facilities->pluck("name")->toArray() as $facility)
+                                                {{ $facility }}<br>
+                                            @empty
+                                                <span style="color: #F33">No Facilities for this room</span>
+                                            @endforelse
+                                        </td>
                                     </tr>
                                 </table>
                             </div>
@@ -94,7 +115,7 @@
             $("#table").DataTable({
                 columnDefs: [
                     {
-                        targets: 4,
+                        targets: 3,
                         orderable: false,
                         searchable: false
                     }

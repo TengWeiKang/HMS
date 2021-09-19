@@ -96,7 +96,7 @@ class RandomSeeder extends Seeder
             $payment = $reservation->payment()->create([
                 "reservation_id" => $reservation->id,
                 "room_name" => $reservation->room->name,
-                "price_per_night" => $reservation->room->price,
+                "price_per_night" => $reservation->room->type->price,
                 "start_date" => $reservation->start_date,
                 "end_date" => $reservation->end_date,
                 "discount" => $faker->numberBetween(0, 20),

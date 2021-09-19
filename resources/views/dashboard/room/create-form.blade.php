@@ -33,7 +33,7 @@
                         <label for="roomType">Room Type <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="roomType" name="roomType">
                             @foreach ($roomTypes as $roomType)
-                                <option value="{{ $roomType->id }}" data-single="{{ $roomType->single_bed }}" data-double="{{ $roomType->double_bed }}" data-image-src="{{ $roomType->imageSrc() }}" @if ($errors->isNotEmpty() && old("roomType") == $roomType->id) selected @endif>{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }})</option>
+                                <option value="{{ $roomType->id }}" data-single="{{ $roomType->single_bed }}" data-double="{{ $roomType->double_bed }}" data-facilities="[{{ implode(", ",$roomType->facilities->pluck("id")->toArray()) }}]" data-image-src="{{ $roomType->imageSrc() }}" @if ($errors->isNotEmpty() && old("roomType") == $roomType->id) selected @endif>{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }})</option>
                             @endforeach
                         </select>
                     </div>
@@ -47,7 +47,7 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="image">Room Image</label>
+                        <label for="image">Room Image (Ignore to use room type image as the room image)</label>
                         <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg">
                         @error("image")
                             <div class="ml-2 text-sm text-danger">
@@ -79,7 +79,7 @@
                         <label for="facilities">Facilities</label>
                         <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple">
                             @foreach ($facilities as $facility)
-                                <option value="{{ $facility->id }}" @if ($errors->isEmpty() && $facility->default == 1 || $errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
+                                <option value="{{ $facility->id }}">{{ $facility->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -111,9 +111,11 @@
                 let selected = $("#roomType").find(":selected");
                 let single = selected.data("single");
                 let double = selected.data("double");
+                let facilities = selected.data("facilities");
                 let [file] = $("#image")[0].files;
                 $("#singleBed").val(single);
                 $("#doubleBed").val(double);
+                $("#facilities").val(facilities).change();
                 if (!file) {
                     let src = selected.data("image-src");
                     $("#hotel_preview").attr("src", src);
@@ -129,7 +131,7 @@
                 updateDefaultBed();
             })
             $('.select2.select2-container').addClass('form-control form-control-rounded');
-
+            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
             $("#image").on("change", function () {
                 const [file] = this.files;
                 if (file) {

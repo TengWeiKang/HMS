@@ -4,6 +4,10 @@
     Dashboard | {{ $roomType->name }}
 @endsection
 
+@php
+    $roomTypeFacilities = $roomType->facilities->pluck("id")->toArray();
+@endphp
+
 @section("content")
 <div class="row mt-3">
     <div class="col-lg-8">
@@ -62,7 +66,15 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group mt-5">
+                    <div class="form-group">
+                        <label for="facilities">Facilities</label>
+                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple">
+                            @foreach ($facilities as $facility)
+                            <option value="{{ $facility->id }}" @if ($errors->isEmpty() && in_array($facility->id, $roomTypeFacilities) || $errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-pencil"></i> Update</button>
                     </div>
                 </form>
@@ -86,13 +98,19 @@
 @push('script')
     <script>
         $(document).ready(function () {
+            $('select.form-control#facilities').select2({
+                placeholder: "Please select facilities",
+                allowClear: true
+            });
+            $('.select2.select2-container').addClass('form-control form-control-rounded');
+            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
             $("#image").on("change", function () {
                 const [file] = this.files;
                 if (file) {
                     $("#hotel_preview").attr("src", URL.createObjectURL(file));
                 }
                 else {
-                    $("#hotel_preview").attr("src", {{ $roomType->imageSrc() }});
+                    $("#hotel_preview").attr("src", "{{ $roomType->imageSrc() }}");
                 }
             });
         });

@@ -32,6 +32,10 @@ class RoomType extends Model
         return $this->hasMany(Room::class, 'room_type');
     }
 
+    public function facilities() {
+        return $this->belongsToMany(Facility::class, "room_type_facility", "room_type_id", "facility_id");
+    }
+
     public function imageSrc() {
         return "data:" . $this->image_type . ";base64," . base64_encode($this->room_image);
     }

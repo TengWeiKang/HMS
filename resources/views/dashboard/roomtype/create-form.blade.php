@@ -61,6 +61,14 @@
                             </div>
                         @enderror
                     </div>
+                    <div class="form-group">
+                        <label for="facilities">Facilities</label>
+                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple">
+                            @foreach ($facilities as $facility)
+                                <option value="{{ $facility->id }}" @if ($errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="form-group mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
                     </div>
@@ -85,6 +93,12 @@
 @push('script')
     <script>
         $(document).ready(function () {
+            $('select.form-control#facilities').select2({
+                placeholder: "Please select facilities",
+                allowClear: true
+            });
+            $('.select2.select2-container').addClass('form-control form-control-rounded');
+            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
             $("#image").on("change", function () {
                 const [file] = this.files;
                 if (file) {

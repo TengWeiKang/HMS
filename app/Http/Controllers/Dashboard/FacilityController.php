@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Facility;
+use App\Models\RoomType;
 use Illuminate\Http\Request;
 
 class FacilityController extends Controller
@@ -30,7 +31,8 @@ class FacilityController extends Controller
      */
     public function create()
     {
-        return view('dashboard/facility/create-form');
+        $roomTypes = RoomType::all();
+        return view('dashboard/facility/create-form', ["roomTypes" => $roomTypes]);
     }
 
     /**
@@ -45,10 +47,10 @@ class FacilityController extends Controller
             'facility' => 'required|max:255|unique:facility,name',
         ]);
 
-        Facility::create([
+        $facility = Facility::create([
             "name" => $request->facility,
-            "default" => $request->has("default") ? 1 : 0
         ]);
+        $facility->roomTypes()->sync($request->roomTypes);
         return redirect()->route('dashboard.facility.create')->with("message", "New Facility Created Successfully");
     }
 
@@ -71,7 +73,9 @@ class FacilityController extends Controller
      */
     public function edit(Facility $facility)
     {
-        return view('dashboard/facility/edit-form', ["facility" => $facility]);
+        $facility->load("roomTypes");
+        $roomTypes = RoomType::all();
+        return view('dashboard/facility/edit-form', ["facility" => $facility, "roomTypes" => $roomTypes]);
     }
 
     /**
@@ -86,8 +90,8 @@ class FacilityController extends Controller
         $this->validate($request, [
             'facility' => 'required|max:255|unique:facility,name,'.$facility->id
         ]);
+        $facility->roomTypes()->sync($request->roomTypes);
         $facility->name = $request->facility;
-        $facility->default = $request->has("default") ? 1 : 0;
         $facility->save();
         return redirect()->route('dashboard.facility.edit', ['facility' => $facility])->with("message", "The facility has successfully updated");
     }
@@ -101,6 +105,7 @@ class FacilityController extends Controller
     public function destroy(Facility $facility)
     {
         $facility->rooms()->detach();
+        $facility->roomTypes()->detach();
         $facility->delete();
         return response()->json(['success' => "The facility has been removed"]);
     }
