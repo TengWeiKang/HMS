@@ -16,7 +16,10 @@ class RoomType extends Model
     protected $fillable = [
         'name',
         'single_bed',
-        'double_bed'
+        'double_bed',
+        'price',
+        'room_image',
+        'image_type',
     ];
 
     /**
@@ -27,5 +30,9 @@ class RoomType extends Model
     public function rooms()
     {
         return $this->hasMany(Room::class, 'room_type');
+    }
+
+    public function imageSrc() {
+        return "data:" . $this->image_type . ";base64," . base64_encode($this->room_image);
     }
 }

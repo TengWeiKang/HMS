@@ -41,11 +41,21 @@ class RoomTypeController extends Controller
             "name" => "required|max:255|unique:room_type,name",
             "singleBed" => "required|numeric|min:0|max:20",
             "doubleBed" => "required|numeric|min:0|max:20",
+            'price' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
+            'image' => 'required|file|mimes:jpg,png,jpe,jpeg',
+        ],
+        [
+            'price.regex' => 'The price can only accept 2 decimals'
         ]);
+        $file = $request->file('image');
+        $mimeType = $file->getMimeType();
         RoomType::create([
             "name" => $request->name,
             "single_bed" => $request->singleBed,
             "double_bed" => $request->doubleBed,
+            "room_image" => file_get_contents($request->image),
+            "image_type" => $mimeType,
+            "price" => $request->price,
         ]);
 
         return redirect()->route('dashboard.room-type.create')->with("message", "The new room type has created successfully");
@@ -87,8 +97,20 @@ class RoomTypeController extends Controller
             "name" => "required|max:255|unique:room_type,name," . $roomType->id,
             "singleBed" => "required|numeric|min:0|max:20",
             "doubleBed" => "required|numeric|min:0|max:20",
+            'price' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
+            'image' => 'file|mimes:jpg,png,jpe,jpeg',
+        ],
+        [
+            'price.regex' => 'The price can only accept 2 decimals'
         ]);
+        if ($request->hasFile("image")) {
+            $file = $request->file('image');
+            $mimeType = $file->getMimeType();
+            $roomType->room_image = file_get_contents($request->image);
+            $roomType->image_type = $mimeType;
+        }
         $roomType->name = $request->name;
+        $roomType->price = $request->price;
         $roomType->single_bed = $request->singleBed;
         $roomType->double_bed = $request->doubleBed;
         $roomType->save();

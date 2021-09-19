@@ -65,7 +65,7 @@
                                 </tr>
                                 <tr>
                                     <td>Price <small>/night</small>:</td>
-                                    <td>RM {{ number_format($room->price, 2) }}</td>
+                                    <td>RM {{ number_format($room->type->price, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Single Bed:</td>
@@ -228,7 +228,7 @@
                         $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
                         $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
                         $("#numDays")[0].innerHTML = numberOfDays;
-                        $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $room->price }}).toFixed(2);
+                        $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $room->type->price }}).toFixed(2);
                     }
                     else {
                         updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");

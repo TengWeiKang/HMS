@@ -9,7 +9,7 @@
             </div>
             <a href="{{ route("customer.room.view", ["room" => $room]) }}"><h3 class="sec_h4">{{ $room->name }}</h3></a>
             <h4>{{ $room->type->name }}</h4>
-            <h5>RM {{ number_format($room->price, 2) }}<small>/night</small></h5>
+            <h5>RM {{ number_format($room->type->price, 2) }}<small>/night</small></h5>
         </div>
     </div>
 @empty

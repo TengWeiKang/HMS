@@ -46,7 +46,7 @@
                             <tbody>
                                 <tr>
                                     <td class="align-middle">{{ $reservation->room->room_id }} - {{ $reservation->room->name }}<br>({{ $reservation->start_date->format("d M Y") }} - {{ $reservation->end_date->format("d M Y") }})</td>
-                                    <td class="align-middle">RM {{ number_format($reservation->room->price, 2) }}</td>
+                                    <td class="align-middle">RM {{ number_format($reservation->room->type->price, 2) }}</td>
                                     <td class="align-middle">{{ $reservation->dateDifference() }}</td>
                                     <td class="align-middle">RM {{ number_format($reservation->bookingPrice(), 2) }}</td>
                                 </tr>

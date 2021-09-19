@@ -54,9 +54,9 @@
                                 @if ($roomType->rooms->count() == 0)
                                     @continue
                                 @endif
-                                <optgroup label="{{ $roomType->name }}">
+                                <optgroup label="{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }} per night)">
                                     @foreach($roomType->rooms as $room)
-                                        <option value="{{ $room->id }}" data-price="{{ $room->price }}" data-status="{{ $room->status() }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ") (RM " . number_format($room->price, 2) . " per night)"}}</option>
+                                        <option value="{{ $room->id }}" data-price="{{ $room->type->price }}" data-status="{{ $room->status() }}" @if ($errors->isEmpty() && request()->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")"}}</option>
                                     @endforeach
                                 </optgroup>
                             @endforeach

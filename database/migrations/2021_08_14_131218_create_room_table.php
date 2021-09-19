@@ -18,17 +18,16 @@ class CreateRoomTable extends Migration
             $table->id();
             $table->string("room_id")->unique();
             $table->string("name");
-            $table->double("price");
             $table->integer("room_type")->index();
             $table->integer("single_bed");
             $table->integer("double_bed");
-            $table->string("image_type");
+            $table->string("image_type")->nullable();
             $table->string("note")->nullable();
             $table->integer("housekeep_by")->nullable()->index();
             $table->integer("status")->default(0);
             $table->timestamp('created_at')->nullable();
         });
-        DB::statement("ALTER TABLE room ADD room_image LONGBLOB NOT NULL AFTER double_bed");
+        DB::statement("ALTER TABLE room ADD room_image LONGBLOB NULL AFTER double_bed");
     }
 
     /**

@@ -52,7 +52,7 @@
                             </tr>
                             <tr>
                                 <td>Price:</td>
-                                <td>RM {{ number_format($room->price, 2) }}</td>
+                                <td>RM {{ number_format($room->type->price, 2) }}</td>
                             </tr>
                             <tr>
                                 <td>Single Bed:</td>

@@ -56,7 +56,6 @@
                                         <tr>
                                             <th>Room ID</th>
                                             <th>Room Name</th>
-                                            <th>Price per night</th>
                                             <th>Status</th>
                                             <th class="text-center">Action</th>
                                         </tr>
@@ -66,7 +65,6 @@
                                             <tr>
                                                 <td>{{ $room->room_id}}</td>
                                                 <td>{{ $room->name }}</td>
-                                                <td>RM {{ number_format($room->price, 2) }}</td>
                                                 <td style="color: {{ $room->statusColor() }}">{!! $room->statusName(true) !!}</td>
                                                 <td class="text-center">
                                                     <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">

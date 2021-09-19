@@ -20,8 +20,9 @@
                             <tr>
                                 <th>#</th>
                                 <th>Room Type Name</th>
-                                <th>Default for single bed</th>
-                                <th>Default for double bed</th>
+                                <th>Price</th>
+                                <th>Ssingle bed (Default)</th>
+                                <th>Double bed (Default)</th>
                                 <th>Number of rooms</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -31,6 +32,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $roomType->name }}</td>
+                                    <td>RM {{ number_format($roomType->price, 2) }}</td>
                                     <td>{{ $roomType->single_bed }}</td>
                                     <td>{{ $roomType->double_bed }}</td>
                                     <td>{{ $roomType->rooms->count() }}</td>

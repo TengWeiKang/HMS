@@ -101,24 +101,32 @@ class DatabaseSeeder extends Seeder
             "name" => "Deluxe Room",
             "single_bed" => 2,
             "double_bed" => 1,
+            "price" => 50.5,
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
+            "image_type" => "image/jpg",
         ]);
 
         $roomType2 = RoomType::create([
             "name" => "Superior Room",
             "single_bed" => 1,
             "double_bed" => 2,
+            "price" => 30,
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
+            "image_type" => "image/jpg",
         ]);
 
         RoomType::create([
             "name" => "Demo Delete Room",
             "single_bed" => 1,
             "double_bed" => 1,
+            "price" => 70,
+            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
+            "image_type" => "image/jpg",
         ]);
 
         Room::create([
             "room_id" => "R101",
             "name" => "Room Name 1",
-            "price" => 50.5,
             "room_type" => $roomType1->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
@@ -129,7 +137,6 @@ class DatabaseSeeder extends Seeder
         Room::create([
             "room_id" => "R102",
             "name" => "Room Name 2",
-            "price" => 40,
             "room_type" => $roomType2->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
@@ -140,7 +147,6 @@ class DatabaseSeeder extends Seeder
         Room::create([
             "room_id" => "R103",
             "name" => "Room Name 3",
-            "price" => 70,
             "room_type" => $roomType2->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
             "image_type" => "image/jpg",
@@ -152,7 +158,6 @@ class DatabaseSeeder extends Seeder
         Room::create([
             "room_id" => "R104",
             "name" => "Room Name 4",
-            "price" => 22,
             "room_type" => $roomType1->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room4.jpg"),
             "image_type" => "image/jpg",
@@ -165,7 +170,6 @@ class DatabaseSeeder extends Seeder
         Room::create([
             "room_id" => "R105",
             "name" => "Room Name 5",
-            "price" => 22,
             "room_type" => $roomType1->id,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
@@ -252,7 +256,7 @@ class DatabaseSeeder extends Seeder
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-            "price_per_night" => $reservation->room->price,
+            "price_per_night" => $reservation->room->type->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,
             "payment_at" => Carbon::now()->subDays(5),
@@ -285,7 +289,7 @@ class DatabaseSeeder extends Seeder
         $payment2 = Payment::create([
             "reservation_id" => $reservation2->id,
             "room_name" => $reservation2->room->room_id . " - " . $reservation2->room->name,
-            "price_per_night" => $reservation2->room->price,
+            "price_per_night" => $reservation2->room->type->price,
             "start_date" => $reservation2->start_date,
             "end_date" => $reservation2->end_date,
             "payment_at" => Carbon::now()->subDays(31),

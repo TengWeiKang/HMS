@@ -52,23 +52,18 @@ class RoomController extends Controller
         $this->validate($request, [
             'roomId' => 'required|max:255|unique:room,room_id',
             'name' => 'required|max:255',
-            'price' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
-            'image' => 'required|file|mimes:jpg,png,jpe,jpeg',
+            'image' => 'file|mimes:jpg,png,jpe,jpeg',
             'singleBed' => 'required|numeric|min:0|max:20',
             'doubleBed' => 'required|numeric|min:0|max:20',
-        ],
-        [
-            'price.regex' => 'The price can only accept 2 decimals'
         ]);
         $file = $request->file('image');
-        $mimeType = $file->getMimeType();
-
+        $mimeType = optional($file)->getMimeType();
         Room::create([
             "room_id" => $request->roomId,
             "name" => $request->name,
             "price" => $request->price,
             "room_type" => $request->roomType,
-            "room_image" => file_get_contents($request->image),
+            "room_image" => $file ? file_get_contents($file) : null,
             "image_type" => $mimeType,
             "single_bed" => $request->singleBed,
             "double_bed" => $request->doubleBed,
@@ -117,26 +112,24 @@ class RoomController extends Controller
         $this->validate($request, [
             'roomId' => 'required|max:255|unique:room,room_id,'.$room->id,
             'name' => 'required|max:255',
-            'price' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
-            'image' => 'file|mimes:jpg,png,jpe,jpeg',
+            'image' => (!$request->default && !$room->room_image ? "required|" : "") . 'file|mimes:jpg,png,jpe,jpeg',
             'singleBed' => 'required|numeric|min:0|max:20',
             'doubleBed' => 'required|numeric|min:0|max:20',
-        ],
-        [
-            'price.regex' => 'The price can only accept 2 decimals'
         ]);
-        if ($request->hasFIle("image")) {
-            $file = $request->file('image');
-            $mimeType = $file->getMimeType();
+        if ($request->default) {
+            $room->room_image = null;
+            $room->image_type = null;
+        }
+        else if ($request->hasFile("image")) {
+            $file = optional($request->file('image'));
+            $mimeType = optional($file)->getMimeType();
             $room->room_image = file_get_contents($request->image);
             $room->image_type = $mimeType;
-
         }
 
         $room->room_id = $request->roomId;
         $room->name = $request->name;
         $room->room_type = $request->roomType;
-        $room->price = $request->price;
         $room->single_bed = $request->singleBed;
         $room->double_bed = $request->doubleBed;
         $room->save();

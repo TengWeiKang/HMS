@@ -27,7 +27,6 @@ class Room extends Model
     protected $fillable = [
         'room_id',
         'name',
-        'price',
         'room_type',
         'single_bed',
         'double_bed',
@@ -97,6 +96,12 @@ class Room extends Model
 
     public function isReserved() {
         return $this->reservedBy() != null;
+    }
+
+    public function imageSrc() {
+        if ($this->room_image == null)
+            return "data:" . $this->type->image_type . ";base64," . base64_encode($this->type->room_image);
+        return "data:" . $this->image_type . ";base64," . base64_encode($this->room_image);
     }
 
     public function reservedBy() {

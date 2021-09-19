@@ -26,7 +26,7 @@
                 <div class="card-title">Image Preview</div>
                 <hr>
                 <div class="hotel_img text-center">
-                    <img id="hotel_preview" class="mw-100" src="data:{{ $room->image_type }};base64,{{ base64_encode($room->room_image) }}" alt="Hotel PlaceHolder">
+                    <img id="hotel_preview" class="mw-100" src="{{ $room->imageSrc() }}" alt="Hotel PlaceHolder">
                 </div>
             </div>
         </div>
@@ -66,11 +66,7 @@
                                     </tr>
                                     <tr>
                                         <td>Room Type:</td>
-                                        <td><a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Price:</td>
-                                        <td>RM {{ number_format($room->price, 2) }}</td>
+                                        <td><a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a> (RM {{ number_format($room->type->price, 2) }})</td>
                                     </tr>
                                     <tr>
                                         <td>Single Bed:</td>
@@ -207,9 +203,9 @@
                         <div class="form-group row mx-2">
                             <label for="status">Room Status</label>
                             <select class="form-control" id="status" name="status">
-                                <option value="0" @if ($room->status == 0) selected @endif>Available</option>
-                                <option value="2" @if ($room->status == 2) selected @endif>Dirty</option>
-                                <option value="3" @if ($room->status == 3) selected @endif>Repairing</option>
+                                <option value="0" @if ($room->status() == 0) selected @endif>Available</option>
+                                <option value="2" @if ($room->status() == 2) selected @endif>Dirty</option>
+                                <option value="3" @if ($room->status() == 3) selected @endif>Repairing</option>
                                 {{-- <option value="1" @if ($room->status == 1) selected @endif>Closed</option> --}}
                             </select>
                         </div>
