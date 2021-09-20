@@ -52,7 +52,8 @@ class PaymentController extends Controller
                 "service_id" => $service->id,
                 "service_name" => $service->name,
                 "quantity" => $service->pivot->quantity,
-                "unit_price" => $service->price
+                "unit_price" => $service->price,
+                "purchase_at" => $service->pivot->created_at
             ];
         }
         $charges = [];
@@ -94,39 +95,5 @@ class PaymentController extends Controller
     {
         $payment->load("items", "charges", "reservation");
         return view('dashboard/payment/view', ["payment" => $payment]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Payment  $payment
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Payment $payment)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Payment  $payment
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Payment $payment)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Payment  $payment
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Payment $payment)
-    {
-        //
     }
 }

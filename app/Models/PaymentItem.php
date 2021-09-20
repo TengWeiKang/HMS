@@ -18,6 +18,11 @@ class PaymentItem extends Model
         'service_name',
         'quantity',
         'unit_price',
+        'purchase_at',
+    ];
+
+    protected $casts = [
+        "purchase_at" => "datetime"
     ];
 
     public function servicePrice() {

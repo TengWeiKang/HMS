@@ -115,10 +115,11 @@
                                             <td>RM {{ number_format($service->price, 2) }}</td>
                                             <td>{{ $service->pivot->quantity }}</td>
                                             <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                            <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <th colspan="5" class="text-center">No Room Service Found</th>
+                                            <th colspan="6" class="text-center">No Room Service Found</th>
                                         </tr>
                                         @endforelse
                                     </tbody>

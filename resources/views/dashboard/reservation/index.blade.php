@@ -48,7 +48,7 @@
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            @if ($reservation->status() == 0 && $reservation->room->status() == 0)
+                                            @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]))
                                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>

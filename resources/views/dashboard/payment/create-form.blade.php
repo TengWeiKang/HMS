@@ -68,7 +68,7 @@
                             <tbody>
                                 @foreach ($reservation->services as $service)
                                 <tr>
-                                    <td class="align-middle">{{ $service->name }}</td>
+                                    <td class="align-middle">{{ $service->name }}<br>Purchased on: {{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
                                     <td class="align-middle">RM {{ number_format($service->price, 2) }}</td>
                                     <td class="align-middle">{{ $service->pivot->quantity }}</td>
                                     <td class="align-middle">RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>

@@ -25,6 +25,9 @@ class RoomTypeFactory extends Factory
             "name" => $this->faker->unique()->word,
             "single_bed" => $this->faker->randomDigit(),
             "double_bed" => $this->faker->randomDigit(),
+            'price' => $this->faker->randomFloat(0, 20, 100),
+            'room_image' => file_get_contents($this->faker->image(null, 300, 300)),
+            'image_type' => "image/jpg",
         ];
     }
 }

@@ -111,6 +111,7 @@
                                             <th>Unit Price</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
+                                            <th>Purchased on</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -121,10 +122,11 @@
                                             <td>RM {{ number_format($service->price, 2) }}</td>
                                             <td>{{ $service->pivot->quantity }}</td>
                                             <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                            <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
                                         </tr>
                                         @empty
                                         <tr>
-                                            <th colspan="5" class="text-center">No Room Service Found</th>
+                                            <th colspan="6" class="text-center">No Room Service Found</th>
                                         </tr>
                                         @endforelse
                                     </tbody>
@@ -150,7 +152,7 @@
             <div class="card-body">
                 <div class="row">
                     @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                        @if ($reservation->status() == 0 && $reservation->room->status() == 0)
+                        @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]))
                         <div class="col-2">
                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
                                 Check in

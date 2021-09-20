@@ -267,7 +267,7 @@ class ReservationController extends Controller
 
     public function checkIn(Reservation $reservation)
     {
-        if ($reservation->room->status() == 0) {
+        if (in_array($reservation->room->status(), [0, 1])) {
             $reservation->check_in = Carbon::now();
             $reservation->status = 0;
             $reservation->save();

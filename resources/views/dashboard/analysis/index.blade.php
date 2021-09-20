@@ -421,7 +421,6 @@
                         datalabels: {
                             display: (data.length > 10 && data.reduce(sum, 0) != 0) ? false: true,
                             formatter: (value, ctx) => {
-                                console.log(ctx);
                                 let dataArr = ctx.chart.data.datasets[0].data;
                                 let total = dataArr.reduce(sum, 0);
                                 if (total == 0 && ctx.dataIndex == 0)
@@ -491,6 +490,7 @@
             let roomTypeID = $("#roomType").val();
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
+            console.log("ajax call");
             $.ajax({
                 type: "GET",
                 url: "{{ route("dashboard.analysis.json") }}",

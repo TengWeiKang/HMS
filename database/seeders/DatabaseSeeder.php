@@ -244,8 +244,10 @@ class DatabaseSeeder extends Seeder
             "check_out" => Carbon::now()
         ]);
         $reservation->services()->attach([
+            ["service_id" => 1, "quantity" => 5, "created_at" => Carbon::now()->subDay()],
+            ["service_id" => 3, "quantity" => 10, "created_at" => Carbon::now()->subDay()],
             ["service_id" => 1, "quantity" => 5],
-            ["service_id" => 3, "quantity" => 10],
+            ["service_id" => 2, "quantity" => 7],
         ]);
 
         $payment = Payment::create([
@@ -258,14 +260,15 @@ class DatabaseSeeder extends Seeder
             "discount" => 20,
         ]);
         $payment->items()->createMany([
-            ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price],
-            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 10, "unit_price" => $service3->price],
+            ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price, "purchase_at" => Carbon::now()->subDay()],
+            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 10, "unit_price" => $service3->price, "purchase_at" => Carbon::now()->subDay()],
+            ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price, "purchase_at" => Carbon::now()],
+            ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 7, "unit_price" => $service2->price, "purchase_at" => Carbon::now()],
         ]);
         $payment->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],
             ["description" => "another charges", "price" => 40],
         ]);
-
 
         $reservation2 = Reservation::create([
             "room_id" => 2,
@@ -277,8 +280,8 @@ class DatabaseSeeder extends Seeder
             "check_out" => Carbon::now()->subDay(31)
         ]);
         $reservation2->services()->attach([
-            ["service_id" => 2, "quantity" => 3],
-            ["service_id" => 3, "quantity" => 2],
+            ["service_id" => 2, "quantity" => 3, "created_at" => Carbon::now()->subDay(34)],
+            ["service_id" => 3, "quantity" => 2, "created_at" => Carbon::now()->subDay(33)],
         ]);
 
         $payment2 = Payment::create([
@@ -291,8 +294,8 @@ class DatabaseSeeder extends Seeder
             "discount" => 20,
         ]);
         $payment2->items()->createMany([
-            ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 3, "unit_price" => $service2->price],
-            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 5, "unit_price" => $service3->price],
+            ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 3, "unit_price" => $service2->price, "purchase_at" => Carbon::now()->subDay(34)],
+            ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 5, "unit_price" => $service3->price, "purchase_at" => Carbon::now()->subDay(33)],
         ]);
         $payment2->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],

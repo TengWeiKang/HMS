@@ -20,6 +20,7 @@ class CreatePaymentItemTable extends Migration
             $table->string("service_name");
             $table->integer("quantity");
             $table->double("unit_price");
+            $table->timestamp("purchase_at");
         });
     }
 

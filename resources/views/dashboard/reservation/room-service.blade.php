@@ -112,7 +112,7 @@
                                     <td>RM {{ number_format($service->price, 2) }}</td>
                                     <td>{{ $service->pivot->quantity }}</td>
                                     <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                    <td>{{ $service->pivot->created_at->format("d M Y H:i:s") }}</td>
+                                    <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -120,6 +120,7 @@
                                 <tr>
                                     <td colspan="4"></td>
                                     <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
+                                    <td></td>
                                 </tr>
                             </tfoot>
                         </table>
