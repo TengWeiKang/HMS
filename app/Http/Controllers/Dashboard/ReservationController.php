@@ -59,6 +59,78 @@ class ReservationController extends Controller
     }
 
     /**
+     * Return a listing of the resource with certain attributes.
+     *
+     * @return array
+     */
+    public function roomSearch(Request $request)
+    {
+        $rawRoomType = RoomType::with("rooms", "rooms.reservations");
+        if (!empty($request->roomType)) {
+            $rawRoomType = $rawRoomType->where("id", $request->roomType);
+        }
+        $roomTypes = $rawRoomType->get();
+        if (!empty($request->startDate) && !empty($request->endDate)){
+            $arrival = new Carbon($request->startDate);
+            $departure = new Carbon($request->endDate);
+        }
+        else {
+            return ["results" => []];
+        }
+        $roomTypes->each(function ($roomType) use ($request, $arrival, $departure) {
+            $roomType->rooms = $roomType->rooms->filter(function ($room) use ($request, $arrival, $departure) {
+                if (!empty($arrival) && !empty($departure)) {
+                    $reservations = $room->reservations->filter(function ($value2, $key) use ($arrival, $departure) {
+                        if ($value2->start_date->lte($arrival) && $value2->end_date->gte($arrival) ||
+                        $value2->start_date->lte($departure) && $value2->end_date->gte($departure) ||
+                        $value2->start_date->gte($arrival) && $value2->end_date->lte($departure)) {
+                            return true;
+                        }
+                        return false;
+                    });
+                    if ($reservations->count() > 0)
+                        return false;
+                }
+                if (!empty($request->single) && $room->single_bed != $request->single) {
+                    return false;
+                }
+                if (!empty($request->double) && $room->double_bed != $request->double) {
+                    return false;
+                }
+                if (!empty($request->person) && $request->person != $room->single_bed + $room->double_bed * 2) {
+                    return false;
+                }
+                if ($request->checkIn == "true") {
+                    if (!in_array($room->status(), [0, 1])) {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        });
+        return $this->convertToJson($roomTypes);
+    }
+
+    private function convertToJson($roomTypes) {
+        $json["results"] = [];
+        foreach ($roomTypes as $roomType) {
+            if ($roomType->rooms->count() == 0)
+                continue;
+            $data["text"] = $roomType->name . " (RM " . number_format($roomType->price, 2) . ")";
+            $data["children"] = [];
+            foreach ($roomType->rooms as $room) {
+                array_push($data["children"], [
+                    "id" => $room->id,
+                    "text" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
+                    "price" => $roomType->price
+                ]);
+            }
+            array_push($json["results"], $data);
+        }
+        return $json;
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -79,13 +151,14 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            "room" => "required",
             "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate",
         ]);
         $validator->validate();
         $validator->after(function ($validator) use ($request) {
-            $count = Reservation::where("room_id", $request->roomId)
+            $count = Reservation::where("room_id", $request->room)
             ->where(function ($query) use ($request) {
                 $query->where("start_date", "<=", $request->startDate)
                     ->where("end_date", ">=", $request->startDate)
@@ -113,14 +186,14 @@ class ReservationController extends Controller
         $customerID = (int) $customerID;
         $error = "";
         if ($request->checkIn) {
-            $room = Room::find($request->roomId);
+            $room = Room::find($request->room);
             if ($room->isReserved()) {
                 $request->checkIn = false;
                 $error = "The room is currently reserved by other customer";
             }
         }
         Reservation::create([
-            "room_id" => $request->roomId,
+            "room_id" => $request->room,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
             "reservable_type" => $isCustomer ? Customer::class : Guest::class,

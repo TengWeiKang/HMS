@@ -133,6 +133,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
     Route::group(["prefix" => "reservation"], function() {
         Route::get("/", [ReservationController::class, "index"])->name("dashboard.reservation");
         Route::post("/json", [ReservationController::class, "json"])->name("dashboard.reservation.json");
+        Route::get("/search", [ReservationController::class, "roomSearch"])->name("dashboard.reservation.search");
         Route::get("/create", [ReservationController::class, "create"])->name("dashboard.reservation.create");
         Route::post("/create", [ReservationController::class, "store"]);
         Route::get("/{reservation}", [ReservationController::class, "show"])->name("dashboard.reservation.view");
