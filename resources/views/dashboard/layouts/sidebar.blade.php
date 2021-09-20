@@ -60,13 +60,11 @@
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.room") }}">
                 <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
             </a>
         </li>
-        @endif
         @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.facility") }}">

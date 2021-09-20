@@ -11,14 +11,10 @@ use App\Models\Service;
 use App\Models\RoomType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
 {
-    public function __construct() {
-        $this->middleware("employee:admin,frontdesk");
-    }
     /**
      * Display a listing of the resource.
      *

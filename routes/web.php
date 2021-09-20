@@ -109,6 +109,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
     Route::group(["prefix" => "room"], function() {
         Route::get("/", [RoomController::class, "index"])->name("dashboard.room");
         Route::post("/assign", [RoomController::class, "assign"])->name("dashboard.room.assign");
+        Route::post("/self-assign", [RoomController::class, "selfAssign"])->name("dashboard.room.self-assign");
         Route::post("/status", [RoomController::class, "updateStatus"])->name("dashboard.room.status");
         Route::get("/create", [RoomController::class, "create"])->name("dashboard.room.create");
         Route::post("/create", [RoomController::class, "store"]);

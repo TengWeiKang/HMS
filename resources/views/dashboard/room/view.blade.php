@@ -36,6 +36,9 @@
         @if ($room->status != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
         @endif
+        @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
+            <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#self-assign-modal">Self Assign Housekeeper</button>
+        @endif
     </div>
     <div class="col-lg-9">
         <div class="card">
@@ -218,6 +221,30 @@
                         <input type="hidden" name="id" value="{{ $room->id }}">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Self Assign Kousekeeper Modal -->
+    <form action="{{ route("dashboard.room.self-assign") }}" method="POST">
+        @csrf
+        <div class="modal fade overflow-hidden" id="self-assign-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Self Assign Housekeeper for {{ $room->room_id }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p style="color: black">Are you sure you want to assign yourself to {{ $room->room_id }}?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="{{ $room->id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <input type="submit" class="btn btn-primary" value="Yes">
                     </div>
                 </div>
             </div>

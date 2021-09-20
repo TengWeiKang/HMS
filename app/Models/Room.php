@@ -46,7 +46,7 @@ class Room extends Model
         if ($this->isReserved()) {
             return 4;
         }
-        else if($this->isBooked()) {
+        else if($this->status == 0 && $this->isBooked()) {
             return 1;
         }
         return $this->status;

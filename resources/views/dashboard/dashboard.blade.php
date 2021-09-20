@@ -307,7 +307,7 @@
             selectOverlap: false,
             displayEventTime: false,
             lazyFetching: false,
-            selectable: true,
+            selectable: @if (Auth::guard("employee")->user()->isAccessible("admin", "frontdesk")) true @else false @endif,
             resourceOrder: 'title',
             refetchResourcesOnNavigate: true,
             slotLabelFormat: [
@@ -650,10 +650,12 @@
                     }
                     return createElement("a", {href: redirectURL, class: "resource-url " + status_css}, arg["fieldValue"]);
                 }
+                @if (Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
                 else {
                     redirectURL = REDIRECT_ROOM_TYPE_URL.replace(":id", arg.resource.id * -1);
                     return createElement("a", {href: redirectURL, class: "resource-url"}, arg["fieldValue"]);
                 }
+                @endif
             },
             selectAllow: function(selectInfo) {
                 if (selectInfo.resource.id < 0)

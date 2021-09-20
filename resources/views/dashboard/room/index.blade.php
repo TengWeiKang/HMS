@@ -51,26 +51,31 @@
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
+                                        @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
+                                            <a class="self-assign" style="cursor: pointer" data-toggle="modal" data-target="#self-assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Self Assign">
+                                                <i class="ti ti-brush text-white"></i>
+                                            </a>
+                                        @endif
                                         @if (Auth::guard("employee")->user()->isAccessible("admin"))
-                                        <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
-                                            <i class="zmdi zmdi-edit text-white"></i>
-                                        </a>
-                                        <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer" title="Delete">
-                                            <i class="zmdi zmdi-delete text-white"></i>
-                                        </a>
+                                            <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
+                                                <i class="zmdi zmdi-edit text-white"></i>
+                                            </a>
+                                            <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer" title="Delete">
+                                                <i class="zmdi zmdi-delete text-white"></i>
+                                            </a>
                                         @endif
                                         <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                         @if (!$room->isReserved() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                        <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
-                                            <i class="fa fa-user-plus text-white"></i>
-                                        </a>
+                                            <a style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
+                                                <i class="fa fa-user-plus text-white"></i>
+                                            </a>
                                         @endif
                                         @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
-                                        <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
-                                            <i class="icon-settings text-white"></i>
-                                        </a>
+                                            <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                <i class="icon-settings text-white"></i>
+                                            </a>
                                         @endif
                                     </td>
                                 </tr>
@@ -103,6 +108,30 @@
                                         <input type="hidden" name="id">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                         <input type="submit" class="btn btn-primary" value="Submit">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- Self Assign Kousekeeper Modal -->
+                    <form action="{{ route("dashboard.room.self-assign") }}" method="POST">
+                        @csrf
+                        <div class="modal fade overflow-hidden" id="self-assign-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Self Assign Housekeeper for <span id="self-assign-room-id"></span></h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p style="color: black">Are you sure you want to assign yourself to <span id="self-assign-room-name"></span>?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <input type="hidden" name="id">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                        <input type="submit" class="btn btn-primary" value="Yes">
                                     </div>
                                 </div>
                             </div>
@@ -163,6 +192,16 @@
                 var roomID = button.data('room');
                 var modal = $(this);
                 modal.find('#assign-room-id')[0].innerHTML = roomID;
+                modal.find('input[name="id"]').val(id);
+            });
+
+            $('#self-assign-modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('id');
+                var roomID = button.data('room');
+                var modal = $(this);
+                modal.find('#self-assign-room-id')[0].innerHTML = roomID;
+                modal.find('#self-assign-room-name')[0].innerHTML = roomID;
                 modal.find('input[name="id"]').val(id);
             });
 

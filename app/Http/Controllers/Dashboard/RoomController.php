@@ -9,6 +9,7 @@ use App\Models\Facility;
 use App\Models\Employee;
 use App\Models\RoomType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
 class RoomController extends Controller
@@ -153,17 +154,32 @@ class RoomController extends Controller
     public function assign(Request $request) {
         $housekeeper = Employee::findOrFail($request->housekeeper);
         $room = Room::findOrFail($request->id);
-        Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
-        $room->status = 2;
-        $room->housekeep_by = $request->housekeeper;
-        $room->save();
+        if ($room->housekeep_by == null) {
+            Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
+            $room->status = 2;
+            $room->housekeep_by = $request->housekeeper;
+            $room->save();
+        }
+        return redirect()->back();
+    }
+
+    public function selfAssign(Request $request) {
+        $room = Room::findOrFail($request->id);
+        $housekeeper = Auth::guard('employee')->user();
+        if ($room->housekeep_by == null && $room->status() == 2) {
+            Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
+            $room->status = 2;
+            $room->housekeep_by = $housekeeper->id;
+            $room->save();
+        }
         return redirect()->back();
     }
 
     public function updateStatus(Request $request) {
         $room = Room::findOrFail($request->id);
         $room->status = $request->status;
-        $room->housekeep_by = null;
+        if ($request->status != 2)
+            $room->housekeep_by = null;
         $room->note = $request->note;
         $room->save();
         return redirect()->back();
