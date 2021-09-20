@@ -3,7 +3,6 @@
 @push("css")
 <style>
     .revenueYearChart,
-    .revenueMonthChart,
     .roomStatusChart,
     .roomServiceChart {
         position: relative;
@@ -59,32 +58,20 @@
 <div class="row">
     <div class="col-6">
         <div class="card">
-            <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
-            <div class="card-body">
-                <div class="revenueMonthChart">
-                    <canvas id="revenueMonthChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-6">
-        <div class="card">
-            <div class="card-header"><span class="mr-2">Room Status</span><span class="badge badge-primary mx-1">Room Type</span></div>
-            <div class="card-body">
-                <div class="roomStatusChart">
-                    <canvas id="roomStatusChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-6">
-        <div class="card">
             <div class="card-header"><span class="mr-2">Room Service Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
             <div class="card-body">
                 <div class="roomServiceChart">
                     <canvas id="roomServiceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header"><span class="mr-2">Room Status (Today)</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-body">
+                <div class="roomStatusChart">
+                    <canvas id="roomStatusChart"></canvas>
                 </div>
             </div>
         </div>
@@ -154,7 +141,6 @@
 
 <script>
     var revenueYearChart = null;
-    var revenueMonthChart = null;
     var roomStatusChart = null;
     var roomServiceChart = null;
     $(document).ready(function () {
@@ -308,89 +294,19 @@
             });
         }
 
-        function generateRevenueMonthChart(info, year, month, roomType) {
-            let revenueMonthCanvas = document.getElementById("revenueMonthChart").getContext("2d");
-            revenueMonthChart = new Chart(revenueMonthCanvas, {
-                type: 'pie',
-                data: {
-                    labels: ["Booking", "Room Service", "Charges"],
-                    datasets: [{
-                        backgroundColor: [
-                            "blue",
-                            "yellow",
-                            "red"
-                        ],
-                        data: info
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    legend: {
-                        display: true,
-                        position: "right",
-                        labels: {
-                            fontColor: '#ddd',
-                            boxWidth: 20
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: "Revenue of " + MONTH[month] + " " + year + " (" + roomType + ")",
-                        fontColor: "white",
-                    },
-                    tooltips: {
-                        displayColors:true,
-                        callbacks: {
-                            label: function (context, constant) {
-                                let index = context.index;
-                                return constant.labels[index] + ": ";
-                            },
-                            afterLabel: function (context, constant) {
-                                let datasetIndex = context.datasetIndex;
-                                let index = context.index;
-                                let amount = constant.datasets[datasetIndex].data[index];
-                                let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
-                                let percentage = amount / total * 100;
-                                return "RM " + amount.toFixed(2) + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
-                            }
-                        }
-                    },
-                    plugins: {
-                        datalabels: {
-                            formatter: (value, ctx) => {
-                                let dataArr = ctx.chart.data.datasets[0].data;
-                                let total = dataArr.reduce(sum, 0);
-                                if (total == 0 && ctx.dataIndex == 0)
-                                    return "No Data Available";
-                                if (value == 0)
-                                    return "";
-                                let percentage = (value * 100 / total).toFixed(2) + "%";
-                                return percentage;
-                            },
-                            color: 'darkgray',
-                            font: {
-                                size: 14,
-                                weight: "bolder",
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
         function generateRoomStatusChart(info, roomType) {
             let roomStatusCanvas = document.getElementById("roomStatusChart").getContext("2d");
             roomStatusChart = new Chart(roomStatusCanvas, {
                 type: 'pie',
                 data: {
-                    labels: ["Available", "Dirty", "Repairing", "Reserved"],
+                    labels: ["Available", "Booked", "Dirty", "Repairing", "Reserved"],
                     datasets: [{
                         backgroundColor: [
-                            "#0f0",
-                            "#282828",
-                            "#ff8484",
-                            "orange"
+                            "{{ App\Models\Room::STATUS[0]["color"] }}",
+                            "{{ App\Models\Room::STATUS[1]["color"] }}",
+                            "{{ App\Models\Room::STATUS[2]["color"] }}",
+                            "{{ App\Models\Room::STATUS[3]["color"] }}",
+                            "{{ App\Models\Room::STATUS[4]["color"] }}",
                         ],
                         data: info
                     }]
@@ -547,12 +463,6 @@
             revenueYearChart.update();
         }
 
-        function updateRevenueMonthChart(info, year, month, roomType) {
-            revenueMonthChart.data.datasets[0].data = info;
-            revenueMonthChart.options.title.text = "Revenue of " + MONTH[month] + " " + year + " (" + roomType + ")";
-            revenueMonthChart.update();
-        }
-
         function updateRoomStatusChart(info, roomType) {
             roomStatusChart.data.datasets[0].data = info;
             roomStatusChart.options.title.text = "Room Status (" + roomType + ")";
@@ -582,7 +492,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
@@ -595,13 +505,11 @@
                     month = parseInt(month);
                     if (isInitialize) {
                         generateRevenueYearChart(response["revenueYearChart"], year, roomType);
-                        generateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
                         generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
-                        updateRevenueMonthChart(response["revenueMonthChart"], year, month, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
                         updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                     }

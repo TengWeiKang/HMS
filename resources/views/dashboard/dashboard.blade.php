@@ -32,6 +32,9 @@
     .status-available {
         color: {{ App\Models\Room::STATUS[0]["color"] }};
     }
+    .status-booked {
+        color: {{ App\Models\Room::STATUS[1]["color"] }};
+    }
     .status-dirty {
         color: {{ App\Models\Room::STATUS[2]["color"] }};
     }
@@ -507,7 +510,7 @@
                         eventDropInfo.revert();
                         Swal.fire({
                             title: "Error",
-                            text: "The room is not ready to reserved to any customer.",
+                            text: "The room is not ready to reserve to any reserved customer.",
                             icon: "error",
                         });
                         return;
@@ -631,6 +634,9 @@
                     switch (status) {
                         case 0:
                             status_css = "status-available";
+                            break;
+                        case 1:
+                            status_css = "status-booked";
                             break;
                         case 2:
                             status_css = "status-dirty";

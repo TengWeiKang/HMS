@@ -14,6 +14,7 @@ class Room extends Model
 
     const STATUS = [
         0 => ["status" => "Available", "color" => "#0f0"],
+        1 => ["status" => "Booked", "color" => "#e22"],
         2 => ["status" => "Dirty", "color" => "#282828"],
         3 => ["status" => "Repairing", "color" => "#ff8484"],
         4 => ["status" => "Reserved", "color" => "orange"]
@@ -44,6 +45,9 @@ class Room extends Model
     public function status() {
         if ($this->isReserved()) {
             return 4;
+        }
+        else if($this->isBooked()) {
+            return 1;
         }
         return $this->status;
     }
@@ -112,6 +116,14 @@ class Room extends Model
             return $reservations[0];
         }
         return null;
+    }
+
+    public function isBooked() {
+        $today = Carbon::today();
+        $count = $this->reservations->filter(function ($value) use ($today) {
+            return $value->status() == 0 && $value->start_date <= $today && $value->end_date >= $today;
+        })->count();
+        return $count > 0;
     }
 
     public function isTurnoverToday() {

@@ -40,7 +40,6 @@ class AnalysisController extends Controller
         $rooms = Room::with("reservations")->get();
 
         $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);
-        $json["revenueMonthChart"] = $this->revenueMonthChart($payments, $request->year, $request->month, $request->roomType);
         $json["roomStatusChart"] = $this->roomStatusChart($rooms, $request->roomType);
         $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month, $request->roomType);
         return $json;
@@ -68,25 +67,6 @@ class AnalysisController extends Controller
         return $json;
     }
 
-    private function revenueMonthChart($payments, $year, $month, $roomType) {
-        $payments = $this->paymentsFilterByYear($payments, $year);
-        $payments = $this->paymentsFilterByRoomType($payments, $roomType);
-        $info = $this->paymentsGroupByMonth($payments)->get($year . "-" . $month, collect());
-        $json = [
-            $info->sum(function ($payment) {
-                return $payment->bookingPriceWithDiscount();
-            }),
-            $info->sum(function ($payment) {
-                return $payment->totalItemPricesWithDiscount();
-            }),
-            $info->sum(function ($payment) {
-                return $payment->totalChargesPrice();
-            })
-        ];
-
-        return $json;
-    }
-
     private function roomStatusChart($rooms, $roomType) {
         $rooms = $this->roomsFilterByRoomType($rooms, $roomType);
         $info = $rooms->groupBy(function ($value) {
@@ -94,6 +74,7 @@ class AnalysisController extends Controller
         });
         $json = [
             optional($info->get(0))->count() ?? 0,
+            optional($info->get(1))->count() ?? 0,
             optional($info->get(2))->count() ?? 0,
             optional($info->get(3))->count() ?? 0,
             optional($info->get(4))->count() ?? 0,

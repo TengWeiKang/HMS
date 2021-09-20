@@ -46,9 +46,7 @@
                         <label for="roomId">Room <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="rooms" name="roomId">
                             @foreach ($roomTypes as $roomType)
-                                @if ($roomType->rooms->count() == 0)
-                                    @continue
-                                @endif
+                                @continue ($roomType->rooms->count() == 0)
                                 <optgroup label="{{ $roomType->name }} (RM {{ number_format($roomType->price, 2) }})">
                                     @foreach($roomType->rooms as $room)
                                         <option value="{{ $room->id }}" data-price="{{ $room->type->price }}" data-status="{{ $room->status() }}" @if($errors->isEmpty() && $reservation->room_id == $room->id || $errors->isNotEmpty() && old("roomId") == $room->id) selected @endif>{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")"}}</option>
