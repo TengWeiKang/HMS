@@ -119,10 +119,9 @@
                     <hr>
                     <div class="form-group row mx-2">
                         <label for="room">Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms" name="room">
+                        <select class="form-control form-control-rounded" id="rooms" name="room" required>
                             @if (request()->has("room_id"))
-                                <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}">{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
-                                {{--  data-room-name="{{ $room->name }}" data-single-bed={{ $room->single_bed }} data-double-bed="{{ $room->double_bed }}" data-facilities="{{ json_encode($room->facilities->pluck("name")->toArray()) }}" --}}
+                                <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}" selected>{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
                             @endif
                         </select>
                         @error("room")
@@ -235,8 +234,7 @@
             placeholder: "Please fill in reservation date before select a room",
             ajax: {
                 url: "{{ route("dashboard.reservation.search") }}",
-                method: "GET",
-                delay: 250,
+                method: "POST",
                 data: function(params) {
                     return {
                         "_token": "{{ csrf_token() }}",
@@ -249,10 +247,6 @@
                         "checkIn": $("#checkIn").prop("checked"),
                     };
                 },
-                processResults: function(data) {
-                    console.log(data);
-                    return data;
-                }
             },
             templateSelection: function(container) {
                 if (container.text == "") {

@@ -65,7 +65,7 @@ class ReservationController extends Controller
      */
     public function roomSearch(Request $request)
     {
-        $rawRoomType = RoomType::with("rooms", "rooms.reservations");
+        $rawRoomType = RoomType::with("rooms", "rooms.reservations", "rooms.facilities");
         if (!empty($request->roomType)) {
             $rawRoomType = $rawRoomType->where("id", $request->roomType);
         }
@@ -79,17 +79,21 @@ class ReservationController extends Controller
         }
         $roomTypes->each(function ($roomType) use ($request, $arrival, $departure) {
             $roomType->rooms = $roomType->rooms->filter(function ($room) use ($request, $arrival, $departure) {
-                if (!empty($arrival) && !empty($departure)) {
-                    $reservations = $room->reservations->filter(function ($value2, $key) use ($arrival, $departure) {
-                        if ($value2->start_date->lte($arrival) && $value2->end_date->gte($arrival) ||
-                        $value2->start_date->lte($departure) && $value2->end_date->gte($departure) ||
-                        $value2->start_date->gte($arrival) && $value2->end_date->lte($departure)) {
-                            return true;
-                        }
+                $reservations = $room->reservations->filter(function ($reservation) use ($request, $arrival, $departure) {
+                    // ignore reservation id
+                    if ($request->has("ignoreID") && $request->ignoreID == $reservation->id)
                         return false;
-                    });
-                    if ($reservations->count() > 0)
-                        return false;
+                    // check reservation with conflicts
+                    if ($reservation->start_date->lte($arrival) && $reservation->end_date->gte($arrival) ||
+                    $reservation->start_date->lte($departure) && $reservation->end_date->gte($departure) ||
+                    $reservation->start_date->gte($arrival) && $reservation->end_date->lte($departure)) {
+                        return true;
+                    }
+                    return false;
+                });
+                // if there is more than one reservation conflict
+                if ($reservations->count() > 0) {
+                    return false;
                 }
                 if (!empty($request->single) && $room->single_bed != $request->single) {
                     return false;
@@ -122,7 +126,13 @@ class ReservationController extends Controller
                 array_push($data["children"], [
                     "id" => $room->id,
                     "text" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
-                    "price" => $roomType->price
+                    "room_id" => $room->room_id,
+                    "room_type" => $roomType->name,
+                    "room_name" => $room->name,
+                    "price" => $roomType->price,
+                    "single_bed" => $room->single_bed,
+                    "double_bed" => $room->double_bed,
+                    "facilities" => $room->facilities->pluck("name")->toArray(),
                 ]);
             }
             array_push($json["results"], $data);
@@ -139,7 +149,9 @@ class ReservationController extends Controller
     {
         $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
         $customers = Customer::all();
-        return view('dashboard/reservation/create-form', ["roomTypes" => $roomTypes, "customers" => $customers]);
+        if (request()->has("room_id"))
+            $room = Room::with("type")->findOrFail(request()->room_id);
+        return view('dashboard/reservation/create-form', ["roomTypes" => $roomTypes, "customers" => $customers, "room" => $room ?? null]);
     }
 
     /**
@@ -189,7 +201,7 @@ class ReservationController extends Controller
             $room = Room::find($request->room);
             if ($room->isReserved()) {
                 $request->checkIn = false;
-                $error = "The room is currently reserved by other customer";
+                $error = "The room is currently reserved/booked by other customer";
             }
         }
         Reservation::create([
@@ -265,7 +277,7 @@ class ReservationController extends Controller
             if ($request->checkIn) {
                 $room = Room::find($request->roomId);
                 if ($room->isReserved() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
-                    $validator->errors()->add("reserved", "The room is currently reserved by other customer");
+                    $validator->errors()->add("reserved", "The room is currently reserved/booked by other customer");
                 }
             }
         });
