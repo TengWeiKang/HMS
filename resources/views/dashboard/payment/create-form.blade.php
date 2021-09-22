@@ -234,28 +234,17 @@
             });
 
             $("#payment-form").on("submit", function(e) {
-                console.log("debug")
                 let cvv = $("#cvv")[0];
                 let cardNumber = $("#cardNumber")[0];
                 if (cvv.value.length != 3) {
-                    console.log(cvv.value);
-                    console.log(cvv.value.length);
                     cvv.setCustomValidity("CVV must be exact 3 character");
                     cardNumber.reportValidity();
                     e.preventDefault();
                 }
-                else {
-                    console.log("cvv correct");
-                }
                 if (cardNumber.value.length != 16) {
-                    console.log(cardNumber.value);
-                    console.log(cardNumber.value.length);
                     cardNumber.setCustomValidity("Card number must be exact 16 number");
                     cardNumber.reportValidity();
                     e.preventDefault();
-                }
-                else {
-                    console.log("card number correct");
                 }
             })
 

@@ -201,7 +201,6 @@
             }],
             select: function(startDate, endDate) {
                 let dateNow = moment().startOf('day');
-                console.log(initialize);
                 if (dateNow > startDate && initialize) {
                     updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
                 }

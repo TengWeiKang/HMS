@@ -388,7 +388,7 @@
                 startDate = moment(startDate);
                 endDate = moment(endDate);
                 let price = $("#rooms").find(":selected").data("price") ?? 0;
-                let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
+                let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
                 $("#numDays")[0].innerHTML = numberOfDays;
                 $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
             }

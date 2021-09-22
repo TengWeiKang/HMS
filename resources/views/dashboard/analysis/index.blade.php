@@ -4,7 +4,9 @@
 <style>
     .revenueYearChart,
     .roomStatusChart,
-    .roomServiceChart {
+    .roomServiceChart,
+    .occupancyRateChart,
+    .averageRoomRateChart {
         position: relative;
         height: 350px;
     }
@@ -25,30 +27,29 @@
                     <canvas id="revenueYearChart"></canvas>
                 </div>
             </div>
-
             <div class="row m-0 row-group text-center border-top border-light-3">
                 <div class="col-3">
                     <div class="p-3">
                         <h5 class="mb-2">Sales</h5>
-                        <h6 class="mb-0">RM <span id="salesRevenue"></span></h6>
+                        <h6 class="mb-0">RM <span id="sales-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
                         <h5 class="mb-2">Room Service</h5>
-                        <h6 class="mb-0">RM <span id="roomServiceRevenue"></span></h6>
+                        <h6 class="mb-0">RM <span id="room-service-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
                         <h5 class="mb-2">Additional Charge</h5>
-                        <h6 class="mb-0">RM <span id="chargeRevenue"></span></h6>
+                        <h6 class="mb-0">RM <span id="charge-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
                         <h5 class="mb-2">Total Revenue</h5>
-                        <h6 class="mb-0">RM <span id="totalRevenue"></span></h6>
+                        <h6 class="mb-0">RM <span id="total-revenue"></span></h6>
                     </div>
                 </div>
             </div>
@@ -72,6 +73,50 @@
             <div class="card-body">
                 <div class="roomStatusChart">
                     <canvas id="roomStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><span class="mr-2">Hotel Room Occupancy</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-body">
+                <div class="occupancyRateChart">
+                    <canvas id="occupancyRateChart"></canvas>
+                </div>
+            </div>
+            <div class="row m-0 row-group text-center border-top border-light-3">
+                <div class="col-4">
+                    <div class="p-3">
+                        <h5 class="mb-2">Total Nights</h5>
+                        <h6 class="mb-0"><span id="total-nights"></span> nights</h6>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3">
+                        <h5 class="mb-2">Nghts Occupied</h5>
+                        <h6 class="mb-0"><span id="nights-occupied"></span> nights</h6>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="p-3">
+                        <h5 class="mb-2">Occupancy Rate</h5>
+                        <h6 class="mb-0"><span id="occupancy-rate"></span>%</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><span class="mr-2">Average Room Rate (ARR)</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-body">
+                <div class="averageRoomRateChart">
+                    <canvas id="averageRoomRateChart"></canvas>
                 </div>
             </div>
         </div>
@@ -143,6 +188,8 @@
     var revenueYearChart = null;
     var roomStatusChart = null;
     var roomServiceChart = null;
+    var occupancyRateChart = null;
+    var averageRoomRateChart = null;
     $(document).ready(function () {
         $("#year, #month, #roomType").select2();
         $('.select2.select2-container').addClass('form-control');
@@ -181,10 +228,10 @@
             let totalRoomService = services.reduce(sum, 0);
             let totalCharge = charges.reduce(sum, 0);
             let totalRevenue = revenues.reduce(sum, 0);
-            $("#salesRevenue").html(totalBooking.toFixed(2));
-            $("#roomServiceRevenue").html(totalRoomService.toFixed(2));
-            $("#chargeRevenue").html(totalCharge.toFixed(2));
-            $("#totalRevenue").html(totalRevenue.toFixed(2));
+            $("#sales-revenue").html(totalBooking.toFixed(2));
+            $("#room-service-revenue").html(totalRoomService.toFixed(2));
+            $("#charge-revenue").html(totalCharge.toFixed(2));
+            $("#total-revenue").html(totalRevenue.toFixed(2));
 
             let revenueYearCanvas = document.getElementById("revenueYearChart").getContext("2d");
             revenueYearChart = new Chart(revenueYearCanvas, {
@@ -340,7 +387,7 @@
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
                                 let percentage = amount / total * 100;
-                                return amount + " room" + (amount == 1 ? "" : "s") + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
+                                return amount + " rooms" + " (" + (percentage || 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -413,7 +460,7 @@
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
                                 let percentage = amount / total * 100;
-                                return "RM " + amount + " (" + (isFinite(percentage) ? percentage : 0).toFixed(2) + "%)";
+                                return "RM " + amount + " (" + (percentage || 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -441,6 +488,211 @@
             });
         }
 
+        function generateOccupancyRateChart(info, year, roomType) {
+            let roomsCount = info["roomsCount"];
+            let totalRooms = [];
+            let occupiedRooms = info["occupied"];
+            for (let i = 1; i <= 12; i++) {
+                totalRooms.push(new Date(year, i, 0).getDate() * roomsCount);
+            }
+            let percentage = occupiedRooms.map((value, index) => value * 100 / totalRooms[index]);
+            let totalAvailableRooms = totalRooms.reduce(sum, 0);
+            let totalOccupiedRooms = occupiedRooms.reduce(sum, 0);
+            let totalPercentage = totalOccupiedRooms / totalAvailableRooms * 100;
+
+            $("#total-nights").html(totalAvailableRooms);
+            $("#nights-occupied").html(totalOccupiedRooms);
+            $("#occupancy-rate").html(totalPercentage.toFixed(2));
+
+            let occupancyRateCanvas = document.getElementById("occupancyRateChart").getContext("2d");
+            occupancyRateChart = new Chart(occupancyRateCanvas, {
+                type: 'line',
+                data: {
+                    labels: Object.values(MONTH),
+                    datasets: [
+                        {
+                            label: 'Occupancy Rate',
+                            data: percentage,
+                            occupiedRooms: occupiedRooms,
+                            totalRooms: totalRooms,
+                            backgroundColor: "lightblue",
+                            borderColor: "lightblue",
+                            borderWidth: 0,
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: true,
+                        position: "right",
+                        labels: {
+                            fontColor: '#ddd',
+                            boxWidth: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Hotel Occupancy in Year " + year + " (" + roomType + ")",
+                        fontColor: "white",
+                    },
+                    tooltips: {
+                        displayColors: true,
+                        callbacks: {
+                            label: function (context, constant) {
+                                let datasetIndex = context.datasetIndex;
+                                let index = context.index;
+                                return [
+                                    "Occupied Rooms: " + constant.datasets[datasetIndex].occupiedRooms[index],
+                                    "Total Rooms: " + constant.datasets[datasetIndex].totalRooms[index],
+                                    "Occupancy Rate: " + context.yLabel.toFixed(2) + "%"
+                                ]
+                            }
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                fontColor: '#ddd'
+                            },
+                            gridLines: {
+                                display: true,
+                                color: "rgba(221, 221, 221, 0.08)"
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Month',
+                                fontColor: "white",
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                max: 100,
+                                stepSize: 20,
+                                fontColor: '#ddd',
+                                callback: function(value, index, values) {
+                                    return value + "%";
+                                }
+                            },
+                            gridLines: {
+                                display: true,
+                                color: "rgba(221, 221, 221, 0.08)"
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Occupancy Rate',
+                                fontColor: "white",
+                            }
+                        }]
+                    },
+                    plugins: {
+                        datalabels: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function generateAverageRoomRateChart(revenues, occupiedRooms, year, roomType) {
+            let averageRoomRate = revenues.map((value, index) => value / occupiedRooms[index] || 0);
+
+            let averageRoomRateCanvas = document.getElementById("averageRoomRateChart").getContext("2d");
+            averageRoomRateChart = new Chart(averageRoomRateCanvas, {
+                type: 'line',
+                data: {
+                    labels: Object.values(MONTH),
+                    datasets: [
+                        {
+                            label: 'Average Room Rate',
+                            data: averageRoomRate,
+                            revenues: revenues,
+                            occupiedRooms: occupiedRooms,
+                            backgroundColor: "yellow",
+                            borderColor: "yellow",
+                            borderWidth: 0,
+                            fill: false,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: true,
+                        position: "right",
+                        labels: {
+                            fontColor: '#ddd',
+                            boxWidth: 20
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Average Room Rate (ARR) in Year " + year + " (" + roomType + ")",
+                        fontColor: "white",
+                    },
+                    tooltips: {
+                        displayColors: true,
+                        callbacks: {
+                            label: function (context, constant) {
+                                let datasetIndex = context.datasetIndex;
+                                let index = context.index;
+                                return [
+                                    "Revenues: RM " + constant.datasets[datasetIndex].revenues[index].toFixed(2),
+                                    "Occupied Rooms: " + constant.datasets[datasetIndex].occupiedRooms[index],
+                                    "Average Room Rate: RM " + context.yLabel.toFixed(2)
+                                ]
+                            }
+                        }
+                    },
+                    scales: {
+                        xAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                fontColor: '#ddd'
+                            },
+                            gridLines: {
+                                display: true,
+                                color: "rgba(221, 221, 221, 0.08)"
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Month',
+                                fontColor: "white",
+                            }
+                        }],
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero:true,
+                                fontColor: '#ddd',
+                                callback: function(value, index, values) {
+                                    return "RM " + value;
+                                }
+                            },
+                            gridLines: {
+                                display: true,
+                                color: "rgba(221, 221, 221, 0.08)"
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Average Room Rate',
+                                fontColor: "white",
+                            }
+                        }]
+                    },
+                    plugins: {
+                        datalabels: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
         function updateRevenueYearChart(info, year, roomType) {
             let bookings = info["bookings"];
             let services = info["services"];
@@ -450,10 +702,10 @@
             let totalRoomService = services.reduce(sum, 0);
             let totalCharge = charges.reduce(sum, 0);
             let totalRevenue = revenues.reduce(sum, 0);
-            $("#salesRevenue").html(totalBooking.toFixed(2));
-            $("#roomServiceRevenue").html(totalRoomService.toFixed(2));
-            $("#chargeRevenue").html(totalCharge.toFixed(2));
-            $("#totalRevenue").html(totalRevenue.toFixed(2));
+            $("#sales-revenue").html(totalBooking.toFixed(2));
+            $("#room-service-revenue").html(totalRoomService.toFixed(2));
+            $("#charge-revenue").html(totalCharge.toFixed(2));
+            $("#total-revenue").html(totalRevenue.toFixed(2));
             revenueYearChart.data.datasets[0].data = revenues;
             revenueYearChart.data.datasets[1].data = bookings;
             revenueYearChart.data.datasets[2].data = services;
@@ -471,17 +723,45 @@
         function updateRoomServiceChart(info, year, month, roomType) {
             let labels = info["labels"];
             let data = info["items"];
-            // let colors = []
-            // for (let i = 0; i < data.length; i++) {
-            //     colors.push(dynamicColor());
-            // }
             roomServiceChart.data.labels = labels;
             roomServiceChart.data.datasets[0].data = data;
-            // roomServiceChart.data.datasets[0].backgroundColor = colors;
             roomServiceChart.options.title.text = "Room Service Revenue in " + MONTH[month] + " " + year + " (" + roomType + ")";
             roomServiceChart.options.legend.display = (data.length > 10) ? false: true;
             roomServiceChart.options.plugins.datalabels.display = (data.length > 10 && data.reduce(sum, 0) != 0) ? false: true;
             roomServiceChart.update();
+        }
+
+        function updateOccupancyRateChart(info, year, roomType) {
+            let roomsCount = info["roomsCount"];
+            let totalRooms = [];
+            let occupiedRooms = info["occupied"];
+            for (let i = 1; i <= 12; i++) {
+                totalRooms.push(new Date(year, i, 0).getDate() * roomsCount);
+            }
+            let percentage = occupiedRooms.map((value, index) => value * 100 / totalRooms[index])
+            let totalAvailableRooms = totalRooms.reduce(sum, 0);
+            let totalOccupiedRooms = occupiedRooms.reduce(sum, 0);
+            let totalPercentage = totalOccupiedRooms / totalAvailableRooms * 100;
+
+            $("#total-nights").html(totalAvailableRooms);
+            $("#nights-occupied").html(totalOccupiedRooms);
+            $("#occupancy-rate").html(totalPercentage.toFixed(2));
+
+            occupancyRateChart.data.datasets[0].data = percentage;
+            occupancyRateChart.data.datasets[0].occupiedRooms = occupiedRooms;
+            occupancyRateChart.data.datasets[0].totalRooms = totalRooms;
+            occupancyRateChart.options.title.text = "Hotel Occupancy in Year " + year + " (" + roomType + ")",
+            occupancyRateChart.update();
+        }
+
+        function updateAverageRoomRateChart(revenues, occupiedRooms, year, roomType) {
+            let averageRoomRate = revenues.map((value, index) => value / occupiedRooms[index] || 0);
+
+            averageRoomRateChart.data.datasets[0].data = averageRoomRate;
+            averageRoomRateChart.data.datasets[0].occupiedRooms = occupiedRooms;
+            averageRoomRateChart.data.datasets[0].revenues = revenues;
+            averageRoomRateChart.options.title.text = "Average Room Rate (ARR) in Year " + year + " (" + roomType + ")",
+            averageRoomRateChart.update();
         }
 
         function dateModified(isInitialize) {
@@ -490,7 +770,6 @@
             let roomTypeID = $("#roomType").val();
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
-            console.log("ajax call");
             $.ajax({
                 type: "GET",
                 url: "{{ route("dashboard.analysis.json") }}",
@@ -503,15 +782,24 @@
                 success: function (response) {
                     year = parseInt(year);
                     month = parseInt(month);
+                    let bookings = response["revenueYearChart"]["bookings"];
+                    let services = response["revenueYearChart"]["services"];
+                    let charges = response["revenueYearChart"]["charges"];
+                    let revenues = bookings.map((value, index) => value + services[index] + charges[index]);
+                    let occupiedRooms = response["occupancyRateChart"]["occupied"];
                     if (isInitialize) {
                         generateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
                         generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
+                        generateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
+                        generateAverageRoomRateChart(revenues, occupiedRooms, year, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
                         updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
+                        updateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
+                        updateAverageRoomRateChart(revenues, occupiedRooms, year, roomType);
                     }
                 }
             });

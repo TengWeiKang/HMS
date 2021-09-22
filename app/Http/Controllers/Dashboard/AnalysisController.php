@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Models\PaymentItem;
+use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\RoomType;
 use App\Models\Service;
@@ -34,14 +35,14 @@ class AnalysisController extends Controller
     public function json(Request $request) {
         $json = [];
         $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
-        // $paymentItems = PaymentItem::with(["payment", "payment.reservation", "payment.reservation.room", "service"])->get();
         $paymentItems = PaymentItem::with(["payment:id,discount,payment_at,reservation_id", "payment.reservation:id,room_id", "payment.reservation.room:id,room_type", "service:id,name"])->get();
+        $reservations = Reservation::with("room")->where("status", 1)->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
-
         $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);
         $json["roomStatusChart"] = $this->roomStatusChart($rooms, $request->roomType);
         $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month, $request->roomType);
+        $json["occupancyRateChart"] = $this->occupancyRateChart($reservations, $rooms, $request->year, $request->roomType);
         return $json;
     }
 
@@ -95,6 +96,38 @@ class AnalysisController extends Controller
         return $json;
     }
 
+    private function occupancyRateChart($reservations, $rooms, $year, $roomType) {
+        $json["roomsCount"] = $this->roomsFilterByRoomType($rooms, $roomType)->count();
+        $json["occupied"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $reservations = $this->reservationsFilterByRoomType($reservations, $roomType);
+        $reservations->each(function ($reservation) use (&$json, $year) {
+            if ($reservation->end_date->lt(new Carbon($year . "-01")) || $reservation->start_date->gt(new Carbon($year . "-12"))) {
+                return;
+            }
+            for ($month = 1; $month <= 12; $month++) {
+                $daysInMonth = (new Carbon($year . "-" . $month))->daysInMonth;
+                $monthStart = new Carbon($year . "-" . $month . "-01");
+                $monthEnd = new Carbon($year . "-" . $month . "-" . $daysInMonth);
+                if ($reservation->end_date->lt($monthStart) || ($reservation->start_date->gt($monthEnd))) {
+                    continue;
+                }
+                if ($reservation->start_date->lt($monthStart) && $reservation->end_date->gt($monthEnd)) {
+                    $json["occupied"][$month - 1] += $daysInMonth;
+                }
+                else if ($reservation->start_date->lt($monthStart)) {
+                    $json["occupied"][$month - 1] += $reservation->end_date->day;
+                }
+                else if ($reservation->end_date->gt($monthEnd)) {
+                    $json["occupied"][$month - 1] += $monthEnd->diffInDays($reservation->start_date) + 1;
+                }
+                else {
+                    $json["occupied"][$month - 1] += $reservation->dateDifference();
+                }
+            }
+        });
+        return $json;
+    }
+
     private function paymentsFilterByYear($payments, $year) {
         return $payments->filter(function ($value) use ($year) {
             return $value->payment_at->format("Y") == $year;
@@ -145,10 +178,19 @@ class AnalysisController extends Controller
 
     private function roomsFilterByRoomType($rooms, $roomType) {
         if (!empty($roomType)) {
-            $rooms = $rooms->filter(function ($value) use ($roomType) {
-                return $value->room_type == $roomType;
+            $rooms = $rooms->filter(function ($room) use ($roomType) {
+                return $room->room_type == $roomType;
             });
         }
         return $rooms;
+    }
+
+    private function reservationsFilterByRoomType($reservations, $roomType) {
+        if (!empty($roomType)) {
+            $reservations = $reservations->filter(function ($reservation) use ($roomType) {
+                return $reservation->room->room_type == $roomType;
+            });
+        }
+        return $reservations;
     }
 }
