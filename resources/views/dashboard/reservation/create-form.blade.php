@@ -28,6 +28,10 @@
     .select2-container--default .select2-selection--single .select2-selection__placeholder {
         color: #eee;
     }
+    .card .table td {
+        padding-left: .5rem;
+        padding-right: .5rem;
+    }
 </style>
 @endpush
 
@@ -36,7 +40,7 @@
 @endsection
 
 @section("content")
-<div class="row mt-3 justify-content-md-center">
+<div class="row mt-3">
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
@@ -116,6 +120,10 @@
                     <div class="form-group row mx-2">
                         <label for="room">Room <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="rooms" name="room">
+                            @if (request()->has("room_id"))
+                                <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}">{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
+                                {{--  data-room-name="{{ $room->name }}" data-single-bed={{ $room->single_bed }} data-double-bed="{{ $room->double_bed }}" data-facilities="{{ json_encode($room->facilities->pluck("name")->toArray()) }}" --}}
+                            @endif
                         </select>
                         @error("room")
                             <div class="ml-2 text-sm text-danger">
@@ -161,6 +169,48 @@
         <div class="card">
             <div class="card-body">
                 <div class="card-title">Room Info</div>
+                <div class="row">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tr>
+                                <td width="10%">Room ID:</td>
+                                <td id="room-id">{{ (request()->has("room_id") ? $room->room_id : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Room Name:</td>
+                                <td id="room-name">{{ (request()->has("room_id") ? $room->name : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Room Type:</td>
+                                <td id="room-type">{{ (request()->has("room_id") ? $room->type->name : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Price:</td>
+                                <td id="room-price">{{ (request()->has("room_id") ? "RM " . number_format($room->type->price, 2) : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Single Bed:</td>
+                                <td id="room-single-bed">{{ (request()->has("room_id") ? $room->single_bed : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Double Bed:</td>
+                                <td id="room-double-bed">{{ (request()->has("room_id") ? $room->double_bed : "") }}</td>
+                            </tr>
+                            <tr>
+                                <td>Facilities:</td>
+                                <td id="room-facilities">
+                                    @if (request()->has("room_id"))
+                                        @forelse ($room->facilities->pluck("name")->toArray() as $facility)
+                                            {{ $facility }}<br>
+                                        @empty
+                                            <span style="color: #F33">No Facilities</span>
+                                        @endforelse
+                                    @endif
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -172,6 +222,7 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
+        var isInitialize = true;
         let phone = $("#customers").find(":selected").data("phone") ?? "";
         $("#phone").val(phone);
         if (phone != "") {
@@ -185,6 +236,7 @@
             ajax: {
                 url: "{{ route("dashboard.reservation.search") }}",
                 method: "GET",
+                delay: 250,
                 data: function(params) {
                     return {
                         "_token": "{{ csrf_token() }}",
@@ -197,9 +249,32 @@
                         "checkIn": $("#checkIn").prop("checked"),
                     };
                 },
+                processResults: function(data) {
+                    console.log(data);
+                    return data;
+                }
             },
             templateSelection: function(container) {
+                if (container.text == "") {
+                    return container.text;
+                }
+                if (container.price === undefined) {
+                    return container.text;
+                }
+                $(container.element).data("room-id", container.room_id);
                 $(container.element).data("price", container.price);
+                $("#room-id").html(container.room_id);
+                $("#room-name").html(container.room_name);
+                $("#room-type").html(container.room_type);
+                $("#room-price").html("RM " + container.price.toFixed(2));
+                $("#room-single-bed").html(container.single_bed);
+                $("#room-double-bed").html(container.double_bed);
+                if (container.facilities.length != 0) {
+                    $("#room-facilities").html(container.facilities.join("<br>"));
+                }
+                else {
+                    $("#room-facilities").html('<span style="color: #F33">No Facilities</span>');
+                }
                 return container.text;
             }
         });
@@ -216,6 +291,9 @@
             };
             calendar.fullCalendar("removeEventSources");
             calendar.fullCalendar("addEventSource", sources);
+        });
+        $roomSelect.on("select2:open", function (e) {
+            $("#rooms").find("option").remove().trigger("change");
         });
 
         $customerSelect = $('select.form-control#customers');
@@ -245,9 +323,8 @@
             $("#phone").val(phone);
         });
 
-        $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("change", function (){
-            $("#rooms").val("").change();
-            $("#calendar").fullCalendar("removeEventSources");
+        $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
+            resetRoomInput();
         });
 
         $("#singleBed, #doubleBed").on("input", function(e) {
@@ -278,37 +355,6 @@
 
         $('.select2.select2-container').addClass('form-control form-control-rounded');
 
-        // $("#rooms").change(function() {
-        //     let calendar = $("#calendar");
-        //     let sources = {
-        //         url: "{{ route("dashboard.reservation.json") }}",
-        //         type: "POST",
-        //         data: {
-        //             "_token": "{{ csrf_token() }}",
-        //             "roomID": $("#rooms")[0].value
-        //         }
-        //     };
-        //     // reset input
-        //     $("#startDate")[0].value = "";
-        //     $("#endDate")[0].value = "";
-        //     $("#totalPrice")[0].innerHTML = "0.00";
-        //     $("#numDays")[0].innerHTML = 0;
-        //     calendar.fullCalendar("unselect");
-        //     calendar.fullCalendar("removeEventSources");
-        //     calendar.fullCalendar("addEventSource", sources);
-        //     /*
-        //     let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
-        //     endDate.subtract(1, "days");
-        //     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
-        //     $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
-        //     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
-        //     $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
-        //     $("#numDays")[0].innerHTML = numberOfDays;
-        //     let price = parseFloat($("#rooms").find(':selected').data('price'));
-        //     $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
-        //     */
-        // });
-
         function updateAndTriggerSwal(title, message) {
             $('#calendar').fullCalendar('unselect');
             $("#startDate")[0].value = "";
@@ -325,6 +371,7 @@
             let endDate = $("#endDate")[0].value;
             if (startDate !== "" && endDate !== "") {
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
+                updateBookingPrice();
             }
         }
 
@@ -339,6 +386,19 @@
                 $("#numDays")[0].innerHTML = numberOfDays;
                 $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
             }
+        }
+
+        function resetRoomInput() {
+            $("#rooms").val("").change();
+            $("#totalPrice")[0].innerHTML = (0).toFixed(2);
+            $("#room-id").html("");
+            $("#room-name").html("");
+            $("#room-type").html("");
+            $("#room-price").html("");
+            $("#room-single-bed").html("");
+            $("#room-double-bed").html("");
+            $("#room-facilities").html("");
+            $("#calendar").fullCalendar("removeEventSources");
         }
 
         $("#calendar").fullCalendar({
@@ -376,7 +436,10 @@
                     $("#numDays").html(numberOfDays);
                     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
                     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
-                    $("#rooms").val("").change();
+                    if (!isInitialize) {
+                        resetRoomInput();
+                    }
+                    isInitialize = false;
                     $("#calendar").fullCalendar("removeEventSources");
                 }
             },
