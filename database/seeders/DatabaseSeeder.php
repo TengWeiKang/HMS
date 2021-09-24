@@ -100,6 +100,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
         ]);
+        $roomType1->facilities()->attach([1,2,3]);
 
         $roomType2 = RoomType::create([
             "name" => "Superior Room",
@@ -109,6 +110,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
         ]);
+        $roomType2->facilities()->attach([1,4,5]);
 
         RoomType::create([
             "name" => "Demo Delete Room",
