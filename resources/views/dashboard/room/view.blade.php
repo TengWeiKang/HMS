@@ -26,7 +26,7 @@
                 <div class="card-title">Image Preview</div>
                 <hr>
                 <div class="hotel_img text-center">
-                    <img id="hotel_preview" class="mw-100" src="{{ $room->imageSrc() }}" alt="Hotel PlaceHolder">
+                    <img id="hotel_preview" class="mw-100" src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
                 </div>
             </div>
         </div>
@@ -73,11 +73,11 @@
                                     </tr>
                                     <tr>
                                         <td>Single Bed:</td>
-                                        <td>{{ $room->single_bed }}</td>
+                                        <td>{{ $room->type->single_bed }}</td>
                                     </tr>
                                     <tr>
                                         <td>Double Bed:</td>
-                                        <td>{{ $room->double_bed }}</td>
+                                        <td>{{ $room->type->double_bed }}</td>
                                     </tr>
                                     <tr>
                                         <td>Status:</td>
@@ -90,11 +90,11 @@
                                     <tr>
                                         <td>Facilities:</td>
                                         <td>
-                                            @if ($room->facilities->count())
-                                                {!! nl2br(implode("\n", $room->facilities->pluck("name")->toArray())) !!}
-                                            @else
+                                            @forelse ($room->type->facilities as $facility)
+                                                {{ $facility->name }}<br>
+                                            @empty
                                                 <span style="color: #F33">No Facilities for this room</span>
-                                            @endif
+                                            @endforelse
                                         </td>
                                     </tr>
                                     <tr>

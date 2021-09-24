@@ -49,7 +49,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="singleBed">Single Bed Default Value</label>
+                        <label for="singleBed">Single Bed <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" placeholder="Number of Single Bed" value="{{ old("singleBed", $roomType->single_bed) }}" step="1" min="0">
                         @error("singleBed")
                             <div class="ml-2 text-sm text-danger">
@@ -58,7 +58,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="doubleBed">Double Bed Default Value</label>
+                        <label for="doubleBed">Double Bed <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" placeholder="Number of Double Bed" value="{{ old("doubleBed", $roomType->double_bed) }}" step="1" min="0">
                         @error("doubleBed")
                             <div class="ml-2 text-sm text-danger">

@@ -52,7 +52,7 @@
                     <div class="col-4">
                         <div class="accomodation_item mb-0">
                             <div class="hotel_img text-center border border-secondary">
-                                <img src="data:{{ $booking->room->image_type }};base64,{{ base64_encode($booking->room->room_image) }}" alt="Hotel PlaceHolder">
+                                <img src="data:{{ $booking->room->type->imageSrc() }}" alt="Hotel PlaceHolder">
                             </div>
                         </div>
                     </div>
@@ -69,16 +69,16 @@
                                 </tr>
                                 <tr>
                                     <td>Single Bed:</td>
-                                    <td>{{ $booking->room->single_bed }}</td>
+                                    <td>{{ $booking->room->type->single_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Double Bed:</td>
-                                    <td>{{ $booking->room->double_bed }}</td>
+                                    <td>{{ $booking->room->type->double_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Facilities:</td>
                                     <td>
-                                        @forelse ($booking->room->facilities->pluck("name")->toArray() as $facility)
+                                        @forelse ($booking->room->type->facilities->pluck("name")->toArray() as $facility)
                                             {{ $facility }}<br>
                                         @empty
                                             <span style="color: #F33">No Facilities for this room</span>

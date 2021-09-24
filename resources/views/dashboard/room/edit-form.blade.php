@@ -1,7 +1,17 @@
 @extends("dashboard.layouts.template")
 
 @push("css")
-
+<style>
+    .select2-selection--multiple {
+        background-color: inherit !important;
+    }
+    .select2-selection--multiple--disabled {
+        background-color: rgba(21,14,14,.45);
+    }
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        padding-left: 5px
+    }
+</style>
 @endpush
 
 @section("title")
@@ -47,50 +57,21 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group row mx-2">
-                        <div class="col-12 px-0">
-                            <label for="image">Room Image @if ($room->room_image) (Ignore to remain the same image) @endif</label>
-                        </div>
-                        <div class="col-7 px-0">
-                            <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg" @if (!$room->room_image) disabled @endif>
-                        </div>
-                        <div class="col-5">
-                            <div class="icheck-material-white">
-                                <input type="checkbox" id="default" name="default" @if (!$room->room_image) checked @endif>
-                                <label for="default">Use Image from Room Type</label>
-                            </div>
-                        </div>
-                        @error("image")
-                        <div class="ml-2 text-sm text-danger">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
                     <div class="form-group row my-4 mx-2">
-                        <div class="col-lg-6 pl-0">
-                            <label for="singleBed">Single Bed <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" id="singleBed" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed", $room->single_bed) }}">
-                            @error("singleBed")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
+                        <div class="col-lg-6 pl-lg-0">
+                            <label for="singleBed">Single Bed</label>
+                            <input type="number" class="form-control form-control-rounded" id="singleBed" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}" disabled>
                         </div>
-                        <div class="col-lg-6 pr-0">
-                            <label for="doubleBed">Double Bed <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" id="doubleBed" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed", $room->double_bed) }}">
-                            @error("doubleBed")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
+                        <div class="col-lg-6 pr-lg-0">
+                            <label for="doubleBed">Double Bed</label>
+                            <input type="number" class="form-control form-control-rounded" id="doubleBed" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}" disabled>
                         </div>
                     </div>
                     <div class="form-group row mx-2">
                         <label for="facilities">Facilities</label>
-                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple">
+                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple" disabled>
                             @foreach ($facilities as $facility)
-                                <option value="{{ $facility->id }}" @if ($errors->isNotEmpty() && in_array($facility->id, old("facilities")) || $errors->isEmpty() && in_array($facility->id, $room->facilities->pluck("id")->all())) selected @endif>{{ $facility->name }}</option>
+                                <option value="{{ $facility->id }}">{{ $facility->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -107,7 +88,7 @@
                 <div class="card-title">Image Preview</div>
                 <hr>
                 <div class="hotel_img text-center">
-                    <img id="hotel_preview" class="mw-100" src="{{ $room->imageSrc() }}" alt="Hotel PlaceHolder">
+                    <img id="hotel_preview" class="mw-100" src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
                 </div>
             </div>
         </div>
@@ -118,50 +99,26 @@
 @push("script")
     <script>
         $(document).ready(function() {
-            $('select.form-control#facilities').select2({
-                placeholder: "Please select facilities",
-                allowClear: true
-            });
-            $roomTypeSelect = $('select.form-control#roomType');
-            $roomTypeSelect.select2();
-            $roomTypeSelect.on("select2:select", function (e) {
+            function updateDefaultBed() {
                 let selected = $("#roomType").find(":selected");
                 let single = selected.data("single");
                 let double = selected.data("double");
                 let facilities = selected.data("facilities");
-                let [file] = $("#image")[0].files;
                 $("#singleBed").val(single);
                 $("#doubleBed").val(double);
                 $("#facilities").val(facilities).change();
-                if (!file) {
-                    let src = selected.data("image-src");
-                    $("#hotel_preview").attr("src", src);
-                }
+            };
+            $('select.form-control#facilities').select2({
+                placeholder: "No Facilities",
+            });
+            $roomTypeSelect = $('select.form-control#roomType');
+            $roomTypeSelect.select2();
+            $roomTypeSelect.on("select2:select", function (e) {
+                updateDefaultBed();
             });
             $('.select2.select2-container').addClass('form-control form-control-rounded');
-            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple');
-
-            $("#default").on("change", function () {
-                let checked = this.checked;
-                // use image from room type
-                $("#image").prop("disabled", checked);
-                if (checked) {
-                    $("#image").val("");
-                    let src = $("#roomType").find(":selected").data("image-src");
-                    $("#hotel_preview").attr("src", src);
-                }
-            });
-
-            $("#image").on("change", function () {
-                const [file] = this.files;
-                if (file) {
-                    $("#hotel_preview").attr("src", URL.createObjectURL(file));
-                }
-                else {
-                    let src = $("#roomType").find(":selected").data("image-src");
-                    $("#hotel_preview").attr("src", src);
-                }
-            });
+            $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple select2-selection--multiple--disabled');
+            updateDefaultBed();
         });
     </script>
 @endpush

@@ -95,13 +95,13 @@ class ReservationController extends Controller
                 if ($reservations->count() > 0) {
                     return false;
                 }
-                if (!empty($request->single) && $room->single_bed != $request->single) {
+                if (!empty($request->single) && $room->type->single_bed != $request->single) {
                     return false;
                 }
-                if (!empty($request->double) && $room->double_bed != $request->double) {
+                if (!empty($request->double) && $room->type->double_bed != $request->double) {
                     return false;
                 }
-                if (!empty($request->person) && $request->person != $room->single_bed + $room->double_bed * 2) {
+                if (!empty($request->person) && $request->person != $room->type->single_bed + $room->type->double_bed * 2) {
                     return false;
                 }
                 if ($request->checkIn == "true") {
@@ -130,9 +130,9 @@ class ReservationController extends Controller
                     "room_type" => $roomType->name,
                     "room_name" => $room->name,
                     "price" => $roomType->price,
-                    "single_bed" => $room->single_bed,
-                    "double_bed" => $room->double_bed,
-                    "facilities" => $room->facilities->pluck("name")->toArray(),
+                    "single_bed" => $room->type->single_bed,
+                    "double_bed" => $room->type->double_bed,
+                    "facilities" => $room->type->facilities->pluck("name")->toArray(),
                 ]);
             }
             array_push($json["results"], $data);

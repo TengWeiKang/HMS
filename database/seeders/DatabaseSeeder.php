@@ -92,6 +92,22 @@ class DatabaseSeeder extends Seeder
             "name" => "Car Park",
         ]);
 
+        Facility::create([
+            "name" => "Car Park1",
+        ]);
+        Facility::create([
+            "name" => "Car Park2",
+        ]);
+        Facility::create([
+            "name" => "Car Park3",
+        ]);
+        Facility::create([
+            "name" => "Car Park4",
+        ]);
+        Facility::create([
+            "name" => "Car Park5",
+        ]);
+
         $roomType1 = RoomType::create([
             "name" => "Deluxe Room",
             "single_bed" => 2,
@@ -100,7 +116,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
         ]);
-        $roomType1->facilities()->attach([1,2,3]);
+        $roomType1->facilities()->attach([1,2,5]);
 
         $roomType2 = RoomType::create([
             "name" => "Superior Room",
@@ -110,7 +126,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
         ]);
-        $roomType2->facilities()->attach([1,4,5]);
+        $roomType2->facilities()->attach([2,4,5]);
 
         RoomType::create([
             "name" => "Demo Delete Room",
@@ -125,55 +141,35 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R101",
             "name" => "Room Name 1",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
-            "double_bed" => 1,
-        ])->facilities()->attach([2, 3, 4]);
+        ]);
 
         Room::create([
             "room_id" => "R102",
             "name" => "Room Name 2",
             "room_type" => $roomType2->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 1,
-            "double_bed" => 2,
-        ])->facilities()->attach([1, 3]);
+        ]);
 
         Room::create([
             "room_id" => "R103",
             "name" => "Room Name 3",
             "room_type" => $roomType2->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
-            "double_bed" => 2,
             "status" => 2
-        ])->facilities()->attach([1, 2, 3, 4, 5]);
+        ]);
 
         Room::create([
             "room_id" => "R104",
             "name" => "Room Name 4",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room4.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
-            "double_bed" => 2,
             "housekeep_by" => 3,
             "status" => 2
-        ])->facilities()->attach([2]);
+        ]);
 
         Room::create([
             "room_id" => "R105",
             "name" => "Room Name 5",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
-            "double_bed" => 2,
             "status" => 2
-        ])->facilities()->attach([2]);
+        ]);
 
         $service1 = Service::create([
             "name" => "food",

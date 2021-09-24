@@ -2,7 +2,7 @@
     <div class="col-lg-3 col-sm-6">
         <div class="accomodation_item text-center">
             <div class="hotel_img">
-                <img src="data:{{ $room->image_type }};base64,{{ base64_encode($room->room_image) }}" alt="Hotel Placeholder">
+                <img src="{{ $room->type->imageSrc() }}" alt="Hotel Placeholder">
                 @auth("customer")
                     <a href="{{ route("customer.booking.create", ["room" => $room]) }}" class="btn theme_btn button_hover">Book Now</a>
                 @endauth

@@ -29,10 +29,6 @@ class Room extends Model
         'room_id',
         'name',
         'room_type',
-        'single_bed',
-        'double_bed',
-        'room_image',
-        'image_type',
         'note',
         'housekeep_by',
         'status',
@@ -65,15 +61,6 @@ class Room extends Model
     }
 
     /**
-     * The facilities that belong to the Room
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function facilities()
-    {
-        return $this->belongsToMany(Facility::class, "room_facility", "room_id", "facility_id");
-    }
-    /**
      * Get all of the reservations for the Room
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -100,12 +87,6 @@ class Room extends Model
 
     public function isReserved() {
         return $this->reservedBy() != null;
-    }
-
-    public function imageSrc() {
-        if ($this->room_image == null)
-            return $this->type->imageSrc();
-        return "data:" . $this->image_type . ";base64," . base64_encode($this->room_image);
     }
 
     public function reservedBy() {

@@ -193,16 +193,16 @@
                             </tr>
                             <tr>
                                 <td>Single Bed:</td>
-                                <td id="room-single-bed">{{ $reservation->room->single_bed }}</td>
+                                <td id="room-single-bed">{{ $reservation->room->type->single_bed }}</td>
                             </tr>
                             <tr>
                                 <td>Double Bed:</td>
-                                <td id="room-double-bed">{{ $reservation->room->double_bed }}</td>
+                                <td id="room-double-bed">{{ $reservation->room->type->double_bed }}</td>
                             </tr>
                             <tr>
                                 <td>Facilities:</td>
                                 <td id="room-facilities">
-                                    @forelse ($reservation->room->facilities->pluck("name")->toArray() as $facility)
+                                    @forelse ($reservation->room->type->facilities->pluck("name")->toArray() as $facility)
                                         {{ $facility }}<br>
                                     @empty
                                         <span style="color: #F33">No Facilities</span>

@@ -10,10 +10,6 @@ table td.action-col {
     height: auto;
 } */
 
-.select2-selection--multiple {
-    bottom: 15%;
-}
-
 .hotel_img {
     position: relative;
     margin-bottom: 10px;
@@ -52,4 +48,10 @@ a.hyperlink {
 }
 select[name=table_length] option {
     color: black;
+}
+
+.form-select-multiple {
+    height: initial !important;
+    padding-top: 0;
+    padding-bottom: 0;
 }

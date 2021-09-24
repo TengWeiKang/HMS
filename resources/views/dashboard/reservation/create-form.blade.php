@@ -189,17 +189,17 @@
                             </tr>
                             <tr>
                                 <td>Single Bed:</td>
-                                <td id="room-single-bed">{{ (request()->has("room_id") ? $room->single_bed : "") }}</td>
+                                <td id="room-single-bed">{{ (request()->has("room_id") ? $room->type->single_bed : "") }}</td>
                             </tr>
                             <tr>
                                 <td>Double Bed:</td>
-                                <td id="room-double-bed">{{ (request()->has("room_id") ? $room->double_bed : "") }}</td>
+                                <td id="room-double-bed">{{ (request()->has("room_id") ? $room->type->double_bed : "") }}</td>
                             </tr>
                             <tr>
                                 <td>Facilities:</td>
                                 <td id="room-facilities">
                                     @if (request()->has("room_id"))
-                                        @forelse ($room->facilities->pluck("name")->toArray() as $facility)
+                                        @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
                                             {{ $facility }}<br>
                                         @empty
                                             <span style="color: #F33">No Facilities</span>
