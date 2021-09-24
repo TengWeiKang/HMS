@@ -62,7 +62,6 @@ class RoomController extends Controller
         Room::create([
             "room_id" => $request->roomId,
             "name" => $request->name,
-            "price" => $request->price,
             "room_type" => $request->roomType,
             "room_image" => $file ? file_get_contents($file) : null,
             "image_type" => $mimeType,
