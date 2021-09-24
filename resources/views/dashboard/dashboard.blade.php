@@ -41,8 +41,11 @@
     .status-repair {
         color: {{ App\Models\Room::STATUS[3]["color"] }};
     }
-    .status-reserved {
+    .status-checked-in {
         color: {{ App\Models\Room::STATUS[4]["color"] }};
+    }
+    .status-cleaning {
+        color: {{ App\Models\Room::STATUS[5]["color"] }};
     }
 </style>
 @endpush
@@ -234,7 +237,7 @@
                         <button type="button" class="btn btn-secondary w-100" name="view"><i class="zmdi zmdi-eye text-white"></i> View</button>
                     </div>
                 </div>
-                <div id="display-reserved" class="d-none">
+                <div id="display-checked-in" class="d-none">
                     <div class="row mt-3">
                         <div class="col-6">
                             <button type="button" class="btn btn-secondary w-100" name="check-out"><i class="zmdi zmdi-check text-white"></i> Check Out</button>
@@ -426,7 +429,7 @@
                 switch (status) {
                     case 0:
                         $("#display-check-in").removeClass("d-none");
-                        $("#display-reserved, #display-complete").addClass("d-none");
+                        $("#display-checked-in, #display-complete").addClass("d-none");
                         let roomStatus = event.getResources()[0].extendedProps.status;
                         if (roomStatus != 0) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
@@ -447,7 +450,7 @@
                         });
                         break;
                     case 1:
-                        $("#display-reserved").removeClass("d-none");
+                        $("#display-checked-in").removeClass("d-none");
                         $("#display-check-in, #display-complete").addClass("d-none");
                         $("button[name='check-out']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
@@ -468,7 +471,7 @@
                     case 2:
                         let paymentID = event.extendedProps.paymentId;
                         $("#display-complete").removeClass("d-none");
-                        $("#display-check-in, #display-reserved").addClass("d-none");
+                        $("#display-check-in, #display-checked-in").addClass("d-none");
                         $("button[name='payment']").on("click", function() {
                             let newTab = $("#newTab").prop("checked");
                             window.open(PAYMENT_URL.replace(":paymentID", paymentID), (newTab ? "_blank": "_self"));
@@ -501,7 +504,7 @@
                         eventDropInfo.revert();
                         Swal.fire({
                             title: "Error",
-                            text: "The room is reserved by other customer.",
+                            text: "The room is checked in by customer.",
                             icon: "error",
                         });
                         return;
@@ -510,7 +513,7 @@
                         eventDropInfo.revert();
                         Swal.fire({
                             title: "Error",
-                            text: "The room is not ready to reserve to any reserved customer.",
+                            text: "The room is not ready to check in.",
                             icon: "error",
                         });
                         return;
@@ -645,7 +648,10 @@
                             status_css = "status-repair";
                             break;
                         case 4:
-                            status_css = "status-reserved";
+                            status_css = "status-checked-in";
+                            break;
+                        case 5:
+                            status_css = "status-cleaning";
                             break;
                     }
                     return createElement("a", {href: redirectURL, class: "resource-url " + status_css}, arg["fieldValue"]);

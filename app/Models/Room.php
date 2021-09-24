@@ -17,7 +17,8 @@ class Room extends Model
         1 => ["status" => "Booked", "color" => "#e22"],
         2 => ["status" => "Dirty", "color" => "#282828"],
         3 => ["status" => "Repairing", "color" => "#ff8484"],
-        4 => ["status" => "Reserved", "color" => "orange"]
+        4 => ["status" => "Checked in", "color" => "orange"],
+        5 => ["status" => "Cleaning", "color" => "pink"]
     ];
 
     public $table = "room";
@@ -39,18 +40,21 @@ class Room extends Model
     ];
 
     public function status() {
-        if ($this->isReserved()) {
+        if ($this->isCheckIn()) {
             return 4;
         }
         else if($this->status == 0 && $this->isBooked()) {
             return 1;
+        }
+        else if ($this->status == 2 && $this->housekeeper != null) {
+            return 5;
         }
         return $this->status;
     }
 
     public function statusName($withAssigned) {
         $additional = "";
-        if ($withAssigned && $this->status() == 2 && $this->housekeeper != null) {
+        if ($this->status() == 5 && $withAssigned) {
             $additional = "<br><small>(" . ($this->housekeeper->username) .")</small>";
         }
         return self::STATUS[$this->status()]["status"] . $additional;
@@ -85,7 +89,7 @@ class Room extends Model
         return $this->belongsTo(Employee::class, "housekeep_by");
     }
 
-    public function isReserved() {
+    public function isCheckIn() {
         return $this->reservedBy() != null;
     }
 

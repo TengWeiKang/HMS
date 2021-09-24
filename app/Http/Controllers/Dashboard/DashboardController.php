@@ -83,7 +83,7 @@ class DashboardController extends Controller
         $reservation = Reservation::findOrFail($request->id);
         if ($request->has("room_id")) {
             $room = Room::findOrFail($request->room_id);
-            if ($room->isReserved() == 4) {
+            if ($room->isCheckIn() == 4) {
                 $room->status = 0;
                 $room->save();
             }

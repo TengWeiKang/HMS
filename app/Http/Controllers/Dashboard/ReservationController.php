@@ -199,9 +199,9 @@ class ReservationController extends Controller
         $error = "";
         if ($request->checkIn) {
             $room = Room::find($request->room);
-            if ($room->isReserved()) {
+            if ($room->isCheckIn()) {
                 $request->checkIn = false;
-                $error = "The room is currently reserved/booked by other customer";
+                $error = "The room is currently checked in by customer";
             }
         }
         Reservation::create([
@@ -276,7 +276,7 @@ class ReservationController extends Controller
             }
             if ($request->checkIn) {
                 $room = Room::find($request->roomId);
-                if ($room->isReserved() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
+                if ($room->isCheckIn() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
                     $validator->errors()->add("reserved", "The room is currently reserved/booked by other customer");
                 }
             }

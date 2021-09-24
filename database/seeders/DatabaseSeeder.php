@@ -25,31 +25,31 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Customer::create([
-            "username" => "customer1",
+            "username" => "john",
             "email" => "customer1@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789")
         ]);
 
         Customer::create([
-            "username" => "customer2",
+            "username" => "jane",
             "email" => "customer2@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789")
         ]);
 
         Guest::create([
-            "username" => "guest1",
+            "username" => "Peter",
             "phone" => "012-12312311"
         ]);
 
         Guest::create([
-            "username" => "guest2",
+            "username" => "Bob",
             "phone" => "012-12312312"
         ]);
 
         Employee::create([
-            "username" => "admin",
+            "username" => "Ali",
             "email" => "admin@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Employee::create([
-            "username" => "frontdesk",
+            "username" => "bobby",
             "email" => "frontdesk@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),

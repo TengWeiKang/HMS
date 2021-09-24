@@ -79,6 +79,7 @@ class AnalysisController extends Controller
             optional($info->get(2))->count() ?? 0,
             optional($info->get(3))->count() ?? 0,
             optional($info->get(4))->count() ?? 0,
+            optional($info->get(5))->count() ?? 0,
         ];
         return $json;
     }

@@ -346,7 +346,7 @@
             roomStatusChart = new Chart(roomStatusCanvas, {
                 type: 'pie',
                 data: {
-                    labels: ["Available", "Booked", "Dirty", "Repairing", "Reserved"],
+                    labels: ["Available", "Booked", "Dirty", "Repairing", "Checked in", "Cleaning"],
                     datasets: [{
                         backgroundColor: [
                             "{{ App\Models\Room::STATUS[0]["color"] }}",
@@ -354,6 +354,7 @@
                             "{{ App\Models\Room::STATUS[2]["color"] }}",
                             "{{ App\Models\Room::STATUS[3]["color"] }}",
                             "{{ App\Models\Room::STATUS[4]["color"] }}",
+                            "{{ App\Models\Room::STATUS[5]["color"] }}",
                         ],
                         data: info
                     }]
