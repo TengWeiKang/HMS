@@ -6,9 +6,11 @@ table td.action-col {
     font-size: 20px
 }
 
-/* .form-select-multiple {
-    height: auto;
-} */
+.form-select-multiple {
+    height: initial !important;
+    padding-top: 0;
+    padding-bottom: 0;
+}
 
 .hotel_img {
     position: relative;
@@ -48,10 +50,4 @@ a.hyperlink {
 }
 select[name=table_length] option {
     color: black;
-}
-
-.form-select-multiple {
-    height: initial !important;
-    padding-top: 0;
-    padding-bottom: 0;
 }

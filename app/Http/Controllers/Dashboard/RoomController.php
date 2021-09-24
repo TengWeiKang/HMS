@@ -53,9 +53,7 @@ class RoomController extends Controller
         $this->validate($request, [
             'roomId' => 'required|max:255|unique:room,room_id',
             'name' => 'required|max:255',
-            'image' => 'file|mimes:jpg,png,jpe,jpeg',
-            'singleBed' => 'required|numeric|min:0|max:20',
-            'doubleBed' => 'required|numeric|min:0|max:20',
+            'roomType' => "required"
         ]);
         Room::create([
             "room_id" => $request->roomId,

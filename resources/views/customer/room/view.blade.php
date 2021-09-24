@@ -27,7 +27,7 @@
             </div>
         </div>
         @auth("customer")
-            <a href="#" class="btn btn-primary mt-4 w-100">Book Now</a>
+            <a href="{{ route("customer.booking.create", ["room" => $room]) }}" class="btn btn-primary mt-4 w-100">Book Now</a>
         @endauth
     </div>
     <div class="col-lg-9">

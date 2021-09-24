@@ -23,8 +23,8 @@
                                 <th>Price</th>
                                 <th>Single bed</th>
                                 <th>Double bed</th>
-                                <th># of rooms</th>
                                 <th># of facilities</th>
+                                <th># of rooms</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -36,8 +36,8 @@
                                     <td>RM {{ number_format($roomType->price, 2) }}</td>
                                     <td>{{ $roomType->single_bed }}</td>
                                     <td>{{ $roomType->double_bed }}</td>
-                                    <td>{{ $roomType->rooms->count() }}</td>
                                     <td>{{ $roomType->facilities->count() }}</td>
+                                    <td>{{ $roomType->rooms->count() }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room-type.view", ["roomType" => $roomType]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>

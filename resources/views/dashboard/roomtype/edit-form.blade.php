@@ -22,7 +22,7 @@
                     @csrf
                     @method("PUT")
                     <div class="form-group">
-                        <label for="name">Room Type Name</label>
+                        <label for="name">Room Type Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="New Room Service Name" value="{{ old("name", $roomType->name) }}">
                         @error("name")
                             <div class="ml-2 text-sm text-danger">
@@ -31,7 +31,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="image">Room Image</label>
+                        <label for="image">Room Image (Ignore to remain the same image)</label>
                         <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg">
                         @error("image")
                             <div class="ml-2 text-sm text-danger">
