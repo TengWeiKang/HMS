@@ -30,10 +30,10 @@
                 </div>
             </div>
         </div>
-        @if (!$room->isCheckIn() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+        @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
-        @if ($room->status != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
+        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
         @endif
         @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
@@ -209,7 +209,6 @@
                                 <option value="0" @if ($room->status() == 0) selected @endif>Available</option>
                                 <option value="2" @if ($room->status() == 2) selected @endif>Dirty</option>
                                 <option value="3" @if ($room->status() == 3) selected @endif>Repairing</option>
-                                {{-- <option value="1" @if ($room->status == 1) selected @endif>Closed</option> --}}
                             </select>
                         </div>
                         <div class="form-group row mx-2">

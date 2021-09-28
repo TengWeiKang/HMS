@@ -57,7 +57,7 @@
                         <tbody>
                             @foreach ($payment->items as $service)
                             <tr>
-                                <td class="align-middle">{{ $service->service_name }}<br>Purchased on: {{ $service->purchase_at->format("d F Y  h:ia") }}</td>
+                                <td class="align-middle">{{ $service->service_name }}<br>Purchased on: {{ $service->purchase_at->format("d M Y  h:ia") }}</td>
                                 <td class="align-middle">RM {{ number_format($service->unit_price, 2) }}</td>
                                 <td class="align-middle">{{ $service->quantity }}</td>
                                 <td class="align-middle">RM {{ number_format($service->servicePrice(), 2) }}</td>

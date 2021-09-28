@@ -9,9 +9,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Room Type
-                <div class="card-action">
-                    <a href="{{ route("dashboard.room-type.create") }}"><u><span>Create New Room Type</span></u></a>
-                </div>
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                    <div class="card-action">
+                        <a href="{{ route("dashboard.room-type.create") }}"><u><span>Create New Room Type</span></u></a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">

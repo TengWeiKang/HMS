@@ -53,7 +53,7 @@
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
-                                            @if (!$room->isCheckIn() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                             <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                                 <i class="fa fa-user-plus text-white"></i>
                                             </a>
@@ -100,7 +100,7 @@
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
-                                            @if (!$room->isCheckIn() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                             <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                                 <i class="fa fa-user-plus text-white"></i>
                                             </a>
@@ -152,7 +152,7 @@
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
-                                            @if (!$room->isCheckIn() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                                 <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>

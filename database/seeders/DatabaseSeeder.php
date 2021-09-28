@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
         Customer::create([
             "username" => "jane",
             "email" => "customer2@gmail.com",
-            "phone" => "012-3456789",
+            "phone" => "012-98765432",
             "password" => Hash::make("123456789")
         ]);
 
@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Employee::create([
-            "username" => "housekeeper",
+            "username" => "lili",
             "email" => "weikangteng@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
@@ -90,22 +90,6 @@ class DatabaseSeeder extends Seeder
 
         Facility::create([
             "name" => "Car Park",
-        ]);
-
-        Facility::create([
-            "name" => "Car Park1",
-        ]);
-        Facility::create([
-            "name" => "Car Park2",
-        ]);
-        Facility::create([
-            "name" => "Car Park3",
-        ]);
-        Facility::create([
-            "name" => "Car Park4",
-        ]);
-        Facility::create([
-            "name" => "Car Park5",
         ]);
 
         $roomType1 = RoomType::create([

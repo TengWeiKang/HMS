@@ -461,7 +461,7 @@
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
                                 let percentage = amount / total * 100;
-                                return "RM " + amount + " (" + (percentage || 0).toFixed(2) + "%)";
+                                return "RM " + amount.toFixed(2) + " (" + (percentage || 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -772,7 +772,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",

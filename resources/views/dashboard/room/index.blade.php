@@ -23,9 +23,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Rooms
-                <div class="card-action">
-                    <a href="{{ route("dashboard.room.create") }}"><u><span>Create New Room</span></u></a>
-                </div>
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                    <div class="card-action">
+                        <a href="{{ route("dashboard.room.create") }}"><u><span>Create New Room</span></u></a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -47,7 +49,14 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $room->room_id }}</td>
                                     <td>{{ $room->name }}</td>
-                                    <td><a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a></td>
+                                    <td>
+                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk, admin"))
+                                            <a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a>
+                                        @else
+                                            {{ $room->type->name }}
+                                        @endif
+
+                                    </td>
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
@@ -67,7 +76,7 @@
                                         <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
-                                        @if (!$room->isCheckIn() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                        @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                             <a style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                                 <i class="fa fa-user-plus text-white"></i>
                                             </a>

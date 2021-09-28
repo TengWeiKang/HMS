@@ -65,7 +65,7 @@ class ReservationController extends Controller
      */
     public function roomSearch(Request $request)
     {
-        $rawRoomType = RoomType::with("rooms", "rooms.reservations", "rooms.facilities");
+        $rawRoomType = RoomType::with("rooms", "rooms.reservations", "rooms.type.facilities");
         if (!empty($request->roomType)) {
             $rawRoomType = $rawRoomType->where("id", $request->roomType);
         }
@@ -80,6 +80,8 @@ class ReservationController extends Controller
         $roomTypes->each(function ($roomType) use ($request, $arrival, $departure) {
             $roomType->rooms = $roomType->rooms->filter(function ($room) use ($request, $arrival, $departure) {
                 $reservations = $room->reservations->filter(function ($reservation) use ($request, $arrival, $departure) {
+                    if ($reservation->status == 0)
+                        return false;
                     // ignore reservation id
                     if ($request->has("ignoreID") && $request->ignoreID == $reservation->id)
                         return false;
@@ -350,7 +352,6 @@ class ReservationController extends Controller
     {
         if (in_array($reservation->room->status(), [0, 1])) {
             $reservation->check_in = Carbon::now();
-            $reservation->status = 0;
             $reservation->save();
         }
         return redirect()->back();
