@@ -56,7 +56,7 @@
                     "width": "7%",
                 },
                 {
-                    "targets": 3,
+                    "targets": 2,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false

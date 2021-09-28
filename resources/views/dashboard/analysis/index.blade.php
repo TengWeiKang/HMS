@@ -346,7 +346,7 @@
             roomStatusChart = new Chart(roomStatusCanvas, {
                 type: 'pie',
                 data: {
-                    labels: ["Available", "Booked", "Dirty", "Repairing", "Reserved"],
+                    labels: ["Available", "Booked", "Dirty", "Repairing", "Checked in", "Cleaning"],
                     datasets: [{
                         backgroundColor: [
                             "{{ App\Models\Room::STATUS[0]["color"] }}",
@@ -354,6 +354,7 @@
                             "{{ App\Models\Room::STATUS[2]["color"] }}",
                             "{{ App\Models\Room::STATUS[3]["color"] }}",
                             "{{ App\Models\Room::STATUS[4]["color"] }}",
+                            "{{ App\Models\Room::STATUS[5]["color"] }}",
                         ],
                         data: info
                     }]
@@ -460,7 +461,7 @@
                                 let amount = constant.datasets[datasetIndex].data[index];
                                 let total = constant.datasets[datasetIndex].data.reduce(sum, 0);
                                 let percentage = amount / total * 100;
-                                return "RM " + amount + " (" + (percentage || 0).toFixed(2) + "%)";
+                                return "RM " + amount.toFixed(2) + " (" + (percentage || 0).toFixed(2) + "%)";
                             }
                         }
                     },
@@ -771,7 +772,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",

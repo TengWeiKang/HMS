@@ -72,7 +72,7 @@ class RandomSeeder extends Seeder
             $roomType->rooms()->saveMany(Room::factory()->times($faker->numberBetween(1, 5))->make());
             $roomType->rooms->each(function ($room) use ($faker, $facilities) {
                 $selectedFacilities = $facilities->random($faker->numberBetween(0, $facilities->count()))->pluck("id");
-                $room->facilities()->sync($selectedFacilities);
+                $room->type->facilities()->sync($selectedFacilities);
             });
         });
         $services = Service::all();

@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use App\Models\Customer;
-use App\Models\Guest;
 use App\Models\Employee;
 use App\Models\Facility;
 use App\Models\Room;
@@ -27,6 +26,9 @@ class DatabaseSeeder extends Seeder
         Customer::create([
             "username" => "customer1",
             "email" => "customer1@gmail.com",
+            "passport" => "px123456",
+            "first_name" => "john",
+            "last_name" => "tan",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789")
         ]);
@@ -34,22 +36,16 @@ class DatabaseSeeder extends Seeder
         Customer::create([
             "username" => "customer2",
             "email" => "customer2@gmail.com",
-            "phone" => "012-3456789",
+            "phone" => "012-98765432",
+            "passport" => "px123457",
+            "first_name" => "jane",
+            "last_name" => "lee",
+            "phone" => "012-98765432",
             "password" => Hash::make("123456789")
         ]);
 
-        Guest::create([
-            "username" => "guest1",
-            "phone" => "012-12312311"
-        ]);
-
-        Guest::create([
-            "username" => "guest2",
-            "phone" => "012-12312312"
-        ]);
-
         Employee::create([
-            "username" => "admin",
+            "username" => "Ali",
             "email" => "admin@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
@@ -57,7 +53,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Employee::create([
-            "username" => "frontdesk",
+            "username" => "bobby",
             "email" => "frontdesk@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
@@ -65,7 +61,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Employee::create([
-            "username" => "housekeeper",
+            "username" => "lili",
             "email" => "weikangteng@gmail.com",
             "phone" => "012-3456789",
             "password" => Hash::make("123456789"),
@@ -100,7 +96,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
         ]);
-        $roomType1->facilities()->attach([1,2,3]);
+        $roomType1->facilities()->attach([1,2,5]);
 
         $roomType2 = RoomType::create([
             "name" => "Superior Room",
@@ -110,7 +106,7 @@ class DatabaseSeeder extends Seeder
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
         ]);
-        $roomType2->facilities()->attach([1,4,5]);
+        $roomType2->facilities()->attach([2,4,5]);
 
         RoomType::create([
             "name" => "Demo Delete Room",
@@ -125,55 +121,45 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R101",
             "name" => "Room Name 1",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
-            "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 1,
-        ])->facilities()->attach([2, 3, 4]);
+        ]);
 
         Room::create([
             "room_id" => "R102",
             "name" => "Room Name 2",
             "room_type" => $roomType2->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
-            "image_type" => "image/jpg",
             "single_bed" => 1,
             "double_bed" => 2,
-        ])->facilities()->attach([1, 3]);
+        ]);
 
         Room::create([
             "room_id" => "R103",
             "name" => "Room Name 3",
             "room_type" => $roomType2->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room3.jpg"),
-            "image_type" => "image/jpg",
             "single_bed" => 2,
             "double_bed" => 2,
             "status" => 2
-        ])->facilities()->attach([1, 2, 3, 4, 5]);
+        ]);
 
         Room::create([
             "room_id" => "R104",
             "name" => "Room Name 4",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room4.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
-            "double_bed" => 2,
+            "single_bed" => 1,
+            "double_bed" => 1,
             "housekeep_by" => 3,
             "status" => 2
-        ])->facilities()->attach([2]);
+        ]);
 
         Room::create([
             "room_id" => "R105",
             "name" => "Room Name 5",
             "room_type" => $roomType1->id,
-            "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
-            "image_type" => "image/jpg",
-            "single_bed" => 2,
+            "single_bed" => 0,
             "double_bed" => 2,
             "status" => 2
-        ])->facilities()->attach([2]);
+        ]);
 
         $service1 = Service::create([
             "name" => "food",
@@ -194,24 +180,21 @@ class DatabaseSeeder extends Seeder
             "room_id" => 1,
             "start_date" => Carbon::now()->today()->addDays(3),
             "end_date" => Carbon::now()->today()->addDays(5),
-            "reservable_type" => Guest::class,
-            "reservable_id" => 1,
+            "customer_id" => 1,
         ]);
 
         Reservation::create([
             "room_id" => 2,
             "start_date" => Carbon::now()->today(),
             "end_date" => Carbon::now()->today()->addDays(3),
-            "reservable_type" => Customer::class,
-            "reservable_id" => 2,
+            "customer_id" => 2,
         ]);
 
         Reservation::create([
             "room_id" => 2,
             "start_date" => Carbon::now()->today(),
             "end_date" => Carbon::now()->today()->addDays(3),
-            "reservable_type" => Customer::class,
-            "reservable_id" => 1,
+            "customer_id" => 1,
             "status" => 0
         ]);
 
@@ -219,8 +202,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => 4,
             "start_date" => Carbon::now()->today()->subDay(2),
             "end_date" => Carbon::now()->today()->subDay(),
-            "reservable_type" => Guest::class,
-            "reservable_id" => 2,
+            "customer_id" => 2,
             "check_in" => Carbon::now()
         ]);
 
@@ -228,8 +210,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => 2,
             "start_date" => Carbon::now()->today()->subDay(2),
             "end_date" => Carbon::now()->today()->subDay(),
-            "reservable_type" => Guest::class,
-            "reservable_id" => 2,
+            "customer_id" => 2,
             "check_in" => Carbon::now()
         ])->services()->attach([
             ["service_id" => 2, "quantity" => 3],
@@ -240,8 +221,7 @@ class DatabaseSeeder extends Seeder
             "room_id" => 1,
             "start_date" => Carbon::now()->today()->subDays(5),
             "end_date" => Carbon::now()->today()->subDays(2),
-            "reservable_type" => Customer::class,
-            "reservable_id" => 1,
+            "customer_id" => 1,
             "check_in" => Carbon::now()->subDays(7),
             "check_out" => Carbon::now()
         ]);
@@ -276,11 +256,11 @@ class DatabaseSeeder extends Seeder
             "room_id" => 2,
             "start_date" => Carbon::now()->today()->subDay(34),
             "end_date" => Carbon::now()->today()->subDay(31),
-            "reservable_type" => Customer::class,
-            "reservable_id" => 1,
+            "customer_id" => 1,
             "check_in" => Carbon::now()->subDay(34),
             "check_out" => Carbon::now()->subDay(31)
         ]);
+
         $reservation2->services()->attach([
             ["service_id" => 2, "quantity" => 3, "created_at" => Carbon::now()->subDay(34)],
             ["service_id" => 3, "quantity" => 2, "created_at" => Carbon::now()->subDay(33)],

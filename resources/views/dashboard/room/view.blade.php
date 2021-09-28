@@ -26,14 +26,14 @@
                 <div class="card-title">Image Preview</div>
                 <hr>
                 <div class="hotel_img text-center">
-                    <img id="hotel_preview" class="mw-100" src="{{ $room->imageSrc() }}" alt="Hotel PlaceHolder">
+                    <img id="hotel_preview" class="mw-100" src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
                 </div>
             </div>
         </div>
-        @if (!$room->isReserved() && $room->status == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+        @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
-        @if ($room->status != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
+        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
         @endif
         @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
@@ -90,11 +90,11 @@
                                     <tr>
                                         <td>Facilities:</td>
                                         <td>
-                                            @if ($room->facilities->count())
-                                                {!! nl2br(implode("\n", $room->facilities->pluck("name")->toArray())) !!}
-                                            @else
+                                            @forelse ($room->type->facilities as $facility)
+                                                {{ $facility->name }}<br>
+                                            @empty
                                                 <span style="color: #F33">No Facilities for this room</span>
-                                            @endif
+                                            @endforelse
                                         </td>
                                     </tr>
                                     <tr>
@@ -120,7 +120,7 @@
                                 <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Customer</th>
+                                            <th>Customer Full Name</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
                                             <th>Status</th>
@@ -130,11 +130,7 @@
                                     <tbody>
                                         @foreach ($room->reservations as $history)
                                             <tr>
-                                                @if ($history->reservable instanceof App\Models\Customer)
-                                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->reservable) }}">{{ $history->reservable->username}}</a></td>
-                                                @else
-                                                    <td>{{ $history->reservable->username}}</td>
-                                                @endif
+                                                <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->customer) }}">{{ $history->customer->fullName()}}</a></td>
                                                 <td>{{ $history->start_date->format("d F Y") }}</td>
                                                 <td>{{ $history->end_date->format("d F Y") }}</td>
                                                 <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>
@@ -209,7 +205,6 @@
                                 <option value="0" @if ($room->status() == 0) selected @endif>Available</option>
                                 <option value="2" @if ($room->status() == 2) selected @endif>Dirty</option>
                                 <option value="3" @if ($room->status() == 3) selected @endif>Repairing</option>
-                                {{-- <option value="1" @if ($room->status == 1) selected @endif>Closed</option> --}}
                             </select>
                         </div>
                         <div class="form-group row mx-2">

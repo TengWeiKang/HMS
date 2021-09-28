@@ -41,11 +41,11 @@
                                         <td>{{ $roomType->name }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Single Bed (Default):</td>
+                                        <td>Single Bed:</td>
                                         <td>{{ $roomType->single_bed }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Double Bed (Default):</td>
+                                        <td>Double Bed:</td>
                                         <td>{{ $roomType->double_bed }}</td>
                                     </tr>
                                     <tr>
@@ -53,7 +53,7 @@
                                         <td>{{ $roomType->rooms->count() }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Facilities (Default):</td>
+                                        <td>Facilities:</td>
                                         <td>
                                             @forelse ($roomType->facilities->pluck("name")->toArray() as $facility)
                                                 {{ $facility }}<br>

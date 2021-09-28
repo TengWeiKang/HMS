@@ -2,13 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Guest;
 use App\Models\Customer;
 use App\Models\Room;
 use App\Models\Reservation;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Collection;
 
 class ReservationFactory extends Factory
 {
@@ -29,17 +27,7 @@ class ReservationFactory extends Factory
     {
         if (is_null($this->collections))
             $this->collections = collect();
-        $reservables = [
-            Customer::class,
-            Guest::class,
-        ];
-        $reservableType = $this->faker->randomElement($reservables);
-        if ($reservableType == Guest::class) {
-            $customer = Guest::factory(1)->create()[0];
-        }
-        else {
-            $customer = Customer::all()->random();
-        }
+        $customer = Customer::all()->random();
         $rooms = Room::all();
         $startDate = $endDate = $roomID = null;
         do {
@@ -61,8 +49,7 @@ class ReservationFactory extends Factory
         $today = Carbon::today();
         $this->collections->push(["room_id" => $roomID, "start_date" => $startDate, "end_date" => $endDate]);
         return [
-            "reservable_type" => get_class($customer),
-            "reservable_id" => $customer,
+            "customer_id" => $customer,
             "room_id" => $roomID,
             "start_date" => $startDate,
             "end_date" => $endDate,

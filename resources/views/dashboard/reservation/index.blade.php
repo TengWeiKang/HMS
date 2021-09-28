@@ -37,12 +37,8 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
-                                    @if ($reservation->reservable instanceof App\Models\Customer)
-                                        <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->reservable]) }}">{{ $reservation->reservable->username }}</td>
-                                    @else
-                                        <td>{{ $reservation->reservable->username }}</td>
-                                    @endif
-                                    <td>{{ $reservation->reservable->phone }}</td>
+                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->username }}</td>
+                                    <td>{{ $reservation->customer->phone }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
@@ -72,6 +68,11 @@
                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
+                                        @if ($reservation->check_in != null && $reservation->check_out == null)
+                                        <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
+                                            <i class="zmdi zmdi-check text-white"></i>
+                                        </a>
+                                        @endif
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $reservation->status() == 0)
                                             <a class="cancelReservation" data-id="{{ $reservation->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Cancelled">
                                                 <i class="fa fa-times text-white"></i>

@@ -21,7 +21,7 @@
                 <hr>
                 <div class="accomodation_item mb-0">
                     <div class="hotel_img text-center border border-secondary">
-                        <img class="mw-100" src="data:{{ $room->image_type }};base64,{{ base64_encode($room->room_image) }}" alt="Hotel PlaceHolder">
+                        <img class="mw-100" src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
                     </div>
                 </div>
             </div>
@@ -65,7 +65,7 @@
                             <tr>
                                 <td>Facilities:</td>
                                 <td>
-                                    @forelse ($room->facilities->pluck("name")->toArray() as $facility)
+                                    @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
                                         {{ $facility }}<br>
                                     @empty
                                         <span style="color: #F33">No Facilities for this room</span>

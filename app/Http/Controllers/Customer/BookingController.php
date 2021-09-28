@@ -124,8 +124,7 @@ class BookingController extends Controller
             "room_id" => $room->id,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
-            "reservable_type" => Customer::class,
-            "reservable_id" => Auth::user()->id,
+            "customer_id" => Auth::user()->id,
         ]);
         return redirect()->route('customer.booking.create', ["room" => $room])->with("message", "New Reservation Created Successfully");
     }
@@ -150,7 +149,7 @@ class BookingController extends Controller
      */
     public function edit(Reservation $booking)
     {
-        $booking->load("room", "room.type", "room.facilities");
+        $booking->load("room", "room.type", "room.type.facilities");
         return view("customer.booking.edit-form", ["booking" => $booking]);
     }
 
@@ -199,7 +198,8 @@ class BookingController extends Controller
      */
     public function destroy(Reservation $booking)
     {
-        $booking->delete();
-        return response()->json(['success' => "The booking has been deleted"]);
+        $booking->status = 0;
+        $booking->save();
+        return response()->json(['success' => "The booking has been cancelled"]);
     }
 }

@@ -118,7 +118,7 @@
                     @enderror
                     <hr>
                     <div class="form-group row mx-2">
-                        <label for="room">Room <span class="text-danger">*</span></label>
+                        <label for="rooms">Room <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="rooms" name="room" required>
                             @if (request()->has("room_id"))
                                 <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}" selected>{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
@@ -131,12 +131,41 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="customers">Customer (Able to custom input) <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="customers" name="customer">
+                        <label for="passport">IC / Passport (Able to custom input) <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="passport" name="passport">
                             @foreach ($customers as $customer)
-                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}">{{ $customer->username }}</option>
+                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}" data-first-name="{{ $customer->first_name }}" data-last-name="{{ $customer->last_name }}" data-email="{{ $customer->email }}">{{ $customer->passport }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group row my-4 mx-2">
+                        <div class="col-lg-6 pl-lg-0">
+                            <label for="firstName">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("firstName") border-danger @enderror" id="firstName" name="firstName" placeholder="First Name" value="{{ old("firstName") }}">
+                            @error("firstName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <div class="col-lg-6 pr-lg-0">
+                            <label for="lastName">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("lastName") border-danger @enderror" id="lastName" name="lastName" placeholder="Last Name" value="{{ old("lastName") }}">
+                            @error("lastName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="email">Email <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("email") border-danger @enderror" id="email" name="email" placeholder="Email" value="{{ old("email") }}">
+                        @error("email")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group row mx-2">
                         <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
@@ -199,7 +228,7 @@
                                 <td>Facilities:</td>
                                 <td id="room-facilities">
                                     @if (request()->has("room_id"))
-                                        @forelse ($room->facilities->pluck("name")->toArray() as $facility)
+                                        @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
                                             {{ $facility }}<br>
                                         @empty
                                             <span style="color: #F33">No Facilities</span>
@@ -222,11 +251,7 @@
 <script>
     $(document).ready(function() {
         var isInitialize = true;
-        let phone = $("#customers").find(":selected").data("phone") ?? "";
-        $("#phone").val(phone);
-        if (phone != "") {
-            $("#phone").prop('readonly', true);
-        }
+
         $('select.form-control#roomType').select2();
         $roomSelect = $('select.form-control#rooms');
         $roomSelect.select2({
@@ -290,8 +315,8 @@
             $("#rooms").find("option").remove().trigger("change");
         });
 
-        $customerSelect = $('select.form-control#customers');
-        $customerSelect.select2({
+        $passportSelect = $('select.form-control#passport');
+        $passportSelect.select2({
             multiple: false,
             tags: true,
             createTag: function (params) {
@@ -306,15 +331,8 @@
                 }
             }
         });
-        $customerSelect.on("select2:select", function (e) {
-            let phone = $(this).find(":selected").data("phone") ?? "";
-            if (phone == "") {
-                $("#phone").prop("readonly", false);
-            }
-            else {
-                $("#phone").prop('readonly', true);
-            }
-            $("#phone").val(phone);
+        $passportSelect.on("select2:select", function (e) {
+            updateCustomerInfo();
         });
 
         $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
@@ -348,6 +366,17 @@
         })
 
         $('.select2.select2-container').addClass('form-control form-control-rounded');
+
+        function updateCustomerInfo() {
+            let phone = $("#passport").find(":selected").data("phone") ?? "";
+            let firstName = $("#passport").find(":selected").data("first-name") ?? "";
+            let lastName = $("#passport").find(":selected").data("last-name") ?? "";
+            let email = $("#passport").find(":selected").data("email") ?? "";
+            $("#phone").val(phone);
+            $("#firstName").val(firstName);
+            $("#lastName").val(lastName);
+            $("#email").val(email);
+        }
 
         function updateAndTriggerSwal(title, message) {
             $('#calendar').fullCalendar('unselect');
@@ -439,6 +468,7 @@
             },
         });
         changeDate();
+        updateCustomerInfo();
     });
 </script>
 @endpush

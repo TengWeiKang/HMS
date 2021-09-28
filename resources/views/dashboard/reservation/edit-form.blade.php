@@ -120,9 +120,10 @@
                             </div>
                         </div>
                     @enderror
+                    <hr>
                     <div class="form-group row mx-2">
-                        <label for="roomId">Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms" name="roomId" required>
+                        <label for="rooms">Room <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="rooms" name="room" required>
                             <option value="{{ $reservation->room->id }}" data-room-id="{{ $reservation->room->room_id }}" data-price="{{ $reservation->room->type->price }}">{{ $reservation->room->room_id }} - {{ $reservation->room->name }} ({{ $reservation->room->statusName(false) }})</option>
                         </select>
                         @error("room")
@@ -132,19 +133,45 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="customer">Customer (Able to custom input) <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="customers" name="customer">
+                        <label for="passport">IC / Passport (Able to custom input) <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="passport" name="passport">
                             @foreach ($customers as $customer)
-                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}" @if ($reservation->reservable instanceof App\Models\Customer && $customer->id == $reservation->reservable->id) selected @endif>{{ $customer->username }}</option>
+                                <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}" data-first-name="{{ $customer->first_name }}" data-last-name="{{ $customer->last_name }}" data-email="{{ $customer->email }}" @if ($customer->id == $reservation->customer->id) selected @endif>{{ $customer->passport }}</option>
                             @endforeach
-                            @if ($reservation->reservable instanceof App\Models\Guest)
-                                <option value="g||{{ $reservation->reservable->username }}" data-phone="{{ $reservation->reservable->phone }}" selected>{{ $reservation->reservable->username }}</option>
-                            @endif
                         </select>
+                    </div>
+                    <div class="form-group row my-4 mx-2">
+                        <div class="col-lg-6 pl-lg-0">
+                            <label for="firstName">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("firstName") border-danger @enderror" id="firstName" name="firstName" placeholder="First Name" value="{{ old("firstName", $reservation->customer->first_name) }}">
+                            @error("firstName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <div class="col-lg-6 pr-lg-0">
+                            <label for="lastName">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("lastName") border-danger @enderror" id="lastName" name="lastName" placeholder="Last Name" value="{{ old("lastName", $reservation->customer->last_name) }}">
+                            @error("lastName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="email">Email <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("email") border-danger @enderror" id="email" name="email" placeholder="Email" value="{{ old("email", $reservation->customer->email) }}">
+                        @error("email")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group row mx-2">
                         <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone", $reservation->reservable->phone) }}" @if ($reservation->reservable instanceof App\Models\Customer) readonly @endif>
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" id="phone" name="phone" placeholder="Contact Number" value="{{ old("phone", $reservation->customer->phone) }}">
                     </div>
                     <div class="form-group col-12 mt-5">
                         <label class="h5">Booking Price: RM <span id="totalPrice">{{ number_format($reservation->bookingPrice(), 2) }}</span></label>
@@ -202,7 +229,7 @@
                             <tr>
                                 <td>Facilities:</td>
                                 <td id="room-facilities">
-                                    @forelse ($reservation->room->facilities->pluck("name")->toArray() as $facility)
+                                    @forelse ($reservation->room->type->facilities->pluck("name")->toArray() as $facility)
                                         {{ $facility }}<br>
                                     @empty
                                         <span style="color: #F33">No Facilities</span>
@@ -288,8 +315,8 @@
             $("#rooms").find("option").remove().trigger("change");
         });
 
-        $customerSelect = $('select.form-control#customers');
-        $customerSelect.select2({
+        $passportSelect = $('select.form-control#passport');
+        $passportSelect.select2({
             multiple: false,
             tags: true,
             createTag: function (params) {
@@ -304,17 +331,8 @@
                 }
             }
         });
-        $customerSelect.on("select2:select", function (e) {
-            $selector = $(this).find(":selected")
-            let phone = $selector.data("phone") || "";
-            let isGuest = $selector.val().startsWith("g");
-            if (phone == "" || isGuest) {
-                $("#phone").prop("readonly", false);
-            }
-            else {
-                $("#phone").prop('readonly', true);
-            }
-            $("#phone").val(phone);
+        $passportSelect.on("select2:select", function (e) {
+            updateCustomerInfo();
         });
         $('.select2.select2-container').addClass('form-control form-control-rounded');
 
@@ -359,6 +377,17 @@
                 $personElement.prop("disabled", true);
             }
         });
+
+        function updateCustomerInfo() {
+            let phone = $("#passport").find(":selected").data("phone") ?? "";
+            let firstName = $("#passport").find(":selected").data("first-name") ?? "";
+            let lastName = $("#passport").find(":selected").data("last-name") ?? "";
+            let email = $("#passport").find(":selected").data("email") ?? "";
+            $("#phone").val(phone);
+            $("#firstName").val(firstName);
+            $("#lastName").val(lastName);
+            $("#email").val(email);
+        }
 
         function updateAndTriggerSwal(title, message) {
             $('#calendar').fullCalendar('unselect');

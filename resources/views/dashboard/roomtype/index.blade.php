@@ -9,9 +9,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Room Type
-                <div class="card-action">
-                    <a href="{{ route("dashboard.room-type.create") }}"><u><span>Create New Room Type</span></u></a>
-                </div>
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                    <div class="card-action">
+                        <a href="{{ route("dashboard.room-type.create") }}"><u><span>Create New Room Type</span></u></a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -23,8 +25,8 @@
                                 <th>Price</th>
                                 <th>Single bed</th>
                                 <th>Double bed</th>
-                                <th># of rooms</th>
                                 <th># of facilities</th>
+                                <th># of rooms</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -36,8 +38,8 @@
                                     <td>RM {{ number_format($roomType->price, 2) }}</td>
                                     <td>{{ $roomType->single_bed }}</td>
                                     <td>{{ $roomType->double_bed }}</td>
-                                    <td>{{ $roomType->rooms->count() }}</td>
                                     <td>{{ $roomType->facilities->count() }}</td>
+                                    <td>{{ $roomType->rooms->count() }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.room-type.view", ["roomType" => $roomType]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>

@@ -22,7 +22,7 @@
                     @csrf
                     @method("PUT")
                     <div class="form-group">
-                        <label for="name">Room Type Name</label>
+                        <label for="name">Room Type Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="New Room Service Name" value="{{ old("name", $roomType->name) }}">
                         @error("name")
                             <div class="ml-2 text-sm text-danger">
@@ -31,7 +31,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="image">Room Image</label>
+                        <label for="image">Room Image (Ignore to remain the same image)</label>
                         <input type="file" class="form-control form-control-rounded @error("image") border-danger @enderror" id="image" name="image" min="0.01" step="0.01" placeholder="Room Image" accept=".pdf,.jpg,.png,.jpeg">
                         @error("image")
                             <div class="ml-2 text-sm text-danger">
@@ -49,7 +49,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="singleBed">Single Bed Default Value</label>
+                        <label for="singleBed">Single Bed <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" name="singleBed" placeholder="Number of Single Bed" value="{{ old("singleBed", $roomType->single_bed) }}" step="1" min="0">
                         @error("singleBed")
                             <div class="ml-2 text-sm text-danger">
@@ -58,7 +58,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="doubleBed">Double Bed Default Value</label>
+                        <label for="doubleBed">Double Bed <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" name="doubleBed" placeholder="Number of Double Bed" value="{{ old("doubleBed", $roomType->double_bed) }}" step="1" min="0">
                         @error("doubleBed")
                             <div class="ml-2 text-sm text-danger">

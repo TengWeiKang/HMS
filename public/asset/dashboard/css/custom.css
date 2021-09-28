@@ -6,12 +6,10 @@ table td.action-col {
     font-size: 20px
 }
 
-/* .form-select-multiple {
-    height: auto;
-} */
-
-.select2-selection--multiple {
-    bottom: 15%;
+.form-select-multiple {
+    height: initial !important;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .hotel_img {
