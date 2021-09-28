@@ -58,19 +58,29 @@
                     </div>
                     <div class="form-group row my-4 mx-2">
                         <div class="col-lg-6 pl-lg-0">
-                            <label for="singleBed">Single Bed</label>
-                            <input type="number" class="form-control form-control-rounded" id="singleBed" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}" disabled>
+                            <label for="singleBed">Single Bed <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control form-control-rounded @error("singleBed") border-danger @enderror" id="singleBed" name="singleBed" min="0" step="1" placeholder="Number of Single Bed" value="{{ old("singleBed") }}">
+                            @error("singleBed")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
                         </div>
                         <div class="col-lg-6 pr-lg-0">
-                            <label for="doubleBed">Double Bed</label>
-                            <input type="number" class="form-control form-control-rounded" id="doubleBed" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}" disabled>
+                            <label for="doubleBed">Double Bed <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control form-control-rounded @error("doubleBed") border-danger @enderror" id="doubleBed" name="doubleBed" min="0" step="1" placeholder="Number of Double Bed" value="{{ old("doubleBed") }}">
+                            @error("doubleBed")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
                         </div>
                     </div>
                     <div class="form-group row mx-2">
                         <label for="facilities">Facilities</label>
-                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple" disabled>
+                        <select class="form-control form-control-rounded" id="facilities" name="facilities[]" multiple="multiple" disabled="disabled">
                             @foreach ($facilities as $facility)
-                                <option value="{{ $facility->id }}">{{ $facility->name }}</option>
+                                <option value="{{ $facility->id }}" @if ($errors->isNotEmpty() && in_array($facility->id, old("facilities"))) selected @endif>{{ $facility->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -98,26 +108,28 @@
 @push("script")
     <script>
         $(document).ready(function() {
-            function updateDefaultBed() {
+            function updateRoomType() {
                 let selected = $("#roomType").find(":selected");
                 let single = selected.data("single");
                 let double = selected.data("double");
                 let facilities = selected.data("facilities");
+                let src = selected.data("image-src");
                 $("#singleBed").val(single);
                 $("#doubleBed").val(double);
                 $("#facilities").val(facilities).change();
-            };
+                $("#hotel_preview").attr("src", src);
+            }
             $('select.form-control#facilities').select2({
                 placeholder: "No Facilities",
             });
             $roomTypeSelect = $('select.form-control#roomType');
             $roomTypeSelect.select2();
             $roomTypeSelect.on("select2:select", function (e) {
-                updateDefaultBed();
-            })
+                updateRoomType();
+            });
             $('.select2.select2-container').addClass('form-control form-control-rounded');
             $('.select2-selection--multiple').parents('.select2-container').addClass('form-select-multiple select2-selection--multiple--disabled');
-            updateDefaultBed();
+            updateRoomType();
         });
     </script>
 @endpush

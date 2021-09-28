@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\Room;
 use App\Models\Customer;
-use App\Models\Guest;
 use App\Models\Service;
 use App\Models\RoomType;
 use Carbon\Carbon;
@@ -22,7 +21,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with("room", "reservable")->orderBy("created_at", "DESC")->get();
+        $reservations = Reservation::with("room", "customer")->orderBy("created_at", "DESC")->get();
         return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 
@@ -97,13 +96,13 @@ class ReservationController extends Controller
                 if ($reservations->count() > 0) {
                     return false;
                 }
-                if (!empty($request->single) && $room->type->single_bed != $request->single) {
+                if (!empty($request->single) && $room->single_bed != $request->single) {
                     return false;
                 }
-                if (!empty($request->double) && $room->type->double_bed != $request->double) {
+                if (!empty($request->double) && $room->double_bed != $request->double) {
                     return false;
                 }
-                if (!empty($request->person) && $request->person != $room->type->single_bed + $room->type->double_bed * 2) {
+                if (!empty($request->person) && $request->person != $room->single_bed + $room->double_bed * 2) {
                     return false;
                 }
                 if ($request->checkIn == "true") {
@@ -132,8 +131,8 @@ class ReservationController extends Controller
                     "room_type" => $roomType->name,
                     "room_name" => $room->name,
                     "price" => $roomType->price,
-                    "single_bed" => $room->type->single_bed,
-                    "double_bed" => $room->type->double_bed,
+                    "single_bed" => $room->single_bed,
+                    "double_bed" => $room->double_bed,
                     "facilities" => $room->type->facilities->pluck("name")->toArray(),
                 ]);
             }
@@ -166,6 +165,10 @@ class ReservationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             "room" => "required",
+            "passport" => "required",
+            "firstName" => "required",
+            "lastName" => "required",
+            "email" => "required|email",
             "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate",
@@ -188,16 +191,28 @@ class ReservationController extends Controller
         });
         $validator->validate();
 
-        $split = explode("||", $request->customer, 2);
+        $split = explode("||", $request->passport, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;
         $customerID = $split[1];
         if (!$isCustomer) {
-            $customerID = Guest::create([
-                "username" => $customerID,
+            $customerID = Customer::create([
+                "passport" => $customerID,
+                "first_name" => $request->firstName,
+                "last_name" => $request->lastName,
+                "email" => $request->email,
                 "phone" => $request->phone
             ])->id;
         }
-        $customerID = (int) $customerID;
+        else {
+            $customerID = (int) $customerID;
+            $customer = Customer::find($customerID);
+            $customer->phone = $request->phone;
+            $customer->first_name = $request->firstName;
+            $customer->last_name = $request->lastName;
+            $customer->email = $request->email;
+            $customer->phone = $request->phone;
+            $customer->save();
+        }
         $error = "";
         if ($request->checkIn) {
             $room = Room::find($request->room);
@@ -210,8 +225,7 @@ class ReservationController extends Controller
             "room_id" => $request->room,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
-            "reservable_type" => $isCustomer ? Customer::class : Guest::class,
-            "reservable_id" => $customerID,
+            "customer_id" => $customerID,
             "check_in" => ($request->checkIn ? Carbon::now() : null)
         ]);
         if ($error == "") {
@@ -230,7 +244,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        $reservation->load("room", "reservable", "services", "payment");
+        $reservation->load("room", "customer", "services", "payment");
         return view('dashboard/reservation/view', ["reservation" => $reservation]);
     }
 
@@ -242,7 +256,7 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        $reservation->load("room", "reservable");
+        $reservation->load("room", "customer");
         $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
         $customers = Customer::all();
         return view('dashboard/reservation/edit-form', ["roomTypes" => $roomTypes, "customers" => $customers, "reservation" => $reservation]);
@@ -258,12 +272,17 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         $validator = Validator::make($request->all(), [
+            "room" => "required",
+            "passport" => "required",
+            "firstName" => "required",
+            "lastName" => "required",
+            "email" => "required|email",
             "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date",
             "endDate" => "required|date"
         ]);
         $validator->after(function ($validator) use ($request, $reservation) {
-            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->roomId)
+            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->room)
                 ->where(function ($query) use ($request) {
                     $query->where("start_date", "<=", $request->startDate)
                         ->where("end_date", ">=", $request->startDate)
@@ -277,7 +296,7 @@ class ReservationController extends Controller
                 $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
             }
             if ($request->checkIn) {
-                $room = Room::find($request->roomId);
+                $room = Room::find($request->room);
                 if ($room->isCheckIn() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
                     $validator->errors()->add("reserved", "The room is currently reserved/booked by other customer");
                 }
@@ -285,28 +304,41 @@ class ReservationController extends Controller
         });
         $validator->validate();
 
-        $split = explode("||", $request->customer, 2);
+        $split = explode("||", $request->passport, 2);
         $isCustomer = $split[0] == 'c' ? 1 : 0;
         $customerID = $split[1];
 
-        // delete previous guest record
-        if ($reservation->reservable_type == Guest::class) {
-            Guest::destroy($reservation->reservable_id);
-        }
         if (!$isCustomer) {
-            $customerID = Guest::create([
-                "username" => $customerID,
+            $customerID = Customer::create([
+                "passport" => $request->passport,
+                "first_name" => $request->firstName,
+                "last_name" => $request->lastName,
+                "email" => $request->email,
                 "phone" => $request->phone
             ])->id;
         }
+        else {
+            $customerID = (int) $customerID;
+            $customer = Customer::find($customerID);
+            $customer->phone = $request->phone;
+            $customer->first_name = $request->firstName;
+            $customer->last_name = $request->lastName;
+            $customer->email = $request->email;
+            $customer->phone = $request->phone;
+            $customer->save();
+        }
         $customerID = (int) $customerID;
 
-        $reservation->room_id = $request->roomId;
+        $reservation->room_id = $request->room;
         $reservation->start_date = $request->startDate;
         $reservation->end_date = $request->endDate;
-        $reservation->reservable_type = $isCustomer ? Customer::class : Guest::class;
-        $reservation->check_in = $request->checkIn ? Carbon::now() : null;
-        $reservation->reservable_id = $customerID;
+        if ($reservation->check_in == null) {
+            $reservation->check_in = $request->checkIn ? Carbon::now() : null;
+        }
+        else if (!$request->checkIn) {
+            $reservation->check_in = null; // disable check in
+        }
+        $reservation->customer_id = $customerID;
         $reservation->save();
 
         return redirect()->route('dashboard.reservation.edit', ["reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
@@ -320,9 +352,6 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-        if ($reservation->reservable_type == Guest::class) {
-            Guest::destroy($reservation->reservable_id);
-        }
         $reservation->delete();
         return response()->json(['success' => "The reservation has been removed"]);
     }

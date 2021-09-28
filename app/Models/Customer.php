@@ -24,6 +24,9 @@ class Customer extends Authenticatable
     protected $fillable = [
         'username',
         'email',
+        'passport',
+        'first_name',
+        'last_name',
         'phone',
         'password',
     ];
@@ -43,7 +46,11 @@ class Customer extends Authenticatable
         'updated_at' => 'datetime',
     ];
 
+    public function fullName() {
+        return $this->first_name . " " . $this->last_name;
+    }
+
     public function bookings() {
-        return $this->morphMany(Reservation::class, "reservable");
+        return $this->hasMany(Reservation::class, "customer_id");
     }
 }

@@ -69,11 +69,11 @@
                                 </tr>
                                 <tr>
                                     <td>Single Bed:</td>
-                                    <td>{{ $booking->room->type->single_bed }}</td>
+                                    <td>{{ $booking->room->single_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Double Bed:</td>
-                                    <td>{{ $booking->room->type->double_bed }}</td>
+                                    <td>{{ $booking->room->double_bed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Facilities:</td>

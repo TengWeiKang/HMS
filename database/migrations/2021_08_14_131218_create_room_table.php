@@ -19,6 +19,8 @@ class CreateRoomTable extends Migration
             $table->string("room_id")->unique();
             $table->string("name");
             $table->integer("room_type")->index();
+            $table->integer("single_bed");
+            $table->integer("double_bed");
             $table->string("note")->nullable();
             $table->integer("housekeep_by")->nullable()->index();
             $table->integer("status")->default(0);

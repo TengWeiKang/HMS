@@ -73,11 +73,11 @@
                                     </tr>
                                     <tr>
                                         <td>Single Bed:</td>
-                                        <td>{{ $room->type->single_bed }}</td>
+                                        <td>{{ $room->single_bed }}</td>
                                     </tr>
                                     <tr>
                                         <td>Double Bed:</td>
-                                        <td>{{ $room->type->double_bed }}</td>
+                                        <td>{{ $room->double_bed }}</td>
                                     </tr>
                                     <tr>
                                         <td>Status:</td>
@@ -120,7 +120,7 @@
                                 <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Customer</th>
+                                            <th>Customer Full Name</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
                                             <th>Status</th>
@@ -130,11 +130,7 @@
                                     <tbody>
                                         @foreach ($room->reservations as $history)
                                             <tr>
-                                                @if ($history->reservable instanceof App\Models\Customer)
-                                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->reservable) }}">{{ $history->reservable->username}}</a></td>
-                                                @else
-                                                    <td>{{ $history->reservable->username}}</td>
-                                                @endif
+                                                <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->customer) }}">{{ $history->customer->fullName()}}</a></td>
                                                 <td>{{ $history->start_date->format("d F Y") }}</td>
                                                 <td>{{ $history->end_date->format("d F Y") }}</td>
                                                 <td style="color: {{ $history->statusColor() }}">{{ $history->statusName() }}</td>

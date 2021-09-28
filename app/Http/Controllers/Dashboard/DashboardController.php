@@ -46,7 +46,7 @@ class DashboardController extends Controller
             $start = new Carbon(explode("T", $request->start)[0]);
             $end = new Carbon(explode("T", $request->end)[0]);
             $end->subDay();
-            $reservations = Reservation::with("reservable", "payment")
+            $reservations = Reservation::with("customer", "payment")
                 ->where("status", 1)
                 ->where(function ($query) use ($start, $end) {
                 $query->where("start_date", "<=", $start)
@@ -65,7 +65,7 @@ class DashboardController extends Controller
                     "backgroundColor" => $reservation->statusColor(),
                     "textColor" => "black",
                     "classNames" => "text-center event-pointer",
-                    "title" => $reservation->reservable->username,
+                    "title" => $reservation->customer->first_name + $reservation->customer->last_name,
                     "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->addDays()->format("Y-m-d"),
                     "editable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed

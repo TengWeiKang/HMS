@@ -16,7 +16,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Username</th>
+                                <th>Full Name</th>
+                                <th>Email</th>
                                 <th>Contact</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -25,7 +26,8 @@
                             @foreach ($customers as $customer)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    <td>{{ $customer->username }}</td>
+                                    <td>{{ $customer->fullName() }}</td>
+                                    <td>{{ $customer->email }}</td>
                                     <td>{{ $customer->phone }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.customer.view", ["customer" => $customer]) }}">

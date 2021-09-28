@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Facility;
 use App\Models\Reservation;
 use Carbon\Carbon;
 
@@ -30,6 +29,8 @@ class Room extends Model
         'room_id',
         'name',
         'room_type',
+        'single_bed',
+        'double_bed',
         'note',
         'housekeep_by',
         'status',
@@ -62,6 +63,16 @@ class Room extends Model
 
     public function statusColor() {
         return self::STATUS[$this->status()]["color"];
+    }
+
+    /**
+     * The facilities that belong to the Room
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function facilities()
+    {
+        return $this->belongsToMany(Facility::class, "room_facility", "room_id", "facility_id");
     }
 
     /**

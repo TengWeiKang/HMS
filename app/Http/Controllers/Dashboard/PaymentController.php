@@ -17,7 +17,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::with("items", "charges", "reservation.reservable")->get();
+        $payments = Payment::with("items", "charges", "reservation.customer")->get();
         return view('dashboard/payment/index', ["payments" => $payments]);
     }
 

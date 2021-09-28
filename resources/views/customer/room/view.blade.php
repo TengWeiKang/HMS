@@ -56,11 +56,11 @@
                             </tr>
                             <tr>
                                 <td>Single Bed:</td>
-                                <td>{{ $room->type->single_bed }}</td>
+                                <td>{{ $room->single_bed }}</td>
                             </tr>
                             <tr>
                                 <td>Double Bed:</td>
-                                <td>{{ $room->type->double_bed }}</td>
+                                <td>{{ $room->double_bed }}</td>
                             </tr>
                             <tr>
                                 <td>Facilities:</td>

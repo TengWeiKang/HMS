@@ -24,6 +24,8 @@ class RoomFactory extends Factory
         return [
             "room_id" => $this->faker->unique->regexify("/^R\d{3}$/"),
             "name" => $this->faker->word(2),
+            "single_bed" => $this->faker->randomDigit(),
+            "double_bed" => $this->faker->randomDigit(),
         ];
     }
 }

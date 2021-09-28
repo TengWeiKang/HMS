@@ -15,7 +15,7 @@
 @endpush
 
 @section("title")
-    Dashboard | {{ $customer->username }}
+    Dashboard | {{ $customer->fullName() }}
 @endsection
 
 @section("content")
@@ -40,8 +40,12 @@
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <tr>
-                                        <td width="20%">Customer Name:</td>
-                                        <td>{{ $customer->username }}</td>
+                                        <td width="20%">Customer Full Name:</td>
+                                        <td>{{ $customer->fullName() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>IC / Passport:</td>
+                                        <td>{{ $customer->passport }}</td>
                                     </tr>
                                     <tr>
                                         <td>Customer Email:</td>
@@ -53,7 +57,7 @@
                                     </tr>
                                     <tr>
                                         <td>Customer Register At:</td>
-                                        <td>{{ $customer->created_at->format("d F Y") }}</td>
+                                        <td>{{ $customer->created_at->format("d F Y h:ia") }}</td>
                                     </tr>
                                     <tr>
                                         <td>Total Number of Reservations:</td>

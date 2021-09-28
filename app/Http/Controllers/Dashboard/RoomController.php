@@ -53,12 +53,17 @@ class RoomController extends Controller
         $this->validate($request, [
             'roomId' => 'required|max:255|unique:room,room_id',
             'name' => 'required|max:255',
-            'roomType' => "required"
+            'roomType' => "required",
+            'singleBed' => 'required|numeric|min:0|max:20',
+            'doubleBed' => 'required|numeric|min:0|max:20',
         ]);
         Room::create([
             "room_id" => $request->roomId,
             "name" => $request->name,
+            "price" => $request->price,
             "room_type" => $request->roomType,
+            "single_bed" => $request->singleBed,
+            "double_bed" => $request->doubleBed,
         ]);
         return redirect()->route('dashboard.room.create')->with("message", "The room has created successfully");
     }
@@ -73,7 +78,7 @@ class RoomController extends Controller
     {
         $room->load(["reservations" => function ($query) {
             $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
-        }, "type", "housekeeper", "reservations.payment", "reservations.reservable"]);
+        }, "type", "housekeeper", "reservations.payment", "reservations.customer"]);
         $housekeepers = Employee::where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
@@ -104,10 +109,15 @@ class RoomController extends Controller
         $this->validate($request, [
             'roomId' => 'required|max:255|unique:room,room_id,'.$room->id,
             'name' => 'required|max:255',
+            'roomType' => "required",
+            'singleBed' => 'required|numeric|min:0|max:20',
+            'doubleBed' => 'required|numeric|min:0|max:20',
         ]);
         $room->room_id = $request->roomId;
         $room->name = $request->name;
         $room->room_type = $request->roomType;
+        $room->single_bed = $request->singleBed;
+        $room->double_bed = $request->doubleBed;
         $room->save();
         return redirect()->route('dashboard.room.edit', ["room" => $room])->with("message", "The room has successfully updated");
     }

@@ -17,8 +17,7 @@ class Reservation extends Model
     const UPDATED_AT = null;
 
     protected $fillable = [
-        'reservable_type',
-        'reservable_id',
+        'customer_id',
         'room_id',
         'start_date',
         'end_date',
@@ -46,8 +45,8 @@ class Reservation extends Model
         return $this->belongsTo(Room::class, "room_id");
     }
 
-    public function reservable() {
-        return $this->morphTo();
+    public function customer() {
+        return $this->belongsTo(Customer::class, "customer_id");
     }
 
     /**
@@ -108,33 +107,4 @@ class Reservation extends Model
     {
         return $this->hasOne(Payment::class, 'reservation_id');
     }
-
-    // public function customerRedirect() {
-    //     if ($this->reservable == null || $this->reservable_type instanceof Guest) {
-    //         return "";
-    //     }
-    //     return "";
-    // }
-
-    // public function statusName() {
-    //     $today = Carbon::today();
-    //     if ($this->check_in == null) {
-    //         if ($today < $this->start_date)
-    //             return "Waiting for Check-in";
-    //         else if ($today == $this->start_date)
-    //             return "Check-in Today";
-    //         else
-    //             return "Check-in Over " . $today->diffInDays($this->start_date) . " day(s)";
-    //     }
-    //     else if ($this->check_out == null) {
-    //         if ($today < $this->end_date)
-    //             return "Check-out in " . $today->diffInDays($this->end_date) . " days";
-    //         else if ($today == $startDate)
-    //             return "Check-out by today";
-    //         else
-    //             return "Check-out over " . $today->diffInDays($this->end_date) . " days";
-    //     }
-    //     else
-    //         return "Completed";
-    // }
 }

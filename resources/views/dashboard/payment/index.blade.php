@@ -32,11 +32,7 @@
                             @foreach ($payments as $payment)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
-                                    @if ($payment->reservation->reservable instanceof App\Models\Customer)
-                                        <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $payment->reservation->reservable]) }}">{{ $payment->reservation->reservable->username }}</a></td>
-                                    @else
-                                        <td>{{ $payment->reservation->reservable->username }}</td>
-                                    @endif
+                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $payment->reservation->customer]) }}">{{ $payment->reservation->customer->fullName() }}</a></td>
                                     <td>{{ $payment->start_date->format("d M Y") }}</td>
                                     <td>{{ $payment->end_date->format("d M Y") }}</td>
                                     <td>{{ $payment->payment_at->format("d M Y h:ia") }}</td>
