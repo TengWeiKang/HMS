@@ -8,9 +8,11 @@ use App\Models\Room;
 use App\Models\Facility;
 use App\Models\Employee;
 use App\Models\RoomType;
+use App\Notifications\HousekeeperSmsNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Nexmo\Laravel\Facade\Nexmo;
 
 class RoomController extends Controller
 {
@@ -26,7 +28,7 @@ class RoomController extends Controller
     public function index()
     {
         $rooms = Room::with("type", "housekeeper", "reservations")->get();
-        $housekeepers = Employee::where("role", 2)->get();
+        $housekeepers = Employee::with("housekeepRooms")->where("role", 2)->get();
         return view('dashboard/room/index', ["rooms" => $rooms, "housekeepers" => $housekeepers]);
     }
 
@@ -78,7 +80,7 @@ class RoomController extends Controller
         $room->load(["reservations" => function ($query) {
             $query->whereNotNull("check_in")->orderBy("start_date", "DESC");
         }, "type", "housekeeper", "reservations.payment", "reservations.customer"]);
-        $housekeepers = Employee::where("role", 2)->get();
+        $housekeepers = Employee::with("housekeepRooms")->where("role", 2)->get();
         return view('dashboard/room/view', ['room' => $room, 'housekeepers' => $housekeepers]);
     }
 
@@ -138,6 +140,7 @@ class RoomController extends Controller
         $room = Room::findOrFail($request->id);
         if ($room->housekeep_by == null) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
+            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $request->housekeeper;
             $room->save();
@@ -150,6 +153,7 @@ class RoomController extends Controller
         $housekeeper = Auth::guard('employee')->user();
         if ($room->housekeep_by == null && $room->status() == 2) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
+            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $housekeeper->id;
             $room->save();

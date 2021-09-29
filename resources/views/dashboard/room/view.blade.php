@@ -172,7 +172,7 @@
                             <label for="housekeeper">Housekeeper</label>
                             <select class="form-control" id="housekeeper" name="housekeeper">
                                 @foreach ($housekeepers as $housekeeper)
-                                    <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }}</option>
+                                    <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }} ({{ $housekeeper->housekeepRooms->count() }} {{ Str::plural("room", $housekeeper->housekeepRooms->count()) }})</option>
                                 @endforeach
                             </select>
                         </div>

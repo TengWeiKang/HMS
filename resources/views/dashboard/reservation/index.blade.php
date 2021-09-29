@@ -37,7 +37,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
-                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->username }}</td>
+                                    <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->fullName() }}</td>
                                     <td>{{ $reservation->customer->phone }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>

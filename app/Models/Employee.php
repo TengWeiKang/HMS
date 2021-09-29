@@ -67,4 +67,13 @@ class Employee extends Authenticatable
     public function isAccessible(...$roles) {
         return in_array(Str::lower(self::ROLES[$this->role]), $roles);
     }
+
+    public function routeNotificationForNexmo($notification) {
+        $phone = preg_replace("/^(?:\+6)?(01[0-46-9])-([0-9]{7,8})$/", "+6$1$2", $this->phone);
+        return $phone;
+    }
+
+    public function housekeepRooms() {
+        return $this->hasMany(Room::class, "housekeep_by");
+    }
 }

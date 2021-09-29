@@ -46,8 +46,13 @@ table td.action-col {
 
 a.hyperlink {
     color:blue;
-    text-decoration: underline;;
+    text-decoration: underline;
 }
+
 select[name=table_length] option {
     color: black;
+}
+
+#table_filter input[type='search'] {
+    color: white;
 }

@@ -39,7 +39,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number (E.g. 012-3456789) <span class="text-danger">*</span></label>
+                        <label for="phone">Phone Number (E.g. +60123456789) <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Mobile Number" value="{{ old("phone") }}">
                         @error("phone")
                             <div class="ml-2 text-sm text-danger">

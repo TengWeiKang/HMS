@@ -26,7 +26,7 @@ class HousekeeperController extends Controller
         $arrivals = $rooms->filter(function ($value, $key) {
             return $value->isArrivalToday();
         });
-        $housekeepers = Employee::where("role", 2)->get();
+        $housekeepers = Employee::with("housekeepRooms")->where("role", 2)->get();
         return view('dashboard/housekeeper/index', ["turnovers" => $turnovers, "departures" => $departures, "arrivals" => $arrivals, "housekeepers" => $housekeepers]);
     }
 }
