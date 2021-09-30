@@ -44,7 +44,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number (E.g. 012-3456789)</label>
+                        <label for="phone">Contact Number (E.g. 012-3456789)</label>
                         <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Mobile Number" value="{{ old("phone", $user->phone) }}">
                         @error("phone")
                             <div class="ml-2 text-sm text-danger">

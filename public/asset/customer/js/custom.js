@@ -1,15 +1,15 @@
 ;(function($){
     "use strict"
-    var nav_offset_top = $('.header_area').height()+50; 
+    var nav_offset_top = $('.header_area').height()+50;
     /*-------------------------------------------------------------------------------
-	  Navbar 
+	  Navbar
 	-------------------------------------------------------------------------------*/
 
-	//* Navbar Fixed  
+	//* Navbar Fixed
     function navbarFixed(){
-        if ( $('.header_area').length ){ 
+        if ( $('.header_area').length ){
             $(window).scroll(function() {
-                var scroll = $(window).scrollTop();   
+                var scroll = $(window).scrollTop();
                 if (scroll >= nav_offset_top ) {
                     $(".header_area").addClass("navbar_fixed");
                 } else {
@@ -19,7 +19,7 @@
         };
     };
     navbarFixed();
-    
+
     function testimonialSlider(){
         if ( $('.testimonial_slider').length ){
             $('.testimonial_slider').owlCarousel({
@@ -43,27 +43,20 @@
         }
     }
     testimonialSlider();
-    
-    //------- Mailchimp js --------//  
 
-    function mailChimp(){
-        $('#mc_embed_signup').find('form').ajaxChimp();
-    }
-    mailChimp();
-    
     /* ===== Parallax Effect===== */
-	
+
 	function parallaxEffect() {
     	$('.bg-parallax').parallax();
 	}
 	parallaxEffect();
-    
-    
+
+
     $('select').niceSelect();
     $('#datetimepicker11,#datetimepicker1').datetimepicker({
         daysOfWeekDisabled: [0, 6]
     });
-    
+
      /*---------gallery isotope js-----------*/
     function galleryMasonry(){
         if ( $('#gallery').length ){
@@ -82,16 +75,16 @@
         }
     }
     galleryMasonry();
-	
+
 	/*----------------------------------------------------*/
     /*  Simple LightBox js
     /*----------------------------------------------------*/
     $('.imageGallery1 .light').simpleLightbox();
-    
+
     /*----------------------------------------------------*/
     /*  Google map js
     /*----------------------------------------------------*/
-    
+
     if ( $('#mapBox').length ){
         var $lat = $('#mapBox').data('lat');
         var $lon = $('#mapBox').data('lon');

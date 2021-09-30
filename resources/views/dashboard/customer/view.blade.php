@@ -44,7 +44,7 @@
                                         <td>{{ $customer->fullName() }}</td>
                                     </tr>
                                     <tr>
-                                        <td>IC / Passport:</td>
+                                        <td>NRIC / Passport:</td>
                                         <td>{{ $customer->passport }}</td>
                                     </tr>
                                     <tr>

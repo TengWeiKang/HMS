@@ -37,7 +37,7 @@
                                 <td>{{ $user->email }}</td>
                             </tr>
                             <tr>
-                                <td>Phone number:</td>
+                                <td>Contact Number:</td>
                                 <td>{{ $user->phone }}</td>
                             </tr>
                             <tr>

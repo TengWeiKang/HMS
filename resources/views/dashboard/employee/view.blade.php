@@ -36,7 +36,7 @@
                                             <td>{{ $employee->email }}</td>
                                         </tr>
                                         <tr>
-                                            <td>Phone number:</td>
+                                            <td>Contact Number:</td>
                                             <td>{{ $employee->phone }}</td>
                                         </tr>
                                         <tr>

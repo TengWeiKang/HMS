@@ -133,12 +133,21 @@
                         @enderror
                     </div>
                     <div class="form-group row mx-2">
-                        <label for="passport">IC / Passport (Able to custom input) <span class="text-danger">*</span></label>
+                        <label for="passport">NRIC / Passport (Able to custom input) <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="passport" name="passport">
                             @foreach ($customers as $customer)
                                 <option value="c||{{ $customer->id }}" data-phone="{{ $customer->phone }}" data-first-name="{{ $customer->first_name }}" data-last-name="{{ $customer->last_name }}" data-email="{{ $customer->email }}" @if ($customer->id == $reservation->customer->id) selected @endif>{{ $customer->passport }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="email">Email <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("email") border-danger @enderror" id="email" name="email" placeholder="Email" value="{{ old("email", $reservation->customer->email) }}">
+                        @error("email")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
                     <div class="form-group row my-4 mx-2">
                         <div class="col-lg-6 pl-lg-0">
@@ -159,15 +168,6 @@
                             </div>
                             @enderror
                         </div>
-                    </div>
-                    <div class="form-group row mx-2">
-                        <label for="email">Email <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-rounded @error("email") border-danger @enderror" id="email" name="email" placeholder="Email" value="{{ old("email", $reservation->customer->email) }}">
-                        @error("email")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
                     </div>
                     <div class="form-group row mx-2">
                         <label for="phone">Contact Number (E.g. 012-3456789) <span class="text-danger">*</span></label>

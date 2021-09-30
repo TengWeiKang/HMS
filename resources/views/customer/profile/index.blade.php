@@ -31,11 +31,23 @@
                                 <td>{{ $user->username }}</td>
                             </tr>
                             <tr>
+                                <td>Passport:</td>
+                                <td>{{ $user->passport }}</td>
+                            </tr>
+                            <tr>
                                 <td>Email:</td>
                                 <td>{{ $user->email }}</td>
                             </tr>
                             <tr>
-                                <td>Phone number:</td>
+                                <td>First Name:</td>
+                                <td>{{ $user->first_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Last Name:</td>
+                                <td>{{ $user->last_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Contact Number:</td>
                                 <td>{{ $user->phone }}</td>
                             </tr>
                             <tr>

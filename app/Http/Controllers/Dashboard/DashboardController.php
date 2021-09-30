@@ -65,7 +65,7 @@ class DashboardController extends Controller
                     "backgroundColor" => $reservation->statusColor(),
                     "textColor" => "black",
                     "classNames" => "text-center event-pointer",
-                    "title" => $reservation->customer->first_name + $reservation->customer->last_name,
+                    "title" => $reservation->customer->fullName(),
                     "start" => $reservation->start_date->format("Y-m-d"),
                     "end" => $reservation->end_date->addDays()->format("Y-m-d"),
                     "editable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
