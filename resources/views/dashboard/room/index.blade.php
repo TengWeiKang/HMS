@@ -11,6 +11,10 @@
     .select2.select2-container {
         border: 1px solid #aaa;
     }
+
+    #select2-filterStatus-container {
+        color: white;
+    }
 </style>
 @endpush
 
@@ -30,6 +34,20 @@
                 @endif
             </div>
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label for="filterStatus">Room Status</label>
+                        <select id="filterStatus">
+                            <option value="">All</option>
+                            @if (Auth::guard("employee")->user()->isHousekeeper())
+                                <option value="({{ Auth::guard("employee")->user()->username }})">Your Housekeeping Room</option>
+                            @endif
+                            @foreach (App\Models\Room::STATUS as $status)
+                                <option value="^{{ $status["status"] }}">{{ $status["status"] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="table" width="100%">
                         <thead>
@@ -55,7 +73,6 @@
                                         @else
                                             {{ $room->type->name }}
                                         @endif
-
                                     </td>
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
@@ -193,7 +210,13 @@
     <script>
         $(document).ready(function () {
             $('select#housekeeper, select#status').select2();
+            $filterSelect = $('select#filterStatus');
+            $filterSelect.select2();
             $('.select2.select2-container').addClass('form-control');
+
+            $filterSelect.on("select2:select", function (e) {
+                filterDatatable();
+            });
 
             $('#assign-modal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget); // Button that triggered the modal
@@ -272,6 +295,11 @@
                     }
                 })
             });
+            function filterDatatable() {
+                table = $("#table").dataTable();
+                let value = $("#filterStatus").val();
+                table.fnFilter(value, 4, true, true, true, true);
+            }
         });
     </script>
 @endpush

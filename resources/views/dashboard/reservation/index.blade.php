@@ -1,7 +1,11 @@
 @extends("dashboard.layouts.template")
 
 @push("css")
-
+<style>
+    #select2-filterStatus-container {
+        color: white;
+    }
+</style>
 @endpush
 
 @section("title")
@@ -18,6 +22,20 @@
                 </div>
             </div>
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label for="filterStatus">Reservation Status</label>
+                        <select id="filterStatus">
+                            <option value="">All</option>
+                            @if (Auth::guard("employee")->user()->isHousekeeper())
+                                <option value="({{ Auth::guard("employee")->user()->username }})">Your Housekeeping Room</option>
+                            @endif
+                            @foreach (App\Models\Reservation::STATUS as $status)
+                                <option value="{{ $status["status"] }}">{{ $status["status"] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
                 <div class="table-responsive">
                     <table id="table">
                         <thead>
@@ -93,6 +111,12 @@
 @push("script")
     <script>
         $(document).ready(function () {
+            function filterDatatable() {
+                table = $("#table").dataTable();
+                let value = $("#filterStatus").val();
+                table.fnFilter(value, 6, false, true, true, true);
+            }
+
             $("#table").DataTable({
                 "columnDefs": [
                 {
@@ -102,6 +126,14 @@
                     "searchable": false
                 }]
             });
+
+            $filterSelect = $('select#filterStatus');
+            $filterSelect.select2();
+            $('.select2.select2-container').addClass('form-control');
+            $filterSelect.on("select2:select", function (e) {
+                filterDatatable();
+            });
+
             $(".deleteReservation").on("click", function () {
                 const DELETE_URL = "{{ route('dashboard.reservation.destroy', ':id') }}";
                 var reservationID = $(this).data("id");
