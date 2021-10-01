@@ -30,25 +30,25 @@
             <div class="row m-0 row-group text-center border-top border-light-3">
                 <div class="col-3">
                     <div class="p-3">
-                        <h5 class="mb-2">Sales</h5>
+                        <h5 class="mb-2">Room Revenues</h5>
                         <h6 class="mb-0">RM <span id="sales-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
-                        <h5 class="mb-2">Room Service</h5>
+                        <h5 class="mb-2">Room Services</h5>
                         <h6 class="mb-0">RM <span id="room-service-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
-                        <h5 class="mb-2">Additional Charge</h5>
+                        <h5 class="mb-2">Additional Charges</h5>
                         <h6 class="mb-0">RM <span id="charge-revenue"></span></h6>
                     </div>
                 </div>
                 <div class="col-3">
                     <div class="p-3">
-                        <h5 class="mb-2">Total Revenue</h5>
+                        <h5 class="mb-2">Total Revenues</h5>
                         <h6 class="mb-0">RM <span id="total-revenue"></span></h6>
                     </div>
                 </div>
@@ -96,7 +96,7 @@
                 </div>
                 <div class="col-4">
                     <div class="p-3">
-                        <h5 class="mb-2">Nghts Occupied</h5>
+                        <h5 class="mb-2">Nights Occupied</h5>
                         <h6 class="mb-0"><span id="nights-occupied"></span> nights</h6>
                     </div>
                 </div>
@@ -240,7 +240,7 @@
                     labels: Object.values(MONTH),
                     datasets: [
                         {
-                            label: 'Total',
+                            label: 'Total Revenues',
                             data: revenues,
                             backgroundColor: "darkgray",
                             borderColor: "darkgray",
@@ -248,7 +248,7 @@
                             fill: false,
                         },
                         {
-                            label: 'Booking',
+                            label: 'Room Revenues',
                             data: bookings,
                             backgroundColor: "blue",
                             borderColor: "blue",
@@ -256,7 +256,7 @@
                             fill: false,
                         },
                         {
-                            label: 'Room Service',
+                            label: 'Room Services',
                             data: services,
                             backgroundColor: "yellow",
                             borderColor: "yellow",
@@ -264,7 +264,7 @@
                             fill: false,
                         },
                         {
-                            label: 'Charges',
+                            label: 'Additional Charges',
                             data: charges,
                             backgroundColor: "red",
                             borderColor: "red",
@@ -346,7 +346,7 @@
             roomStatusChart = new Chart(roomStatusCanvas, {
                 type: 'pie',
                 data: {
-                    labels: ["Available", "Booked", "Dirty", "Repairing", "Checked in", "Cleaning"],
+                    labels: ["Available", "Booked", "Dirty", "Repairing", "Occupied", "Cleaning"],
                     datasets: [{
                         backgroundColor: [
                             "{{ App\Models\Room::STATUS[0]["color"] }}",
@@ -643,7 +643,7 @@
                                 let datasetIndex = context.datasetIndex;
                                 let index = context.index;
                                 return [
-                                    "Revenues: RM " + constant.datasets[datasetIndex].revenues[index].toFixed(2),
+                                    "Room Revenues: RM " + constant.datasets[datasetIndex].revenues[index].toFixed(2),
                                     "Occupied Rooms: " + constant.datasets[datasetIndex].occupiedRooms[index],
                                     "Average Room Rate: RM " + context.yLabel.toFixed(2)
                                 ]
@@ -793,14 +793,14 @@
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
                         generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         generateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        generateAverageRoomRateChart(revenues, occupiedRooms, year, roomType);
+                        generateAverageRoomRateChart(bookings, occupiedRooms, year, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
                         updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         updateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        updateAverageRoomRateChart(revenues, occupiedRooms, year, roomType);
+                        updateAverageRoomRateChart(bookings, occupiedRooms, year, roomType);
                     }
                 }
             });

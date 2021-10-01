@@ -29,11 +29,9 @@
     .resource-url {
         text-decoration: underline !important;
     }
-    .status-available {
-        color: {{ App\Models\Room::STATUS[0]["color"] }};
-    }
+    .status-available,
     .status-booked {
-        color: {{ App\Models\Room::STATUS[1]["color"] }};
+        color: {{ App\Models\Room::STATUS[0]["color"] }};
     }
     .status-dirty {
         color: {{ App\Models\Room::STATUS[2]["color"] }};
@@ -56,7 +54,12 @@
 
 @section('content')
 <div class="card mt-3">
-    <div class="card-header" style="font-size: 20px">Calendar <span id="loading" class="text-warning font-weight-normal small"></span>
+    <div class="card-header" style="font-size: 20px">Calendar
+        @foreach (App\Models\Reservation::STATUS as $key => $status)
+            @continue($key == 3) {{-- ignore cancelled status --}}
+            <span class="badge" style="background-color: {{ $status["color"] }}; color: black;">{{ $status["status"] }}</span>
+        @endforeach
+        <span id="loading" class="text-warning font-weight-normal small"></span>
         <div class="card-action">
             <a id="refetch-event" href="javascript:void();"><i class="icon-refresh text-white mr-1" style="font-size: 20px"></i></a>
         </div>
@@ -126,6 +129,10 @@
                                 <tr>
                                     <td>Customer:</td>
                                     <td colspan="2" class="text-center" id="customer"></td>
+                                </tr>
+                                <tr>
+                                    <td>Reservation ID:</td>
+                                    <td colspan="2" class="text-center" id="reservation_id"></td>
                                 </tr>
                                 <tr id="room_info">
                                     <td>Room:</td>
@@ -198,6 +205,10 @@
                                 <tr>
                                     <td>Room ID:</td>
                                     <td id="display-room-id"></td>
+                                </tr>
+                                <tr>
+                                    <td>Reservation ID:</td>
+                                    <td id="display-reservation-id"></td>
                                 </tr>
                                 <tr>
                                     <td>Customer:</td>
@@ -411,6 +422,7 @@
                 let endDate = new Date(event.end.setDate(event.end.getDate() - 1));
                 let dateDiff = dateDifferenceInDays(event.start, endDate);
                 $("#display-room-id").html(event.getResources()[0].extendedProps.room_id);
+                $("#display-reservation-id").html(event.extendedProps.reservation_id);
                 $("#display-customer").html(event.title);
                 $("#display-date").html(properDateFormat(event.start) + " - " + properDateFormat(endDate));
                 $("#display-total-night").html(dateDiff + " nights");
@@ -431,7 +443,10 @@
                         $("#display-check-in").removeClass("d-none");
                         $("#display-checked-in, #display-complete").addClass("d-none");
                         let roomStatus = event.getResources()[0].extendedProps.status;
-                        if (roomStatus != 0) {
+                        let date = new Date();
+                        let today = new Date(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate())
+                        console.log(event.start);
+                        if (roomStatus != 0 && roomStatus != 1 || event.start > today) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
                         }
                         else {
@@ -504,7 +519,7 @@
                         eventDropInfo.revert();
                         Swal.fire({
                             title: "Error",
-                            text: "The room is checked in by customer.",
+                            text: "The room is occupied by other customer.",
                             icon: "error",
                         });
                         return;
@@ -530,7 +545,8 @@
                 else {
                     $("#room_info, #price_unchanged_info").removeClass("d-none");
                     $("#room_changes_info, #price_changes_info").addClass("d-none");
-                    $("#room_description").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)")
+                    $("#room_description").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)");
+                    $("#reservation_id").html(event.extendedProps.reservation_id);
                     $("#unmodified_price").html("RM " + (newRoomPrice * dateDifferenceInDays(event.start, eventEnd)).toFixed(2))
                 }
                 let delta = eventDropInfo.delta;
@@ -592,7 +608,8 @@
                 $("#start_date_change_info, #end_date_change_info, #price_changes_info, #room_info, #changed_night").removeClass("d-none");
 
                 $("#customer").html(event.title);
-                $("#room_description").html(roomID + " (RM " + roomPrice.toFixed(2) +" per night)")
+                $("#room_description").html(roomID + " (RM " + roomPrice.toFixed(2) +" per night)");
+                $("#reservation_id").html(event.extendedProps.reservation_id);
                 $("#before_start_date").html(properDateFormat(oldEvent.start));
                 $("#before_end_date").html(properDateFormat(oldEventEnd));
                 $("#after_start_date").html(properDateFormat(event.start));

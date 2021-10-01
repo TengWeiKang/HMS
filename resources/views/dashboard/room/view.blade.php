@@ -30,7 +30,7 @@
                 </div>
             </div>
         </div>
-        @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+        @if (!$room->isOccupied() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
         @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
@@ -38,6 +38,11 @@
         @endif
         @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#self-assign-modal">Self Assign Housekeeper</button>
+        @endif
+        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->reservedBy() != null)
+            <a class="btn btn-primary w-100 mb-3" href="{{ route("dashboard.payment.create", ["reservation" => $room->reservedBy()]) }}" title="Check Out">
+                Customer Check Out
+            </a>
         @endif
     </div>
     <div class="col-lg-9">

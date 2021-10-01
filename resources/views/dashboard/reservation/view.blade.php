@@ -142,47 +142,45 @@
             </div>
         </div>
     </div>
-    @if ($reservation->status() != 2)
+    @if ($reservation->status() != 2 && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                        @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]))
-                        <div class="col-2">
-                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                                Check in
-                            </a>
-                        </div>
-                        @endif
-                        @if (in_array($reservation->status(), [0, 1]))
-                        <div class="col-2">
-                            <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                                Edit
-                            </a>
-                        </div>
-                        @endif
-                        @if ($reservation->status() == 1)
-                        <div class="col-2">
-                            <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                                Add Service
-                            </a>
-                        </div>
-                        @endif
-                        @if ($reservation->status() != 2)
-                        <div class="col-2">
-                            <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
-                                Delete
-                            </a>
-                        </div>
-                        @endif
-                        @if ($reservation->status() == 0)
-                        <div class="col-2">
-                            <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
-                                Cancel
-                            </a>
-                        </div>
-                        @endif
+                    @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]) && $reservation->canCheckIn())
+                    <div class="col-2">
+                        <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                            Check in
+                        </a>
+                    </div>
+                    @endif
+                    @if (in_array($reservation->status(), [0, 1]))
+                    <div class="col-2">
+                        <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                            Edit
+                        </a>
+                    </div>
+                    @endif
+                    @if ($reservation->status() == 1)
+                    <div class="col-2">
+                        <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                            Add Service
+                        </a>
+                    </div>
+                    @endif
+                    @if ($reservation->status() != 2)
+                    <div class="col-2">
+                        <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
+                            Delete
+                        </a>
+                    </div>
+                    @endif
+                    @if ($reservation->status() == 0)
+                    <div class="col-2">
+                        <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
+                            Cancel
+                        </a>
+                    </div>
                     @endif
                 </div>
             </div>

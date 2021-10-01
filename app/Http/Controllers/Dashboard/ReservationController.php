@@ -21,7 +21,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with("room", "customer")->orderBy("created_at", "DESC")->get();
+        $reservations = Reservation::with("room", "customer", "room.reservations")->orderBy("created_at", "DESC")->get();
         return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 
@@ -216,9 +216,9 @@ class ReservationController extends Controller
         $error = "";
         if ($request->checkIn) {
             $room = Room::find($request->room);
-            if ($room->isCheckIn()) {
+            if ($room->isOccupied()) {
                 $request->checkIn = false;
-                $error = "The room is currently checked in by customer";
+                $error = "The room is currently occupied by customer";
             }
         }
         Reservation::create([
@@ -297,7 +297,7 @@ class ReservationController extends Controller
             }
             if ($request->checkIn) {
                 $room = Room::find($request->room);
-                if ($room->isCheckIn() && $room->reservedBy() != null && $room->reservedBy()->isNot($reservation)) {
+                if ($room->isOccupied() && $room->reservedBy()->isNot($reservation)) {
                     $validator->errors()->add("reserved", "The room is currently reserved/booked by other customer");
                 }
             }

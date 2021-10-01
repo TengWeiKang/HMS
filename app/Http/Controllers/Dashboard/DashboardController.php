@@ -34,7 +34,7 @@ class DashboardController extends Controller
                     $data["children"][] = [
                         "id" => $room->id,
                         "room_id" => $room->room_id,
-                        "title" => $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")",
+                        "title" => $room->room_id . " - " . $room->name . (!in_array($room->status(), [0,1]) ? " (" . $room->statusName(false) . ")" : ""),
                         "price" => $roomType->price,
                         "status" => $room->status()
                     ];
@@ -73,6 +73,7 @@ class DashboardController extends Controller
                     "totalPrice" => $reservation->finalPrices(),
                     "status" => $reservation->status(),
                     "paymentId" => optional($reservation->payment)->id,
+                    "reservation_id" => $reservation->id(),
                 ];
             }
         }
@@ -83,7 +84,7 @@ class DashboardController extends Controller
         $reservation = Reservation::findOrFail($request->id);
         if ($request->has("room_id")) {
             $room = Room::findOrFail($request->room_id);
-            if ($room->isCheckIn() == 4) {
+            if ($room->status() == 4) {
                 $room->status = 0;
                 $room->save();
             }

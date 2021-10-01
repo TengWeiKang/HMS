@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Room;
+use Carbon\Carbon;
 
 class Reservation extends Model
 {
@@ -59,6 +60,10 @@ class Reservation extends Model
         return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity", "created_at");
     }
 
+    public function id() {
+        return "#" . sprintf("%06d", $this->id);
+    }
+
     public function totalServicePrices()
     {
         $totalPrice = $this->services->sum(function ($service) {
@@ -76,7 +81,7 @@ class Reservation extends Model
             return 3;
         if ($this->check_in == null) // awaiting to check in
             return 0;
-        else if ($this->check_out == null) // checked in
+        else if ($this->check_out == null) // occupied
             return 1;
         else // completed
             return 2;
@@ -106,5 +111,10 @@ class Reservation extends Model
     public function payment()
     {
         return $this->hasOne(Payment::class, 'reservation_id');
+    }
+
+    public function canCheckIn() {
+        $today = Carbon::today();
+        return $this->start_date <= $today && $this->end_date >= $today;
     }
 }

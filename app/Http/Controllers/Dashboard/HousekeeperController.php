@@ -17,13 +17,13 @@ class HousekeeperController extends Controller
     public function index()
     {
         $rooms = Room::with("reservations", "housekeeper")->get();
-        $turnovers = $rooms->filter(function ($value, $key) {
+        $turnovers = $rooms->filter(function ($value) {
             return $value->isTurnoverToday();
         });
-        $departures = $rooms->filter(function ($value, $key) {
+        $departures = $rooms->filter(function ($value) {
             return $value->isDepartureToday();
         });
-        $arrivals = $rooms->filter(function ($value, $key) {
+        $arrivals = $rooms->filter(function ($value) {
             return $value->isArrivalToday();
         });
         $housekeepers = Employee::with("housekeepRooms")->where("role", 2)->get();

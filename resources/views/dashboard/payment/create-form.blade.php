@@ -145,7 +145,7 @@
                                     <div class="form-group row mx-2">
                                         <div class="col-6">
                                             <label for="expiredDate">Expired Date</label>
-                                            <input type="month" class="form-control" name="expiredDate" placeholder="Card Number" required>
+                                            <input type="month" class="form-control" name="expiredDate" placeholder="Card Number" min="{{ date("Y-m") }}" required>
                                         </div>
                                         <div class="col-6">
                                             <label for="cvv">CVV/CVV2</label>

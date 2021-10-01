@@ -17,9 +17,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Reservations
+                @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                 <div class="card-action">
                     <a href="{{ route("dashboard.reservation.create") }}"><u><span>Create New Reservation</span></u></a>
                 </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="row mb-3">
@@ -27,9 +29,6 @@
                         <label for="filterStatus">Reservation Status</label>
                         <select id="filterStatus">
                             <option value="">All</option>
-                            @if (Auth::guard("employee")->user()->isHousekeeper())
-                                <option value="({{ Auth::guard("employee")->user()->username }})">Your Housekeeping Room</option>
-                            @endif
                             @foreach (App\Models\Reservation::STATUS as $status)
                                 <option value="{{ $status["status"] }}">{{ $status["status"] }}</option>
                             @endforeach
@@ -43,7 +42,6 @@
                                 <th>#</th>
                                 <th>Room ID</th>
                                 <th>Customer</th>
-                                <th>Contact</th>
                                 <th>Arrival Date</th>
                                 <th>Departure Date</th>
                                 <th>Status</th>
@@ -53,16 +51,15 @@
                         <tbody>
                             @foreach ($reservations as $reservation)
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $reservation->id() }}</td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->fullName() }}</td>
-                                    <td>{{ $reservation->customer->phone }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]))
+                                            @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]) && $reservation->canCheckIn())
                                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>
@@ -86,7 +83,7 @@
                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
-                                        @if ($reservation->check_in != null && $reservation->check_out == null)
+                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $reservation->check_in != null && $reservation->check_out == null)
                                         <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
                                             <i class="zmdi zmdi-check text-white"></i>
                                         </a>
@@ -114,13 +111,13 @@
             function filterDatatable() {
                 table = $("#table").dataTable();
                 let value = $("#filterStatus").val();
-                table.fnFilter(value, 6, false, true, true, true);
+                table.fnFilter(value, 5, false, true, true, true);
             }
 
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 7,
+                    "targets": 6,
                     "width": "7%",
                     "orderable": false,
                     "searchable": false

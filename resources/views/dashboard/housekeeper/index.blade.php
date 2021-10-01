@@ -45,23 +45,38 @@
                                 @forelse ($turnovers as $room)
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
+                                        <td>{{ $room->room_id }}</td>
                                         <td>{{ $room->name }}</td>
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                         <td class="text-center action-col">
+                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                                <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
+                                                    <i class="fa fa-download text-white"></i>
+                                                </a>
+                                            @endif
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
-                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
-                                                <i class="fa fa-user-plus text-white"></i>
-                                            </a>
+                                            @if (!$room->isOccupied() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                                <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
+                                                    <i class="fa fa-user-plus text-white"></i>
+                                                </a>
                                             @endif
                                             @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
-                                            <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
-                                                <i class="icon-settings text-white"></i>
-                                            </a>
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->reservedBy() != null)
+                                                <a href="{{ route("dashboard.payment.create", ["reservation" => $room->reservedBy()]) }}" title="Check Out">
+                                                    <i class="zmdi zmdi-check text-white"></i>
+                                                </a>
                                             @endif
                                         </td>
                                     </tr>
@@ -69,6 +84,68 @@
                                 <tr>
                                     <td colspan="6" class="text-center">No Turnover Room Today</td>
                                 </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row col-12 mb-5">
+                    <div class="card-title">Arrival Today (The rooms where customers will be arriving on today)</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Room ID</th>
+                                    <th>Room Name</th>
+                                    <th>Status</th>
+                                    <th>Note</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse ($arrivals as $room)
+                                    <tr>
+                                        <td>{{ $loop->index + 1 }}</td>
+                                        <td>{{ $room->room_id }}</td>
+                                        <td>{{ $room->name }}</td>
+                                        <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
+                                        <td style="white-space:break-spaces">{!! $room->note !!}</td>
+                                        <td class="text-center action-col">
+                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                                <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
+                                                    <i class="fa fa-download text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
+                                                <a class="self-assign" style="cursor: pointer" data-toggle="modal" data-target="#self-assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Self Assign">
+                                                    <i class="ti ti-brush text-white"></i>
+                                                </a>
+                                            @endif
+                                            <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
+                                                <i class="zmdi zmdi-eye text-white"></i>
+                                            </a>
+                                            @if (!$room->isOccupied() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                                <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
+                                                    <i class="fa fa-user-plus text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->reservedBy() != null)
+                                                <a href="{{ route("dashboard.payment.create", ["reservation" => $room->reservedBy()]) }}" title="Check Out">
+                                                    <i class="zmdi zmdi-check text-white"></i>
+                                                </a>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center">No Arrival Room Today</td>
+                                    </tr>
                                 @endforelse
                             </tbody>
                         </table>
@@ -97,62 +174,15 @@
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                         <td class="text-center action-col">
-                                            <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
-                                                <i class="zmdi zmdi-eye text-white"></i>
-                                            </a>
-                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
-                                                <i class="fa fa-user-plus text-white"></i>
-                                            </a>
-                                            @endif
-                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
-                                            <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
-                                                <i class="icon-settings text-white"></i>
-                                            </a>
-                                            @endif
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center">No Departure Room Today</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="row col-12 mb-5">
-                    <div class="card-title">Arrival Today (The rooms where customers will be arriving on today)</div>
-                    <div class="table-responsive">
-                        <table class="table table-hover" width="100%">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Room ID</th>
-                                    <th>Room Name</th>
-                                    <th>Status</th>
-                                    <th>Note</th>
-                                    <th class="text-center">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($arrivals as $room)
-                                    <tr>
-                                        <td>{{ $loop->index + 1 }}</td>
-                                        <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
-                                        <td>{{ $room->name }}</td>
-                                        <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
-                                        <td style="white-space:break-spaces">{!! $room->note !!}</td>
-                                        <td class="text-center action-col">
-                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
-                                                <a class="self-assign" style="cursor: pointer" data-toggle="modal" data-target="#self-assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Self Assign">
-                                                    <i class="ti ti-brush text-white"></i>
+                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                                <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
+                                                    <i class="fa fa-download text-white"></i>
                                                 </a>
                                             @endif
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
-                                            @if (!$room->isCheckIn() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                            @if (!$room->isOccupied() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                                 <a class="assign" style="cursor: pointer" data-toggle="modal" data-target="#assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Assign">
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>
@@ -162,11 +192,16 @@
                                                     <i class="icon-settings text-white"></i>
                                                 </a>
                                             @endif
+                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->reservedBy() != null)
+                                                <a href="{{ route("dashboard.payment.create", ["reservation" => $room->reservedBy()]) }}" title="Check Out">
+                                                    <i class="zmdi zmdi-check text-white"></i>
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center">No Arrival Room Today</td>
+                                        <td colspan="6" class="text-center">No Departure Room Today</td>
                                     </tr>
                                 @endforelse
                             </tbody>

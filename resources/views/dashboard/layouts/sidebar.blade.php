@@ -25,13 +25,11 @@
                 <i class="zmdi zmdi-info"></i> <span style="margin-left: 9px">Today</span>
             </a>
         </li>
-        @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
         <li>
             <a href="{{ route("dashboard.reservation") }}">
                 <i class="fa fa-ticket"></i><span style="margin-left: 9px">Reservation</span>
             </a>
         </li>
-        @endif
         @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
         <li>
             <a href="{{ route("dashboard.payment") }}">
