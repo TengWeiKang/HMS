@@ -104,7 +104,6 @@ class FacilityController extends Controller
      */
     public function destroy(Facility $facility)
     {
-        $facility->rooms()->detach();
         $facility->roomTypes()->detach();
         $facility->delete();
         return response()->json(['success' => "The facility has been removed"]);

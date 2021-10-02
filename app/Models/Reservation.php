@@ -23,7 +23,8 @@ class Reservation extends Model
         'start_date',
         'end_date',
         'check_in',
-        'check_out'
+        'check_out',
+        'deposit'
     ];
 
     protected $casts = [

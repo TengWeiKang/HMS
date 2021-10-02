@@ -18,11 +18,6 @@ class Facility extends Model
         'default'
     ];
 
-    public function rooms()
-    {
-        return $this->belongsToMany(Room::class, "room_facility", "facility_id", "room_id");
-    }
-
     public function roomTypes() {
         return $this->belongsToMany(RoomType::class, "room_type_facility", "facility_id", "room_type_id");
     }

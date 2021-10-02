@@ -66,16 +66,6 @@ class Room extends Model
     }
 
     /**
-     * The facilities that belong to the Room
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-     */
-    public function facilities()
-    {
-        return $this->belongsToMany(Facility::class, "room_facility", "room_id", "facility_id");
-    }
-
-    /**
      * Get all of the reservations for the Room
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
