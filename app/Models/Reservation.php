@@ -32,7 +32,6 @@ class Reservation extends Model
         'check_in' => 'datetime',
         'check_out' => 'datetime',
         'created_at' => 'datetime',
-        'deleted_at' => 'datetime',
     ];
 
     const STATUS = [
@@ -42,8 +41,14 @@ class Reservation extends Model
         3 => ["status" => "Cancelled", "color" => "darkgray"],
     ];
 
-    public function room() {
-        return $this->belongsTo(Room::class, "room_id");
+    /**
+     * The rooms that belong to the Reservation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, "reservation_room", "reservation_id", "room_id");
     }
 
     public function customer() {

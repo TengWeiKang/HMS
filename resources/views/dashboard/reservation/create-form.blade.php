@@ -83,7 +83,7 @@
                         <div class="col-lg-4 pr-0">
                             <label for="roomType">Check in now?</label>
                             <div class="icheck-material-white">
-                                <input type="checkbox" id="checkIn" name="checkIn"/>
+                                <input type="checkbox" id="checkIn" onclick="return false;"/>
                                 <label for="checkIn">Check In</label>
                             </div>
                         </div>
@@ -116,20 +116,37 @@
                         </div>
                     </div>
                     @enderror
-                    <hr>
                     <div class="form-group row mx-2">
-                        <label for="rooms">Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms" name="room" required>
+                        <label for="rooms">Add Room <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="rooms" required>
                             @if (request()->has("room_id"))
                                 <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}" selected>{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
                             @endif
                         </select>
-                        @error("room")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
                     </div>
+                    <hr style="border-width: 4px">
+                    <div id="add-rooms">
+                        <div class="form-group row mx-2">
+                            <label for="room">Added Room <span class="text-danger">*</span></label>
+                        </div>
+                        {{-- <div class="div-room form-group row mx-2">
+                            <div class="col-lg-8 pl-lg-0">
+                                <input type="text" class="form-control form-control-rounded" name="room[]" readonly>
+                            </div>
+                            <div class="col-lg-3 text-center">
+                                <div class="icheck-material-white">
+                                    <input type="checkbox" name="checkIn[]"/>
+                                    <label>Check In</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-1">
+                                <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
+                                    <i class="zmdi zmdi-delete text-white"></i>
+                                </a>
+                            </div>
+                        </div> --}}
+                    </div>
+                    <hr style="border-width: 2px">
                     <div class="form-group row mx-2">
                         <label for="passport">NRIC / Passport (Able to custom input) <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="passport" name="passport">
@@ -194,53 +211,6 @@
                 <div id="calendar"></div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Room Info</div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <tr>
-                                <td width="10%">Room ID:</td>
-                                <td id="room-id">{{ (request()->has("room_id") ? $room->room_id : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Room Name:</td>
-                                <td id="room-name">{{ (request()->has("room_id") ? $room->name : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Room Type:</td>
-                                <td id="room-type">{{ (request()->has("room_id") ? $room->type->name : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Price:</td>
-                                <td id="room-price">{{ (request()->has("room_id") ? "RM " . number_format($room->type->price, 2) : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Single Bed:</td>
-                                <td id="room-single-bed">{{ (request()->has("room_id") ? $room->single_bed : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Double Bed:</td>
-                                <td id="room-double-bed">{{ (request()->has("room_id") ? $room->double_bed : "") }}</td>
-                            </tr>
-                            <tr>
-                                <td>Facilities:</td>
-                                <td id="room-facilities">
-                                    @if (request()->has("room_id"))
-                                        @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
-                                            {{ $facility }}<br>
-                                        @empty
-                                            <span style="color: #F33">No Facilities</span>
-                                        @endforelse
-                                    @endif
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection
@@ -273,43 +243,88 @@
                     };
                 },
             },
-            templateSelection: function(container) {
-                if (container.text == "") {
-                    return container.text;
-                }
-                if (container.price === undefined) {
-                    return container.text;
-                }
-                $(container.element).data("room-id", container.room_id);
-                $(container.element).data("price", container.price);
-                $("#room-id").html(container.room_id);
-                $("#room-name").html(container.room_name);
-                $("#room-type").html(container.room_type);
-                $("#room-price").html("RM " + container.price.toFixed(2));
-                $("#room-single-bed").html(container.single_bed);
-                $("#room-double-bed").html(container.double_bed);
-                if (container.facilities.length != 0) {
-                    $("#room-facilities").html(container.facilities.join("<br>"));
+            templateResult: function(room) {
+                if (room.id == undefined)
+                    return room.text;
+                let facilities = "";
+                if (room.facilities.length != 0) {
+                    facilities = room.facilities.join(", ");
                 }
                 else {
-                    $("#room-facilities").html('<span style="color: #F33">No Facilities</span>');
+                    facilities = '<span class="select2-result-room__facilities-empty">No Facilities</span>';
                 }
-                return container.text;
-            }
+                html = `<div class="select2-result-room">
+                            <div class="select2-result-room__title">
+                                ` + room.text + `
+                            </div>`;
+                if (room.single_bed > 0) {
+                    html += `<div class="select2-result-room__description">
+                            <div class="select2-result-room__singlebed">
+                                ` + room.single_bed + ` single bed
+                            </div>`;
+                }
+                if (room.double_bed > 0) {
+                    html += `<div class="select2-result-room__doublebed">
+                                ` + room.double_bed + ` double bed
+                            </div>`;
+                }
+                html += `<div class="select2-result-room__doublebed">
+                            Facilities: ` + facilities + `
+                        </div>
+                    </div>
+                </div>`;
+                var $container = $(html);
+                return $container;
+            },
+            templateSelection: function(room) {
+                let isCheckIn = $("#checkIn").prop("checked");
+                $("select#rooms").data("id", room.id);
+                $("select#rooms").data("price", room.price);
+                $("select#rooms").data("title", room.text);
+                $("select#rooms").data("occupied", room.room_available);
+                return "";
+            },
         });
         $roomSelect.on("select2:select", function (e) {
-            updateBookingPrice();
-            let calendar = $("#calendar");
-            let sources = {
-                url: "{{ route("dashboard.reservation.json") }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "roomID": $("#rooms")[0].value
-                }
-            };
-            calendar.fullCalendar("removeEventSources");
-            calendar.fullCalendar("addEventSource", sources);
+            // updateBookingPrice();
+            let startDate = $("#startDate").val();
+            let d = new Date(startDate);
+            let today = new Date();
+            d.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            let disable = true;
+            if (today >= d) {
+                disable = false;
+            }
+
+            $("#rooms").find("option").remove().trigger("change");
+            let isCheckIn = $("#checkIn").prop("checked");
+            let id = $(this).data("id");
+            let title = $(this).data("title");
+            let price = $(this).data("price");
+            let isAvailable = $(this).data("occupied") == 1;
+            let html = `
+                <div class="div-room form-group row mx-2">
+                    <div class="col-lg-8 pl-lg-0">
+                        <input type="text" class="form-control form-control-rounded" value="` + title + `" readonly>
+                        <input type="hidden" value="` + id + `" readonly>
+                        <div name="price" data-price="` + price + `"></div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="icheck-material-white">
+                            <input type="checkbox" id="checkbox` + id + `" name="checkIn[]"` + (isCheckIn ? " checked" : "") + (disable || !isAvailable ? " onclick=\"return false;\"" : "") + `/>
+                            <label for="checkbox` + id + `">Check In</label>
+                        </div>
+                    </div>
+                    <div class="col-lg-1">
+                        <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
+                            <i class="zmdi zmdi-delete text-white"></i>
+                        </a>
+                    </div>
+                </div>
+                `;
+            $("#add-rooms").append(html);
+            bindListener();
         });
         $roomSelect.on("select2:open", function (e) {
             $("#rooms").find("option").remove().trigger("change");
@@ -335,7 +350,10 @@
             updateCustomerInfo();
         });
 
-        $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
+        // $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
+        //     resetRoomInput();
+        // });
+        $("#startDate, #endDate").on("input", function (){
             resetRoomInput();
         });
 
@@ -367,6 +385,29 @@
 
         $('.select2.select2-container').addClass('form-control form-control-rounded');
 
+        function disableCheckIn() {
+            let startDate = $("#startDate").val();
+            if (startDate != "") {
+                let d = new Date(startDate);
+                d.setHours(0, 0, 0, 0);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (today >= d) {
+                    $("#checkIn").removeAttr("onclick");
+                }
+                else {
+                    $("#checkIn").prop("checked", false);
+                    $("#checkIn").attr("onclick", "return false;")
+                }
+            }
+        }
+        function bindListener() {
+            $(".delete-room-row").unbind();
+            $(".delete-room-row").on("click", function () {
+                $(this).parents(".div-room").remove();
+            });
+        }
+
         function updateCustomerInfo() {
             let phone = $("#passport").find(":selected").data("phone") ?? "";
             let firstName = $("#passport").find(":selected").data("first-name") ?? "";
@@ -382,6 +423,7 @@
             $('#calendar').fullCalendar('unselect');
             $("#startDate")[0].value = "";
             $("#endDate")[0].value = "";
+            $("#checkIn").attr("onclick", "return false;")
             Swal.fire({
                 title: title,
                 text: message,
@@ -412,16 +454,7 @@
         }
 
         function resetRoomInput() {
-            $("#rooms").val("").change();
-            $("#totalPrice")[0].innerHTML = (0).toFixed(2);
-            $("#room-id").html("");
-            $("#room-name").html("");
-            $("#room-type").html("");
-            $("#room-price").html("");
-            $("#room-single-bed").html("");
-            $("#room-double-bed").html("");
-            $("#room-facilities").html("");
-            $("#calendar").fullCalendar("removeEventSources");
+            $(".div-room").remove();
         }
 
         $("#calendar").fullCalendar({
@@ -459,6 +492,7 @@
                     $("#numDays").html(numberOfDays);
                     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
                     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
+                    disableCheckIn();
                     if (!isInitialize) {
                         resetRoomInput();
                     }
@@ -469,6 +503,8 @@
         });
         changeDate();
         updateCustomerInfo();
+        bindListener();
+        disableCheckIn();
     });
 </script>
 @endpush

@@ -65,15 +65,19 @@
                             @foreach ($reservations as $reservation)
                                 <tr>
                                     <td>{{ $reservation->id() }}</td>
-                                    <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
+                                    <td>
+                                        @foreach ($reservation->rooms as $room)
+                                        <a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
+                                        @endforeach
                                     <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->fullName() }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]) && $reservation->canCheckIn())
-                                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
+                                            {{-- TODO validate room status --}}
+                                            @if ($reservation->status() == 0 /* && in_array($reservation->rooms->status(), [0, 1]) */ && $reservation->canCheckIn())
+                                            <a class="checkInRoom" data-id="{{ $reservation->id }}" data-rooms="{{ $reservation->rooms->pivot }}" style="cursor: pointer" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>
                                             @endif
@@ -142,19 +146,18 @@
             $filterSelect.on("select2:select", function (e) {
                 filterDatatable();
             });
+
             $("input[type='date']").on("input", function() {
                 filterDatatable();
             });
-            function ignoreTimeZone(date) {
-                if (date == null)
-                    return null;
-                return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
-            }
+
             $.fn.DataTable.ext.search.push(
                 function(settings, searchData, index, rowData, counter) {
                     // console.log(settings, searchData, index, rowData, counter);
-                    let filterStartDate = ignoreTimeZone(new Date($("#startDate").val()) ?? null);
-                    let filterEndDate = ignoreTimeZone(new Date($("#endDate").val()) ?? null);
+                    let filterStartDate = new Date($("#startDate").val()) ?? null;
+                    let filterEndDate = new Date($("#endDate").val()) ?? null;
+                    filterStartDate.setHours(0, 0, 0, 0);
+                    filterEndDate.setHours(0, 0, 0, 0);
                     let dataStartDate = new Date(searchData[3]);
                     let dataEndDate = new Date(searchData[4]);
 

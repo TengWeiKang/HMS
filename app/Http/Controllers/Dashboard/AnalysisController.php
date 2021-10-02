@@ -36,7 +36,7 @@ class AnalysisController extends Controller
         $json = [];
         $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
         $paymentItems = PaymentItem::with(["payment:id,discount,payment_at,reservation_id", "payment.reservation:id,room_id", "payment.reservation.room:id,room_type", "service:id,name"])->get();
-        $reservations = Reservation::with("room")->where("status", 1)->get();
+        $reservations = Reservation::with("rooms")->where("status", 1)->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
         $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);

@@ -21,7 +21,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with("room", "customer", "room.reservations")->orderBy("created_at", "DESC")->get();
+        $reservations = Reservation::with("rooms", "customer", "room.reservations")->orderBy("created_at", "DESC")->get();
         return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 
@@ -134,6 +134,7 @@ class ReservationController extends Controller
                     "single_bed" => $room->single_bed,
                     "double_bed" => $room->double_bed,
                     "facilities" => $room->type->facilities->pluck("name")->toArray(),
+                    "room_available" => $room->status() == 0,
                 ]);
             }
             array_push($json["results"], $data);
