@@ -11,27 +11,16 @@ use Illuminate\Http\Request;
 class HomeController extends Controller
 {
     public function index() {
-        $rooms = Room::with("type")->get();
         $roomTypes = RoomType::with("rooms")->get()->filter(function ($value, $key) {
             return $value->rooms->count() > 0;
         });
-        return view("customer/index", ["rooms" => $rooms, "roomTypes" => $roomTypes]);
+        return view("customer/index", ["roomTypes" => $roomTypes]);
     }
 
     public function search(Request $request) {
         $rooms = Room::with("reservations", "type")->get();
-        $arrival = "";
-        $departure = "";
-        if (!empty($request->arrival) && empty($request->departure)) {
-            $arrival = $departure = new Carbon($request->arrival);
-        }
-        else if (empty($request->arrival) && !empty($request->departure)) {
-            $arrival = $departure = new Carbon($request->departure);
-        }
-        else if (!empty($request->arrival) && !empty($request->departure)){
-            $arrival = new Carbon($request->arrival);
-            $departure = new Carbon($request->departure);
-        }
+        $arrival = new Carbon($request->arrival);
+        $departure = new Carbon($request->departure);
         $rooms = $rooms->filter(function ($value, $key) use ($request, $arrival, $departure) {
             if (!empty($arrival) && !empty($departure)) {
                 $reservations = $value->reservations->filter(function ($value2, $key) use ($arrival, $departure) {
@@ -59,6 +48,6 @@ class HomeController extends Controller
             }
             return true;
         });
-        return view("customer/components/accomodations", ["rooms" => $rooms]);
+        return view("customer/components/accomodations", ["rooms" => $rooms, "startDate" => $request->arrival, "endDate" => $request->departure]);
     }
 }

@@ -32,6 +32,10 @@
 </style>
 @endpush
 
+@php
+    $user = Auth::user();
+@endphp
+
 @section("title")
     Hotel Booking | {{ $room->name }}
 @endsection
@@ -92,12 +96,41 @@
                 <hr>
                 <div class="card-title">Booking Form</div>
                 <hr>
-                <form action="{{ route("customer.booking.create", ["room" => $room]) }}" method="POST">
+                <form id="booking-form" action="{{ route("customer.booking.create", ["room" => $room]) }}" method="POST">
                     @csrf
+                    <div class="form-group row my-4 mx-2">
+                        <div class="col-lg-6 pl-lg-0">
+                            <label for="firstName">First Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("firstName") border-danger @enderror" id="firstName" name="firstName" min="0" step="1" placeholder="First Name" value="{{ old("firstName", $user->first_name) }}">
+                            @error("firstName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                        <div class="col-lg-6 pr-lg-0">
+                            <label for="lastName">Last Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control form-control-rounded @error("lastName") border-danger @enderror" id="lastName" name="lastName" min="0" step="1" placeholder="Last Name" value="{{ old("lastName", $user->last_name) }}">
+                            @error("lastName")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
+                        </div>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <label for="phone">Contact Number <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Contact Number (E.g. 012-3456789)" value="{{ old("phone", $user->phone) }}">
+                        @error("phone")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                        @enderror
+                    </div>
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Booking Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", request()->startDate) }}">
                             @error("startDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -106,7 +139,7 @@
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate") }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", request()->endDate) }}">
                             @error("endDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -124,6 +157,33 @@
                     @enderror
                     <div class="form-group col-12 mt-3">
                         <label class="h6">Booking Price: RM <span id="totalPrice">0.00</span></label>
+                    </div>
+                    <div class="form-group col-12 mt-3">
+                        <input type="hidden" name="deposit" value="100">
+                        <label class="h6">Deposit: RM 100.00</label>
+                    </div>
+                    <hr>
+                    <label for="">Bank Information</label>
+                    <div class="form-group row mx-2">
+                        <div class="col-12">
+                            <label for="cardNumber">Card Number</label>
+                            <input type="number" id="cardNumber" name="cardNumber" class="form-control" placeholder="Card Number" required>
+                        </div>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <div class="col-6">
+                            <label for="expiredDate">Expired Date</label>
+                            <input type="month" class="form-control" name="expiredDate" placeholder="Card Number" min="{{ date("Y-m") }}" required>
+                        </div>
+                        <div class="col-6">
+                            <label for="cvv">CVV/CVV2</label>
+                            <input type="password" class="form-control" id="cvv" name="cvv" placeholder="Card Number" required>
+                        </div>
+                    </div>
+                    <div class="form-group row mx-2">
+                        <div class="col-12">
+                            <label for="">Payment Amount: RM 100.00 (For Deposit)</label>
+                        </div>
                     </div>
                     <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-primary btn-round w-100"><i class="icon-plus"></i> Book Now</button>
@@ -178,6 +238,31 @@
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
             }
         }
+
+        $("#cvv").on("input", function() {
+            this.setCustomValidity("");
+            this.value = this.value.substr(0, 3);
+        });
+
+        $("#cardNumber").on("input", function() {
+            this.setCustomValidity("");
+            this.value = this.value.substr(0, 16);
+        });
+
+        $("#booking-form").on("submit", function(e) {
+            let cvv = $("#cvv")[0];
+            let cardNumber = $("#cardNumber")[0];
+            if (cvv.value.length != 3) {
+                cvv.setCustomValidity("CVV must be exact 3 character");
+                cardNumber.reportValidity();
+                e.preventDefault();
+            }
+            if (cardNumber.value.length != 16) {
+                cardNumber.setCustomValidity("Card number must be exact 16 number");
+                cardNumber.reportValidity();
+                e.preventDefault();
+            }
+        });
 
         $("#calendar").fullCalendar({
             selectable: true,

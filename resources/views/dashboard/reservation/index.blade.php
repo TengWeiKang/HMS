@@ -126,7 +126,6 @@
                 let value = $("#filterStatus").val();
                 table.fnFilter(value, 5, false, true, true, true);
             }
-
             $("#table").DataTable({
                 "columnDefs": [
                 {

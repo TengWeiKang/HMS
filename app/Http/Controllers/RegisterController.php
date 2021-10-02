@@ -20,10 +20,7 @@ class RegisterController extends Controller
         $this->validate($request, [
             'username' => 'required|max:255|unique:customer,username|unique:employee,username',
             "passport" => "required|max:255",
-            "firstName" => "required|max:255",
-            "lastName" => "required|max:255",
             'email' => 'required|email|max:255|unique:customer,email|unique:employee,email',
-            'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14',
             'password' => 'required|confirmed|min:8|max:255',
         ]);
         $passport = str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $request->passport);
@@ -32,10 +29,7 @@ class RegisterController extends Controller
             Customer::create([
                 "username" => $request->username,
                 "passport" => $request->passport,
-                "first_name" => $request->firstName,
-                "last_name" => $request->lastName,
                 "email" => $request->email,
-                "phone" => $request->phone,
                 "password" => Hash::make($request->password)
             ]);
         }
@@ -47,10 +41,7 @@ class RegisterController extends Controller
         else {
             $customer = $customers[0];
             $customer->username = $request->username;
-            $customer->first_name = $request->firstName;
-            $customer->last_name = $request->lastName;
             $customer->email = $request->email;
-            $customer->phone = $request->phone;
             $customer->password = Hash::make($request->password);
             $customer->save();
         }

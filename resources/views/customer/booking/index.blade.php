@@ -37,7 +37,7 @@
                             <tbody>
                                 @foreach (Auth::user()->bookings as $booking)
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $booking->id() }}</td>
                                     <td>{{ $booking->room->room_id }}</td>
                                     <td>{{ $booking->start_date->format("d M Y") }}</td>
                                     <td>{{ $booking->end_date->format("d M Y") }}</td>
@@ -49,11 +49,11 @@
                                             <i class="lnr lnr-eye"></i>
                                         </a>
                                         @if ($booking->status() == 0)
-                                            <a href="{{ route("customer.booking.edit", ["booking" => $booking]) }}" title="Edit">
+                                            {{-- <a href="{{ route("customer.booking.edit", ["booking" => $booking]) }}" title="Edit">
                                                 <i class="lnr lnr-pencil"></i>
-                                            </a>
-                                            <a class="deleteBooking" data-id="{{ $booking->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Delete">
-                                                <i class="lnr lnr-trash"></i>
+                                            </a> --}}
+                                            <a class="deleteBooking" data-id="{{ $booking->id }}" data-number="{{ $booking->id() }}" style="cursor: pointer" title="Delete">
+                                                <i class="lnr lnr-cross"></i>
                                             </a>
                                         @endif
                                     </td>
@@ -75,7 +75,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 6,
+                    "targets": 7,
                     "width": "7%",
                     "orderable": false,
                     "searchable": false
@@ -87,8 +87,8 @@
                 var bookingNumber = $(this).data("number");
                 var url = DELETE_URL.replace(":id", bookingID);
                 Swal.fire({
-                    title: "Delete Room",
-                    text: "Are you sure you want to cancel booking #" + bookingNumber + "?",
+                    title: "Cancel Booking",
+                    html: "Are you sure you want to cancel booking " + bookingNumber + "?<br>The deposit value is not returning to you.",
                     icon: "warning",
                     showCancelButton: true,
                     cancelButtonColor: "#E00",

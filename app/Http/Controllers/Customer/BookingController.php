@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
-use App\Models\Customer;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -101,6 +100,9 @@ class BookingController extends Controller
         $validator = Validator::make($request->all(), [
             "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate",
+            "firstName" => "required|max:255",
+            "lastName" => "required|max:255",
+            'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14',
         ]);
         $validator->validate();
         $validator->after(function ($validator) use ($request, $room) {
@@ -119,14 +121,20 @@ class BookingController extends Controller
             }
         });
         $validator->validate();
+        $user = Auth::user();
+        $user->first_name = $request->firstName;
+        $user->last_name = $request->lastName;
+        $user->phone = $request->phone;
+        $user->save();
 
-        Reservation::create([
+        $booking = Reservation::create([
             "room_id" => $room->id,
+            "deposit" => $request->deposit,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
-            "customer_id" => Auth::user()->id,
+            "customer_id" => $user->id,
         ]);
-        return redirect()->route('customer.booking.create', ["room" => $room])->with("message", "New Reservation Created Successfully");
+        return redirect()->route('customer.booking.view', ["booking" => $booking]);
     }
 
     /**

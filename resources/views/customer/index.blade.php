@@ -48,6 +48,18 @@
                     $personElement.prop("placeholder", "Number of Person (disabled)")
                 }
             });
+            $("#arrival, #departure").on("input", function() {
+                let arrival = $("#arrival").val();
+                let departure = $("#departure").val();
+                if (arrival != "" && departure != "" && new Date(arrival) > new Date(departure)) {
+                    $(this).val("");
+                    Swal.fire({
+                        title: "Invalid Date",
+                        text: "Arrival date must be earlier than departure date",
+                        icon: "error",
+                    });
+                }
+            });
             $("#search-btn").on("click", function (e) {
                 e.preventDefault();
                 let arrival = $("#arrival").val();
@@ -56,10 +68,10 @@
                 let double = $("#double").val();
                 let roomType = $("#roomType").val();
                 let person = $("#person").val();
-                if (arrival != "" && departure != "" && new Date(arrival) > new Date(departure)) {
+                if (arrival == "" || departure == "") {
                     Swal.fire({
-                        title: "Invalid Date",
-                        text: "Arrival date must be earlier than departure date",
+                        title: "Missing Information",
+                        text: "Please filled in both arrival date and departure date",
                         icon: "error",
                     });
                 }

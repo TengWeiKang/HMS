@@ -698,7 +698,10 @@
         });
         $("#drag-drop-modal").on("hide.bs.modal", function () {
             $("#undoBtn, #saveBtn").unbind();
-        })
+        });
+        $("#drag-drop-modal").on("show.bs.modal", function () {
+            $("#undoBtn, #saveBtn").unbind();
+        });
     });
 </script>
 @endpush

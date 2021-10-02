@@ -41,11 +41,11 @@
                                             <td><a href="{{ route("customer.room.view", ["room" => $booking->room]) }}" style="color:blue; text-decoration: underline">{{ $booking->room->room_id . " - " . $booking->room->name}}</a></td>
                                         </tr>
                                         <tr>
-                                            <td>Booking Arrival Date:</td>
+                                            <td>Arrival Date:</td>
                                             <td>{{ $booking->start_date->format("d F Y") }}</td>
                                         </tr>
                                         <tr>
-                                            <td>Booking Departure Date:</td>
+                                            <td>Departure Date:</td>
                                             <td>{{ $booking->end_date->format("d F Y") }}</td>
                                         </tr>
                                         <tr>
@@ -57,26 +57,26 @@
                                             <td style="color: {{ $booking->statusColor() }}">{{ $booking->statusName() }}</td>
                                         </tr>
                                         @if ($booking->check_in != null)
-                                        <tr>
-                                            <td>Check in:</td>
-                                            <td>{{ $booking->check_in->format("d F Y  h:ia") }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>Check in:</td>
+                                                <td>{{ $booking->check_in->format("d F Y  h:ia") }}</td>
+                                            </tr>
                                         @endif
                                         @if ($booking->check_out != null)
-                                        <tr>
-                                            <td>Check out:</td>
-                                            <td>{{ $booking->check_out->format("d F Y  h:ia") }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>Check out:</td>
+                                                <td>{{ $booking->check_out->format("d F Y  h:ia") }}</td>
+                                            </tr>
                                         @endif
                                         <tr>
                                             <td>Booking Price:</td>
                                             <td>RM {{ number_format($booking->bookingPrice(), 2) }}</td>
                                         </tr>
                                         @if ($booking->services->count() > 0)
-                                        <tr>
-                                            <td>Room Service Price:</td>
-                                            <td>RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>Room Service Price:</td>
+                                                <td>RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
+                                            </tr>
                                         @endif
                                         <tr>
                                             <td>Total Payment:</td>
@@ -105,6 +105,7 @@
                                             <th>Unit Price</th>
                                             <th>Quantity</th>
                                             <th>Price</th>
+                                            <th>Purchase On</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -124,12 +125,12 @@
                                         @endforelse
                                     </tbody>
                                     @if (count($booking->services) > 0)
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="4" class="text-right">Total Price:</td>
-                                            <td>RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
-                                        </tr>
-                                    </tfoot>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="4" class="text-right">Total Price:</td>
+                                                <td>RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
+                                            </tr>
+                                        </tfoot>
                                     @endif
                                 </table>
                             </div>

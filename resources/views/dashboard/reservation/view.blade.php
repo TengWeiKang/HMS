@@ -81,7 +81,7 @@
                                         </tr>
                                         @endif
                                         <tr>
-                                            <td>Total Payment (Expected):</td>
+                                            <td>Total Payment:</td>
                                             <td>RM {{ number_format($reservation->finalPrices(), 2) }}
                                                 @if ($reservation->payment != null)
                                                 <a class="pl-3" style="color:blue; text-decoration: underline" href="{{ route("dashboard.payment.view", ["payment" => $reservation->payment]) }}">View Payment</a>
@@ -99,7 +99,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
                                             <th>#</th>
@@ -111,7 +111,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($reservation->services as $service)
+                                        @foreach ($reservation->services as $service)
                                         <tr>
                                             <td>{{ $loop->index + 1 }}</td>
                                             <td>{{ $service->name }}</td>
@@ -120,11 +120,7 @@
                                             <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
                                             <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
                                         </tr>
-                                        @empty
-                                        <tr>
-                                            <th colspan="6" class="text-center">No Room Service Found</th>
-                                        </tr>
-                                        @endforelse
+                                        @endforeach
                                     </tbody>
                                     @if (count($reservation->services) > 0)
                                     <tfoot>
@@ -193,6 +189,7 @@
 @push('script')
     <script>
         $(document).ready(function () {
+            $("#table").DataTable();
             $(".deleteReservation").on("click", function () {
                 Swal.fire({
                     title: "Delete Room",

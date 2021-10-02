@@ -48,35 +48,6 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group row">
-                        <div class="col-lg-6">
-                            <label for="firstName">First Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-rounded @error("firstName") border-danger @enderror" id="firstName" name="firstName" placeholder="First Name" value="{{ old("firstName") }}">
-                            @error("firstName")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="col-lg-6">
-                            <label for="lastName">Last Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-rounded @error("lastName") border-danger @enderror" id="lastName" name="lastName" placeholder="Last Name" value="{{ old("lastName") }}">
-                            @error("lastName")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Contact Number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Contact Number (E.g. 012-3456789)" value="{{ old("phone") }}">
-                        @error("phone")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
                     <div class="form-group">
                         <label for="password">Password <span class="text-danger">*</span></label>
                         <input type="password" class="form-control form-control-rounded @error("password") border-danger @enderror" name="password" placeholder="Enter Password" autocomplete="off">

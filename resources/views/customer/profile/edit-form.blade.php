@@ -51,35 +51,6 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group row">
-                        <div class="col-lg-6">
-                            <label for="firstName">First Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-rounded @error("firstName") border-danger @enderror" id="firstName" name="firstName" placeholder="First Name" value="{{ old("firstName", $user->first_name) }}">
-                            @error("firstName")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                        <div class="col-lg-6">
-                            <label for="lastName">Last Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control form-control-rounded @error("lastName") border-danger @enderror" id="lastName" name="lastName" placeholder="Last Name" value="{{ old("lastName", $user->last_name) }}">
-                            @error("lastName")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                            @enderror
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Contact number <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control form-control-rounded @error("phone") border-danger @enderror" name="phone" placeholder="Enter Your Contact Number (E.g. 012-3456789)" value="{{ old("phone", $user->phone) }}">
-                        @error("phone")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
-                    </div>
                     <div class="form-group mt-5">
                         <button type="submit" class="btn btn-primary btn-round px-5 w-100"> Update</button>
                     </div>
