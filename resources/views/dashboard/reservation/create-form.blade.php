@@ -52,7 +52,7 @@
                     <div class="text-danger text-center">{{ session('error') }}</div>
 				@endif
                 <hr>
-                <form action="{{ route("dashboard.reservation.create") }}" method="POST">
+                <form id="reservation-form" action="{{ route("dashboard.reservation.create") }}" method="POST">
                     @csrf
                     <div class="title font-weight-bold">Filter Room</div>
                     <div class="form-group row my-4 mx-2">
@@ -84,7 +84,7 @@
                             <label for="roomType">Check in now?</label>
                             <div class="icheck-material-white">
                                 <input type="checkbox" id="checkIn" onclick="return false;"/>
-                                <label for="checkIn">Check In</label>
+                                <label for="checkIn" id="checkbox-label" class="checkbox-disable">Check In</label>
                             </div>
                         </div>
                     </div>
@@ -118,7 +118,7 @@
                     @enderror
                     <div class="form-group row mx-2">
                         <label for="rooms">Add Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms" required>
+                        <select class="form-control form-control-rounded" id="rooms">
                             @if (request()->has("room_id"))
                                 <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}" selected>{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
                             @endif
@@ -129,22 +129,6 @@
                         <div class="form-group row mx-2">
                             <label for="room">Added Room <span class="text-danger">*</span></label>
                         </div>
-                        {{-- <div class="div-room form-group row mx-2">
-                            <div class="col-lg-8 pl-lg-0">
-                                <input type="text" class="form-control form-control-rounded" name="room[]" readonly>
-                            </div>
-                            <div class="col-lg-3 text-center">
-                                <div class="icheck-material-white">
-                                    <input type="checkbox" name="checkIn[]"/>
-                                    <label>Check In</label>
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
-                                    <i class="zmdi zmdi-delete text-white"></i>
-                                </a>
-                            </div>
-                        </div> --}}
                     </div>
                     <hr style="border-width: 2px">
                     <div class="form-group row mx-2">
@@ -193,8 +177,12 @@
                             </div>
                         @enderror
                     </div>
-                    <div class="form-group col-12 mt-5">
+                    <div class="form-group col-12 mt-4">
                         <label class="h5">Booking Price: RM <span id="totalPrice">0.00</span></label>
+                    </div>
+                    <div class="form-group col-12">
+                        <label class="h5">Deposit: RM <span id="deposit">0.00</span></label>
+                        <input type="hidden" name="deposit">
                     </div>
                     <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
@@ -220,17 +208,16 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
-        var isInitialize = true;
-
         $('select.form-control#roomType').select2();
         $roomSelect = $('select.form-control#rooms');
         $roomSelect.select2({
             minimumResultsForSearch: -1,
-            placeholder: "Please fill in reservation date before select a room",
+            placeholder: "Please fill in reservation date before choose a room",
             ajax: {
                 url: "{{ route("dashboard.reservation.search") }}",
                 method: "POST",
                 data: function(params) {
+                    let ignoreID = $("input[name='room[]']").map(function(){return $(this).val();}).get();
                     return {
                         "_token": "{{ csrf_token() }}",
                         "single": $("#singleBed").val(),
@@ -240,6 +227,7 @@
                         "startDate": $("#startDate").val(),
                         "endDate": $("#endDate").val(),
                         "checkIn": $("#checkIn").prop("checked"),
+                        "roomIgnoreID": ignoreID,
                     };
                 },
             },
@@ -282,11 +270,11 @@
                 $("select#rooms").data("price", room.price);
                 $("select#rooms").data("title", room.text);
                 $("select#rooms").data("occupied", room.room_available);
-                return "";
+                return "Please fill in reservation date before choose a room";
             },
         });
         $roomSelect.on("select2:select", function (e) {
-            // updateBookingPrice();
+            updateBookingPrice();
             let startDate = $("#startDate").val();
             let d = new Date(startDate);
             let today = new Date();
@@ -307,13 +295,13 @@
                 <div class="div-room form-group row mx-2">
                     <div class="col-lg-8 pl-lg-0">
                         <input type="text" class="form-control form-control-rounded" value="` + title + `" readonly>
-                        <input type="hidden" value="` + id + `" readonly>
+                        <input type="hidden" name="room[]" value="` + id + `" readonly>
                         <div name="price" data-price="` + price + `"></div>
                     </div>
                     <div class="col-lg-3">
                         <div class="icheck-material-white">
-                            <input type="checkbox" id="checkbox` + id + `" name="checkIn[]"` + (isCheckIn ? " checked" : "") + (disable || !isAvailable ? " onclick=\"return false;\"" : "") + `/>
-                            <label for="checkbox` + id + `">Check In</label>
+                            <input type="checkbox" value="` + id + `" id="checkbox` + id + `" name="checkIn[]"` + (isCheckIn ? " checked" : "") + (disable || !isAvailable ? " onclick=\"return false;\"" : "") + `/>
+                            <label for="checkbox` + id + `" ` + (disable || !isAvailable ? " class=\"checkbox-disable\"" : "") + `>Check In</label>
                         </div>
                     </div>
                     <div class="col-lg-1">
@@ -324,6 +312,7 @@
                 </div>
                 `;
             $("#add-rooms").append(html);
+            updateBookingPrice();
             bindListener();
         });
         $roomSelect.on("select2:open", function (e) {
@@ -394,10 +383,12 @@
                 today.setHours(0, 0, 0, 0);
                 if (today >= d) {
                     $("#checkIn").removeAttr("onclick");
+                    $("#checkbox-label").removeClass("checkbox-disable");
                 }
                 else {
                     $("#checkIn").prop("checked", false);
                     $("#checkIn").attr("onclick", "return false;")
+                    $("#checkbox-label").addClass("checkbox-disable");
                 }
             }
         }
@@ -405,6 +396,7 @@
             $(".delete-room-row").unbind();
             $(".delete-room-row").on("click", function () {
                 $(this).parents(".div-room").remove();
+                updateBookingPrice();
             });
         }
 
@@ -424,6 +416,7 @@
             $("#startDate")[0].value = "";
             $("#endDate")[0].value = "";
             $("#checkIn").attr("onclick", "return false;")
+            $("#checkbox-label").addClass("checkbox-disable");
             Swal.fire({
                 title: title,
                 text: message,
@@ -444,12 +437,19 @@
             let startDate = $("#startDate")[0].value;
             let endDate = $("#endDate")[0].value;
             if (startDate != "" && endDate != "") {
+                let bookingPrice = 0;
+                $data = $("div[name='price']");
+                $data.each(function (index, element) {
+                    bookingPrice += parseFloat($(element).data("price"));
+                })
                 startDate = moment(startDate);
                 endDate = moment(endDate);
-                let price = $("#rooms").find(":selected").data("price") ?? 0;
                 let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
                 $("#numDays")[0].innerHTML = numberOfDays;
-                $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
+                $("#totalPrice")[0].innerHTML = (numberOfDays * bookingPrice).toFixed(2);
+                let deposit = $data.length * {{ App\Models\Reservation::DEPOSIT }};
+                $("#deposit").html(parseFloat(deposit).toFixed(2));
+                $("input[name='deposit']").val(deposit);
             }
         }
 
@@ -493,14 +493,21 @@
                     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
                     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
                     disableCheckIn();
-                    if (!isInitialize) {
-                        resetRoomInput();
-                    }
-                    isInitialize = false;
+                    resetRoomInput();
                     $("#calendar").fullCalendar("removeEventSources");
                 }
             },
         });
+        $("#reservation-form").on("submit", function(e) {
+            if ($("input[name='room[]']").length <= 0) {
+                e.preventDefault();
+                    Swal.fire({
+                    title: "Missing Information",
+                    text: "Please add at least one room",
+                    icon: "error",
+                });
+            }
+        })
         changeDate();
         updateCustomerInfo();
         bindListener();

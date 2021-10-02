@@ -19,7 +19,6 @@ class Reservation extends Model
 
     protected $fillable = [
         'customer_id',
-        'room_id',
         'start_date',
         'end_date',
         'check_in',
@@ -33,6 +32,8 @@ class Reservation extends Model
         'check_out' => 'datetime',
         'created_at' => 'datetime',
     ];
+
+    const DEPOSIT = 100;
 
     const STATUS = [
         0 => ["status" => "Waiting for Check-in", "color" => "mediumvioletred"],

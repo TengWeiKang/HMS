@@ -78,6 +78,9 @@ class ReservationController extends Controller
         }
         $roomTypes->each(function ($roomType) use ($request, $arrival, $departure) {
             $roomType->rooms = $roomType->rooms->filter(function ($room) use ($request, $arrival, $departure) {
+                if ($request->has("roomIgnoreID") && in_array($room->id, $request->roomIgnoreID)) {
+                    return false;
+                }
                 $reservations = $room->reservations->filter(function ($reservation) use ($request, $arrival, $departure) {
                     if ($reservation->status == 0)
                         return false;
@@ -165,7 +168,6 @@ class ReservationController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            "room" => "required",
             "passport" => "required",
             "firstName" => "required",
             "lastName" => "required",
@@ -176,7 +178,7 @@ class ReservationController extends Controller
         ]);
         $validator->validate();
         $validator->after(function ($validator) use ($request) {
-            $count = Reservation::where("room_id", $request->room)
+            $count = Reservation::with("rooms")->where("room_id", $request->room)
             ->where(function ($query) use ($request) {
                 $query->where("start_date", "<=", $request->startDate)
                     ->where("end_date", ">=", $request->startDate)
@@ -215,20 +217,18 @@ class ReservationController extends Controller
             $customer->save();
         }
         $error = "";
-        if ($request->checkIn) {
-            $room = Room::find($request->room);
-            if ($room->isOccupied()) {
-                $request->checkIn = false;
-                $error = "The room is currently occupied by customer";
-            }
+        $rooms = [];
+        foreach ($request->room as $roomID) {
+            $temp = ["room_id" => $roomID, "status" => in_array($roomID, $request->checkIn)];
+            array_push($rooms, $temp);
         }
-        Reservation::create([
-            "room_id" => $request->room,
+        $reservation = Reservation::create([
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
             "customer_id" => $customerID,
             "check_in" => ($request->checkIn ? Carbon::now() : null)
         ]);
+        $reservation->rooms->attach($rooms);
         if ($error == "") {
             return redirect()->route('dashboard.reservation.create')->with("message", "New Reservation Created Successfully");
         }
