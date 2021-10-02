@@ -34,6 +34,19 @@
                             @endforeach
                         </select>
                     </div>
+                    @php
+                        $today = Carbon\Carbon::today();
+                        $startDate = new Carbon\Carbon($today->year . "-" . $today->month . "-1");
+                        $endDate = new Carbon\Carbon($today->year . "-" . $today->month . "-" . $today->daysInMonth)
+                    @endphp
+                    <div class="col-3">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate" class="form-control" value="{{ $startDate->format("Y-m-d") }}">
+                    </div>
+                    <div class="col-3">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate" class="form-control" value="{{ $endDate->format("Y-m-d") }}">
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table id="table">
@@ -130,6 +143,30 @@
             $filterSelect.on("select2:select", function (e) {
                 filterDatatable();
             });
+            $("input[type='date']").on("input", function() {
+                filterDatatable();
+            });
+            function ignoreTimeZone(date) {
+                if (date == null)
+                    return null;
+                return new Date(date.getTime() + date.getTimezoneOffset() * 60000);
+            }
+            $.fn.DataTable.ext.search.push(
+                function(settings, searchData, index, rowData, counter) {
+                    // console.log(settings, searchData, index, rowData, counter);
+                    let filterStartDate = ignoreTimeZone(new Date($("#startDate").val()) ?? null);
+                    let filterEndDate = ignoreTimeZone(new Date($("#endDate").val()) ?? null);
+                    let dataStartDate = new Date(searchData[3]);
+                    let dataEndDate = new Date(searchData[4]);
+
+                    if (filterStartDate != null && filterStartDate > dataEndDate) {
+                        return false;
+                    }
+                    if (filterEndDate != null && filterEndDate < dataStartDate)
+                        return false
+                    return true;
+                }
+            )
 
             $(".deleteReservation").on("click", function () {
                 const DELETE_URL = "{{ route('dashboard.reservation.destroy', ':id') }}";
@@ -203,6 +240,7 @@
                     }
                 })
             });
+            filterDatatable();
         });
     </script>
 @endpush
