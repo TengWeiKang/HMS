@@ -37,7 +37,7 @@
                             <tbody>
                                 @foreach (Auth::user()->bookings as $booking)
                                 <tr>
-                                    <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $booking->id() }}</td>
                                     <td>{{ $booking->room->room_id }}</td>
                                     <td>{{ $booking->start_date->format("d M Y") }}</td>
                                     <td>{{ $booking->end_date->format("d M Y") }}</td>

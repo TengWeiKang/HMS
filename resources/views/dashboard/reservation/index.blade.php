@@ -88,7 +88,7 @@
                                             </a>
                                             @endif
                                             @if ($reservation->status() != 2)
-                                            <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Delete">
+                                            <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Delete">
                                                 <i class="zmdi zmdi-delete text-white"></i>
                                             </a>
                                             @endif
@@ -102,7 +102,7 @@
                                         </a>
                                         @endif
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $reservation->status() == 0)
-                                            <a class="cancelReservation" data-id="{{ $reservation->id }}" data-number="{{ $loop->index + 1 }}" style="cursor: pointer" title="Cancelled">
+                                            <a class="cancelReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Cancelled">
                                                 <i class="fa fa-times text-white"></i>
                                             </a>
                                         @endif
@@ -174,7 +174,7 @@
                 var url = DELETE_URL.replace(":id", reservationID);
                 Swal.fire({
                     title: "Delete Room",
-                    text: "Are you sure you want to remove reservation #" + reservationNumber + "?",
+                    text: "Are you sure you want to remove reservation " + reservationNumber + "?",
                     icon: "warning",
                     showCancelButton: true,
                     cancelButtonColor: "#E00",
@@ -210,7 +210,7 @@
                 var url = DELETE_URL.replace(":id", reservationID);
                 Swal.fire({
                     title: "Delete Room",
-                    text: "Are you sure you want to cancel reservation #" + reservationNumber + "?",
+                    text: "Are you sure you want to cancel reservation " + reservationNumber + "?",
                     icon: "warning",
                     showCancelButton: true,
                     cancelButtonColor: "#E00",

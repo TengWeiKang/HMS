@@ -96,7 +96,7 @@
                                     <tbody>
                                         @foreach ($customer->bookings as $booking)
                                             <tr>
-                                                <td>{{ $loop->index + 1 }}</td>
+                                                <td>{{ $booking->id() }}</td>
                                                 <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $booking->room]) }}">{{ $booking->room->room_id }}</a></td>
                                                 <td>{{ $booking->start_date->format("d F Y") }}</td>
                                                 <td>{{ $booking->end_date->format("d F Y") }}</td>
