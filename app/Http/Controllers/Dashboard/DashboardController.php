@@ -46,7 +46,7 @@ class DashboardController extends Controller
             $start = new Carbon(explode("T", $request->start)[0]);
             $end = new Carbon(explode("T", $request->end)[0]);
             $end->subDay();
-            $reservations = Reservation::with("customer", "payment")
+            $reservations = Reservation::with("customer", "payment", "rooms", "rooms.reservations", "services", "rooms.type")
                 ->where("status", 1)
                 ->where(function ($query) use ($start, $end) {
                 $query->where("start_date", "<=", $start)
@@ -59,22 +59,24 @@ class DashboardController extends Controller
             )->get();
             $isHousekeeper = Auth::guard("employee")->user()->isHousekeeper();
             foreach ($reservations as $reservation) {
-                $json[] = [
-                    "id" => $reservation->id,
-                    "resourceId" => $reservation->room_id,
-                    "backgroundColor" => $reservation->statusColor(),
-                    "textColor" => "black",
-                    "classNames" => "text-center event-pointer",
-                    "title" => $reservation->customer->fullName(),
-                    "start" => $reservation->start_date->format("Y-m-d"),
-                    "end" => $reservation->end_date->addDays()->format("Y-m-d"),
-                    "editable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
-                    "resourceEditable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
-                    "totalPrice" => $reservation->finalPrices(),
-                    "status" => $reservation->status(),
-                    "paymentId" => optional($reservation->payment)->id,
-                    "reservation_id" => $reservation->id(),
-                ];
+                foreach ($reservation->rooms as $room) {
+                    $json[] = [
+                        "groupId" => $reservation->id,
+                        "resourceId" => $room->id,
+                        "backgroundColor" => $reservation->statusColor(),
+                        "textColor" => "black",
+                        "classNames" => "text-center event-pointer",
+                        "title" => $reservation->customer->fullName(),
+                        "start" => $reservation->start_date->format("Y-m-d"),
+                        "end" => $reservation->end_date->addDays()->format("Y-m-d"),
+                        "editable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
+                        "resourceEditable" => ($reservation->status() == 2 || $isHousekeeper) ? false : true, //status 2 = completed
+                        "totalPrice" => $reservation->finalPrices(),
+                        "status" => $reservation->status(),
+                        "paymentId" => optional($reservation->payment)->id,
+                        "reservation_id" => $reservation->id(),
+                    ];
+                }
             }
         }
         return $json;
@@ -82,13 +84,8 @@ class DashboardController extends Controller
 
     public function reservation_date_update(Request $request) {
         $reservation = Reservation::findOrFail($request->id);
-        if ($request->has("room_id")) {
-            $room = Room::findOrFail($request->room_id);
-            if ($room->status() == 4) {
-                $room->status = 0;
-                $room->save();
-            }
-            $reservation->room_id = $request->room_id;
+        if ($request->has("room_ids")) {
+            $reservation->rooms()->sync($request->room_ids);
         }
         $reservation->start_date = $request->start_date;
         $reservation->end_date = $request->end_date;

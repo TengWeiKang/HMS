@@ -203,16 +203,16 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>Room ID:</td>
-                                    <td id="display-room-id"></td>
-                                </tr>
-                                <tr>
                                     <td>Reservation ID:</td>
                                     <td id="display-reservation-id"></td>
                                 </tr>
                                 <tr>
                                     <td>Customer:</td>
                                     <td id="display-customer"></td>
+                                </tr>
+                                <tr>
+                                    <td>Room ID:</td>
+                                    <td id="display-room-id"></td>
                                 </tr>
                                 <tr>
                                     <td>Date:</td>
@@ -284,6 +284,7 @@
 @push('script')
 <script src="{{ asset("dashboard/plugins/fullcalendar-v5/main.min.js") }}"></script>
 <script>
+    var calendar = null;
     $(document).ready(function () {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         $("button#redirectBtn").on("click", function() {
@@ -312,7 +313,7 @@
         }
 
         let calendarElement = document.getElementById("calendar");
-        let calendar = new FullCalendar.Calendar(calendarElement, {
+        calendar = new FullCalendar.Calendar(calendarElement, {
             schedulerLicenseKey: 'CC-Attribution-NonCommercial-NoDerivatives',
             initialView: 'resourceTimelineTwoWeek',
             contentHeight: "auto",
@@ -421,7 +422,12 @@
                 let event = eventClickInfo.event;
                 let endDate = new Date(event.end.setDate(event.end.getDate() - 1));
                 let dateDiff = dateDifferenceInDays(event.start, endDate);
-                $("#display-room-id").html(event.getResources()[0].extendedProps.room_id);
+                let eventID = event.groupId;
+                let allEvents = calendar.getEvents();
+                let sameEvents = allEvents.filter(event => event.groupId == eventID);
+                let roomIDs = sameEvents.map(event => event.getResources()[0].extendedProps.room_id)
+
+                $("#display-room-id").html(roomIDs.join("<br>"));
                 $("#display-reservation-id").html(event.extendedProps.reservation_id);
                 $("#display-customer").html(event.title);
                 $("#display-date").html(properDateFormat(event.start) + " - " + properDateFormat(endDate));
@@ -437,16 +443,15 @@
                 const ADD_SERVICE_URL = "{{ route("dashboard.reservation.service", ":reservationID") }}";
                 const CHECK_OUT_URL = "{{ route("dashboard.payment.create", ":reservationID") }}";
                 const PAYMENT_URL = "{{ route("dashboard.payment.view", ":paymentID") }}";
-                let eventID = event.id;
+
                 switch (status) {
                     case 0:
                         $("#display-check-in").removeClass("d-none");
                         $("#display-checked-in, #display-complete").addClass("d-none");
-                        let roomStatus = event.getResources()[0].extendedProps.status;
+                        let roomStatuses = sameEvents.map(event => event.getResources()[0].extendedProps.status);
                         let date = new Date();
                         let today = new Date(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate())
-                        console.log(event.start);
-                        if (roomStatus != 0 && roomStatus != 1 || event.start > today) {
+                        if (!roomStatuses.every(status => status == 0 || status == 1) || event.start > today) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
                         }
                         else {
@@ -503,7 +508,11 @@
             eventDrop: function(eventDropInfo) {
                 let oldEvent = eventDropInfo.oldEvent;
                 let event = eventDropInfo.event;
-
+                
+                let eventID = event.groupId;
+                let allEvents = calendar.getEvents();
+                let sameEvents = allEvents.filter(event => event.groupId == eventID);
+                
                 let oldEventEnd = new Date(oldEvent.end.setDate(oldEvent.end.getDate() - 1));
                 let eventEnd = new Date(event.end.setDate(event.end.getDate() - 1));
 
@@ -533,26 +542,40 @@
                         });
                         return;
                     }
+                    let unaffectedEvents = sameEvents.filter(event => event.getResources()[0].extendedProps.room_id != newRoomID);
+                    let unaffectedEventsStr = unaffectedEvents.map(function (event) {
+                        let roomID = event.getResources()[0].extendedProps.room_id;
+                        let roomPrice = event.getResources()[0].extendedProps.price;
+                        return roomID + " (RM " + roomPrice.toFixed(2) +" per night)";
+                    }).join("<br>");
+                    let prices = unaffectedEvents.map(event => event.getResources()[0].extendedProps.price);
+                    let unaffectedPrices = prices.reduce((a, b) => a + b, 0);
                     $("#room_changes_info, #price_changes_info").removeClass("d-none");
                     $("#room_info, #price_unchanged_info").addClass("d-none");
-                    $("#before_room").html(oldRoomID + " (RM " + oldRoomPrice.toFixed(2) +" per night)");
-                    $("#after_room").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)");
-                    let oldTotalPrice = oldRoomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
-                    let newTotalPrice = newRoomPrice * dateDifferenceInDays(event.start, eventEnd);
+                    $("#before_room").html(oldRoomID + " (RM " + oldRoomPrice.toFixed(2) +" per night)<br>" + unaffectedEventsStr);
+                    $("#after_room").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)<br>" + unaffectedEventsStr);
+                    let oldTotalPrice = (oldRoomPrice + unaffectedPrices) * dateDifferenceInDays(oldEvent.start, oldEventEnd);
+                    let newTotalPrice = (newRoomPrice + unaffectedPrices) * dateDifferenceInDays(event.start, eventEnd);
                     $("#before_modified_price").html("RM " + oldTotalPrice.toFixed(2));
                     $("#after_modified_price").html("RM " + newTotalPrice.toFixed(2));
                 }
                 else {
+                    let prices = sameEvents.map(event => event.getResources()[0].extendedProps.price);
+                    let roomPrices = prices.reduce((a, b) => a + b, 0);
                     $("#room_info, #price_unchanged_info").removeClass("d-none");
                     $("#room_changes_info, #price_changes_info").addClass("d-none");
-                    $("#room_description").html(newRoomID + " (RM " + newRoomPrice.toFixed(2) +" per night)");
-                    $("#reservation_id").html(event.extendedProps.reservation_id);
-                    $("#unmodified_price").html("RM " + (newRoomPrice * dateDifferenceInDays(event.start, eventEnd)).toFixed(2))
+                    $("#room_description").html(sameEvents.map(function (event) {
+                        let roomID = event.getResources()[0].extendedProps.room_id;
+                        let roomPrice = event.getResources()[0].extendedProps.price;
+                        return roomID + " (RM " + roomPrice.toFixed(2) +" per night)";
+                    }).join("<br>"));
+                    $("#unmodified_price").html("RM " + (roomPrices * dateDifferenceInDays(event.start, eventEnd)).toFixed(2))
                 }
                 let delta = eventDropInfo.delta;
 
                 $("#unchanged_night").removeClass("d-none");
                 $("#changed_night").addClass("d-none");
+                $("#reservation_id").html(event.extendedProps.reservation_id);
                 $("#nights").html(dateDifferenceInDays(event.start, eventEnd) + " nights");
                 $("#customer").html(event.title);
 
@@ -575,8 +598,7 @@
                     eventDropInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
-                    let eventID = event.id;
-                    let roomID = newResourceInfo.id;
+                    let roomIDs = sameEvents.map(event => event.getResources()[0].id);
                     let startDateISO = dateISOString(event.start);
                     let endDateISO = dateISOString(eventEnd);
                     $.ajax({
@@ -585,7 +607,7 @@
                         data: {
                             _token: "{{ csrf_token() }}",
                             id: eventID,
-                            room_id: roomID,
+                            room_ids: roomIDs,
                             start_date: startDateISO,
                             end_date: endDateISO
                         },
@@ -597,18 +619,23 @@
                 let oldEvent = eventResizeInfo.oldEvent;
                 let event = eventResizeInfo.event;
 
+                let eventID = event.groupId;
+                let allEvents = calendar.getEvents();
+                let sameEvents = allEvents.filter(event => event.groupId == eventID);
+                let prices = sameEvents.map(event => event.getResources()[0].extendedProps.price);
+                let roomPrices = prices.reduce((a, b) => a + b, 0);
                 let oldEventEnd = new Date(oldEvent.end.setDate(oldEvent.end.getDate() - 1));
                 let eventEnd = new Date(event.end.setDate(event.end.getDate() - 1));
-
-                let newResourceInfo = event.getResources()[0];
-                let roomPrice = newResourceInfo.extendedProps.price;
-                let roomID = newResourceInfo.extendedProps.room_id;
 
                 $("#room_changes_info, #date_unchange_info, #unchanged_night, #price_unchanged_info").addClass("d-none");
                 $("#start_date_change_info, #end_date_change_info, #price_changes_info, #room_info, #changed_night").removeClass("d-none");
 
                 $("#customer").html(event.title);
-                $("#room_description").html(roomID + " (RM " + roomPrice.toFixed(2) +" per night)");
+                $("#room_description").html(sameEvents.map(function (event) {
+                    let roomID = event.getResources()[0].extendedProps.room_id;
+                    let roomPrice = event.getResources()[0].extendedProps.price;
+                    return roomID + " (RM " + roomPrice.toFixed(2) +" per night)";
+                }).join("<br>"));
                 $("#reservation_id").html(event.extendedProps.reservation_id);
                 $("#before_start_date").html(properDateFormat(oldEvent.start));
                 $("#before_end_date").html(properDateFormat(oldEventEnd));
@@ -617,8 +644,8 @@
                 $("#before_night").html(dateDifferenceInDays(oldEvent.start, oldEventEnd));
                 $("#after_night").html(dateDifferenceInDays(event.start, eventEnd));
 
-                let oldTotalPrice = roomPrice * dateDifferenceInDays(oldEvent.start, oldEventEnd);
-                let newTotalPrice = roomPrice * dateDifferenceInDays(event.start, eventEnd);
+                let oldTotalPrice = roomPrices * dateDifferenceInDays(oldEvent.start, oldEventEnd);
+                let newTotalPrice = roomPrices * dateDifferenceInDays(event.start, eventEnd);
                 $("#before_modified_price").html("RM " + oldTotalPrice.toFixed(2));
                 $("#after_modified_price").html("RM " + newTotalPrice.toFixed(2));
 
@@ -628,7 +655,6 @@
                     eventResizeInfo.revert();
                 });
                 $("#saveBtn").on("click", function() {
-                    let eventID = event.id;
                     let startDateISO = dateISOString(event.start);
                     let endDateISO = dateISOString(eventEnd);
                     $.ajax({
@@ -686,8 +712,17 @@
                 return true;
             },
             eventAllow: function(dropInfo, draggedEvent) {
-                if (dropInfo.resource.id < 0)
+                if (dropInfo.resource.id < 0) {
                     return false;
+                }
+                let eventID = draggedEvent.groupId;
+                let allEvents = calendar.getEvents();
+                let sameEvents = allEvents.filter(event => event.groupId == eventID && draggedEvent.getResources()[0].id != event.getResources()[0].id);
+                let roomIDs = sameEvents.map(event => event.getResources()[0].id)
+                let dropInfoID = dropInfo.resource.id
+                if (roomIDs.includes(dropInfoID)) {
+                    return false;
+                }
                 return true;
             },
         });
