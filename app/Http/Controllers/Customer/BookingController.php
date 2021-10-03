@@ -7,6 +7,8 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Payment;
+use App\Models\RoomType;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,10 +25,10 @@ class BookingController extends Controller
      */
     public function index()
     {
-        Auth::user()->load("bookings", "bookings.room", "bookings.services");
-        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value, $key){
+        Auth::user()->load("bookings", "bookings.room", "bookings.room.type", "bookings.services");
+        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value){
             return in_array($value->status(), [0, 1]);
-        });
+        })->sortByDesc("id");
         return view("customer.booking.index");
     }
     /**
@@ -36,10 +38,10 @@ class BookingController extends Controller
      */
     public function history()
     {
-        Auth::user()->load("bookings", "bookings.room", "bookings.services", "bookings.payment");
-        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value, $key){
+        Auth::user()->load("bookings", "bookings.room", "bookings.room.type", "bookings.services", "bookings.payment");
+        Auth::user()->bookings = Auth::user()->bookings->filter(function ($value){
             return $value->status() == 2;
-        })->sortByDesc("check_out");
+        })->sortByDesc("id");
         return view("customer.booking.history");
     }
 
@@ -55,10 +57,22 @@ class BookingController extends Controller
      * @param  \App\Models\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function create(Room $room)
+    public function create(RoomType $roomType, $singleBed, $doubleBed)
     {
-        $room->load("reservations");
-        return view("customer.booking.create-form", ["room" => $room]);
+        if (request()->has(["startDate", "endDate"])) {
+            $startDate = request()->startDate;
+            $endDate = request()->endDate;
+            $rooms = $this->roomFilterAvailable($roomType, $singleBed, $doubleBed, $startDate, $endDate);
+            return view("customer.booking.create-form", [
+                "roomType" => $roomType,
+                "singleBed" => $singleBed,
+                "doubleBed" => $doubleBed,
+                "startDate" => $startDate,
+                "endDate" => $endDate,
+                "count" => $rooms->count()
+            ]);
+        }
+        return abort(404);
     }
 
     public function json(Request $request)
@@ -95,38 +109,24 @@ class BookingController extends Controller
      * @param  \App\Models\Room  $room
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, Room $room)
+    public function store(Request $request, RoomType $roomType, $singleBed, $doubleBed)
     {
-        $validator = Validator::make($request->all(), [
+        $this->validate($request, [
             "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate",
             "firstName" => "required|max:255",
             "lastName" => "required|max:255",
             'phone' => 'required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14',
         ]);
-        $validator->validate();
-        $validator->after(function ($validator) use ($request, $room) {
-            $count = Reservation::where("room_id", $room->id)
-            ->where(function ($query) use ($request) {
-                $query->where("start_date", "<=", $request->startDate)
-                    ->where("end_date", ">=", $request->startDate)
-                    ->orWhere("start_date", "<=", $request->endDate)
-                    ->where("end_date", ">=", $request->endDate)
-                    ->orWhere("start_date", ">=", $request->startDate)
-                    ->where("end_date", "<=", $request->endDate);
-                }
-            )->count();
-            if ($count > 0) {
-                $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
-            }
-        });
-        $validator->validate();
+        $startDate = $request->startDate;
+        $endDate = $request->endDate;
+        $rooms = $this->roomFilterAvailable($roomType, $singleBed, $doubleBed, $startDate, $endDate);
+        $room = $rooms[0];
         $user = Auth::user();
         $user->first_name = $request->firstName;
         $user->last_name = $request->lastName;
         $user->phone = $request->phone;
         $user->save();
-
         $booking = Reservation::create([
             "room_id" => $room->id,
             "deposit" => $request->deposit,
@@ -170,32 +170,32 @@ class BookingController extends Controller
      */
     public function update(Request $request, Reservation $booking)
     {
-        $validator = Validator::make($request->all(), [
-            "startDate" => "required|date",
-            "endDate" => "required|date"
-        ]);
-        $validator->after(function ($validator) use ($request, $booking) {
-            $count = Reservation::where("id", "!=", $booking->id)->where("room_id", $request->roomId)
-                ->where(function ($query) use ($request) {
-                    $query->where("start_date", "<=", $request->startDate)
-                        ->where("end_date", ">=", $request->startDate)
-                        ->orWhere("start_date", "<=", $request->endDate)
-                        ->where("end_date", ">=", $request->endDate)
-                        ->orWhere("start_date", ">=", $request->startDate)
-                        ->where("end_date", "<=", $request->endDate);
-                }
-            )->count();
-            if ($count > 0) {
-                $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
-            }
-        });
-        $validator->validate();
+        // $validator = Validator::make($request->all(), [
+        //     "startDate" => "required|date",
+        //     "endDate" => "required|date"
+        // ]);
+        // $validator->after(function ($validator) use ($request, $booking) {
+        //     $count = Reservation::where("id", "!=", $booking->id)->where("room_id", $request->roomId)->where("status", 1)
+        //         ->where(function ($query) use ($request) {
+        //             $query->where("start_date", "<=", $request->startDate)
+        //                 ->where("end_date", ">=", $request->startDate)
+        //                 ->orWhere("start_date", "<=", $request->endDate)
+        //                 ->where("end_date", ">=", $request->endDate)
+        //                 ->orWhere("start_date", ">=", $request->startDate)
+        //                 ->where("end_date", "<=", $request->endDate);
+        //         }
+        //     )->count();
+        //     if ($count > 0) {
+        //         $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
+        //     }
+        // });
+        // $validator->validate();
 
-        $booking->start_date = $request->startDate;
-        $booking->end_date = $request->endDate;
-        $booking->save();
+        // $booking->start_date = $request->startDate;
+        // $booking->end_date = $request->endDate;
+        // $booking->save();
 
-        return redirect()->route('customer.booking.edit', ["booking" => $booking])->with("message", "The Booking Updated Successfully");
+        // return redirect()->route('customer.booking.edit', ["booking" => $booking])->with("message", "The Booking Updated Successfully");
     }
 
     /**
@@ -209,5 +209,31 @@ class BookingController extends Controller
         $booking->status = 0;
         $booking->save();
         return response()->json(['success' => "The booking has been cancelled"]);
+    }
+
+    public function roomFilterAvailable($roomType, $singleBed, $doubleBed, $startDate, $endDate) {
+        $arrival = new Carbon($startDate);
+        $departure = new Carbon($endDate);
+        $rooms = Room::with("reservations", "type")
+            ->where("room_type", $roomType->id)
+            ->where("single_bed", $singleBed)
+            ->where("double_bed", $doubleBed)
+            ->get();
+        $rooms = $rooms->filter(function ($value) use ($arrival, $departure) {
+            if (!empty($arrival) && !empty($departure)) {
+                $reservations = $value->reservations->filter(function ($value2) use ($arrival, $departure) {
+                    if ($value2->start_date->lte($arrival) && $value2->end_date->gte($arrival) ||
+                    $value2->start_date->lte($departure) && $value2->end_date->gte($departure) ||
+                    $value2->start_date->gte($arrival) && $value2->end_date->lte($departure)) {
+                        return true;
+                    }
+                    return false;
+                });
+                if ($reservations->count() > 0)
+                    return false;
+            }
+            return true;
+        });
+        return $rooms;
     }
 }

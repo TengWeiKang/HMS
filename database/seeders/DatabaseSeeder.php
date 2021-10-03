@@ -92,7 +92,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Deluxe Room",
             "single_bed" => 2,
             "double_bed" => 1,
-            "price" => 50.5,
+            "price" => 300,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
         ]);
@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Superior Room",
             "single_bed" => 1,
             "double_bed" => 2,
-            "price" => 30,
+            "price" => 250,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
         ]);

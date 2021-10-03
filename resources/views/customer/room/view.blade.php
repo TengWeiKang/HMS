@@ -5,11 +5,11 @@
 @endpush
 
 @section("title")
-    Hotel Booking | {{ $room->name }}
+    Hotel Booking | {{ $roomType->name }}
 @endsection
 
 @section("title2")
-    {{ $room->name }}
+    {{ $roomType->name }}
 @endsection
 
 @section("content")
@@ -21,13 +21,15 @@
                 <hr>
                 <div class="accomodation_item mb-0">
                     <div class="hotel_img text-center border border-secondary">
-                        <img class="mw-100" src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
+                        <img class="mw-100" src="{{ $roomType->imageSrc() }}" alt="Hotel PlaceHolder">
                     </div>
                 </div>
             </div>
         </div>
         @auth("customer")
-            <a href="{{ route("customer.booking.create", ["room" => $room]) }}" class="btn btn-primary mt-4 w-100">Book Now</a>
+            @isset($startDate, $endDate)
+                <a href="{{ route("customer.booking.create", ["roomType" => $roomType, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}" class="btn btn-primary mt-4 w-100">Book Now</a>
+            @endisset
         @endauth
     </div>
     <div class="col-lg-9">
@@ -39,39 +41,39 @@
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <tr>
-                                <td width="20%">Room ID:</td>
-                                <td>{{ $room->room_id }}</td>
-                            </tr>
-                            <tr>
-                                <td>Room Name:</td>
-                                <td>{{ $room->name }}</td>
-                            </tr>
-                            <tr>
                                 <td>Room Type:</td>
-                                <td>{{ $room->type->name }}</td>
+                                <td>{{ $roomType->name }}</td>
                             </tr>
                             <tr>
                                 <td>Price:</td>
-                                <td>RM {{ number_format($room->type->price, 2) }}</td>
+                                <td>RM {{ $roomType->price }}</td>
                             </tr>
                             <tr>
                                 <td>Single Bed:</td>
-                                <td>{{ $room->single_bed }}</td>
+                                <td>{{ $singleBed }}</td>
                             </tr>
                             <tr>
                                 <td>Double Bed:</td>
-                                <td>{{ $room->double_bed }}</td>
+                                <td>{{ $doubleBed }}</td>
                             </tr>
                             <tr>
                                 <td>Facilities:</td>
                                 <td>
-                                    @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
+                                    @forelse ($roomType->facilities->pluck("name")->toArray() as $facility)
                                         {{ $facility }}<br>
                                     @empty
                                         <span style="color: #F33">No Facilities for this room</span>
                                     @endforelse
                                 </td>
                             </tr>
+                            @isset($count)
+                                <tr>
+                                    <td>Available:</td>
+                                    <td>
+                                        {{ $count }}  {{ Str::plural("room", $count) }}
+                                    </td>
+                                </tr>
+                            @endisset
                         </table>
                     </div>
                 </div>

@@ -66,6 +66,7 @@ class Room extends Model
     }
 
     /**
+<<<<<<< HEAD
      * The facilities that belong to the Room
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -77,6 +78,9 @@ class Room extends Model
 
     /**
      * The reservations that belong for the Room
+=======
+     * Get all of the reservations for the Room
+>>>>>>> master
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

@@ -96,6 +96,24 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="card-title mt-5">Deposit</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="80%">Description</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Deposit</td>
+                                    <td>- RM {{ number_format($reservation->deposit, 2) }}</td>
+                                    <input type="hidden" name="deposit" value="{{ $reservation->deposit }}" readonly>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="card-title mt-5">Additional Charges (Optional)</div>
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -196,6 +214,7 @@
                 $("#price")[0].innerHTML = discountedPrice.toFixed(2);
 
                 $charges = $("input[name='chargePrices[]']");
+                let deposit = $("input[name='deposit']").val();
                 let chargePrices = 0;
                 $charges.each(function (index, element) {
                     let chargePrice = element.value;
@@ -208,7 +227,7 @@
                     }
                     chargePrices += parseFloat(chargePrice);
                 });
-                let totalPrice = discountedPrice + chargePrices;
+                let totalPrice = discountedPrice + chargePrices - deposit;
                 $("#finalPrice, #total-payment").html(totalPrice.toFixed(2));
             }
 

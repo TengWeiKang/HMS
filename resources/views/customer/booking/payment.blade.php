@@ -17,7 +17,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <div class="card-title">Payment Information <a class="ml-3 font-weight-normal" style="color: blue" href="{{ route("customer.booking.view", ['booking' => $payment->reservation]) }}"><u>View Booking</u></a></div>
+                <div class="card-title">Payment Information <a class="ml-3 font-weight-normal" style="color: blue" href="{{ route("customer.booking.view", ['booking' => $payment->reservation]) }}"><u>{{ $payment->reservation->id() }}</u></a></div>
                 @if (session('message'))
                     <div class="text-success text-center">{{ session('message') }}</div>
 				@endif
@@ -85,6 +85,23 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="card-title mt-5">Deposit</div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th width="80%">Description</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Deposit</td>
+                                    <td>- RM {{ number_format($payment->deposit, 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 @if ($payment->charges->count())
                 <div class="card-title mt-4">Additional Charges</div>
                 <div class="table-responsive">
@@ -111,7 +128,7 @@
                         <tbody>
                             <tr>
                                 <td width="80%" class="text-right">Final Total:</td>
-                                <td>RM {{ number_format($payment->totalPrices(), 2) }}</td>
+                                <td>RM {{ number_format($payment->totalPricesWithDeposit(), 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

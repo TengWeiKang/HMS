@@ -77,7 +77,7 @@
                 }
                 else {
                     $.ajax({
-                        type: "GET",
+                        type: "POST",
                         url: "{{ route("customer.search") }}",
                         datatype: "text",
                         data: {
