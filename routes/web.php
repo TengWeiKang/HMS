@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\Route;
 // customer
 Route::group(["prefix" => 'customer'], function () {
     Route::get('/', [HomeController::class, "index"])->name("customer.home");
-    Route::get('/search', [HomeController::class, "search"])->name("customer.search");
+    Route::post('/search', [HomeController::class, "search"])->name("customer.search");
 
     //profile
     Route::group(["prefix" => "profile"], function() {
@@ -51,7 +51,7 @@ Route::group(["prefix" => 'customer'], function () {
 
     //rooms
     Route::group(["prefix" => "room"], function() {
-        Route::get("/{room}", [CustomerRoomController::class, "show"])->name("customer.room.view");
+        Route::get("/{roomType}/{singleBed}/{doubleBed}", [CustomerRoomController::class, "show"])->name("customer.room.view");
     });
 
     //booking
@@ -59,8 +59,8 @@ Route::group(["prefix" => 'customer'], function () {
         Route::get("/", [BookingController::class, "index"])->name("customer.booking");
         Route::post("/json", [BookingController::class, "json"])->name("customer.booking.json");
         Route::get("/history", [BookingController::class, "history"])->name("customer.booking.history");
-        Route::get("/{room}/create", [BookingController::class, "create"])->name("customer.booking.create");
-        Route::post("/{room}/create", [BookingController::class, "store"]);
+        Route::get("/{roomType}/{singleBed}/{doubleBed}/create", [BookingController::class, "create"])->name("customer.booking.create");
+        Route::post("/{roomType}/{singleBed}/{doubleBed}/create", [BookingController::class, "store"]);
         Route::get("/{booking}", [BookingController::class, "show"])->name("customer.booking.view");
         Route::get("/{booking}/edit", [BookingController::class, "edit"])->name("customer.booking.edit");
         Route::put("/{booking}/edit", [BookingController::class, "update"]);

@@ -25,7 +25,7 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Room ID</th>
+                                    <th>Room Type</th>
                                     <th>Arrival Date</th>
                                     <th>Departure Date</th>
                                     <th>Night(s)</th>
@@ -38,7 +38,7 @@
                                 @foreach (Auth::user()->bookings as $booking)
                                 <tr>
                                     <td>{{ $booking->id() }}</td>
-                                    <td>{{ $booking->room->room_id }}</td>
+                                    <td>{{ $booking->room->type->name }}</td>
                                     <td>{{ $booking->start_date->format("d M Y") }}</td>
                                     <td>{{ $booking->end_date->format("d M Y") }}</td>
                                     <td>{{ $booking->dateDifference() }}</td>

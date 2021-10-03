@@ -91,7 +91,11 @@ class Payment extends Model
     }
 
     public function totalPrices() {
-        return $this->totalSubPrices() + $this->totalChargesPrice() - $this->deposit;
+        return $this->totalSubPrices() + $this->totalChargesPrice();
+    }
+
+    public function totalPricesWithDeposit() {
+        return $this->totalPrices() - $this->deposit;
     }
 
     public function bookingPriceWithDiscount() {

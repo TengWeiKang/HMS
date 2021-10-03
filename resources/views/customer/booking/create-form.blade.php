@@ -37,11 +37,11 @@
 @endphp
 
 @section("title")
-    Hotel Booking | {{ $room->name }}
+    Hotel Booking | {{ $roomType->name }}
 @endsection
 
 @section("title2")
-    {{ $room->name }}
+    {{ $roomType->name }}
 @endsection
 
 @section("content")
@@ -56,7 +56,7 @@
                     <div class="col-4">
                         <div class="accomodation_item mb-0">
                             <div class="hotel_img text-center border border-secondary">
-                                <img src="{{ $room->type->imageSrc() }}" alt="Hotel PlaceHolder">
+                                <img src="{{ $roomType->imageSrc() }}" alt="Hotel PlaceHolder">
                             </div>
                         </div>
                     </div>
@@ -65,28 +65,34 @@
                             <table class="table table-hover">
                                 <tr>
                                     <td width="30%">Room Type:</td>
-                                    <td>{{ $room->type->name }}</td>
+                                    <td>{{ $roomType->name }}</td>
                                 </tr>
                                 <tr>
                                     <td>Price <small>/night</small>:</td>
-                                    <td>RM {{ number_format($room->type->price, 2) }}</td>
+                                    <td>RM {{ number_format($roomType->price, 2) }}</td>
                                 </tr>
                                 <tr>
                                     <td>Single Bed:</td>
-                                    <td>{{ $room->single_bed }}</td>
+                                    <td>{{ $singleBed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Double Bed:</td>
-                                    <td>{{ $room->double_bed }}</td>
+                                    <td>{{ $doubleBed }}</td>
                                 </tr>
                                 <tr>
                                     <td>Facilities:</td>
                                     <td>
-                                        @forelse ($room->type->facilities->pluck("name")->toArray() as $facility)
+                                        @forelse ($roomType->facilities->pluck("name")->toArray() as $facility)
                                             {{ $facility }}<br>
                                         @empty
                                             <span style="color: #F33">No Facilities for this room</span>
                                         @endforelse
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Available:</td>
+                                    <td>
+                                        {{ $count }}  {{ Str::plural("room", $count) }}
                                     </td>
                                 </tr>
                             </table>
@@ -96,7 +102,7 @@
                 <hr>
                 <div class="card-title">Booking Form</div>
                 <hr>
-                <form id="booking-form" action="{{ route("customer.booking.create", ["room" => $room]) }}" method="POST">
+                <form id="booking-form" action="{{ route("customer.booking.create", ["roomType" => $roomType, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}" method="POST">
                     @csrf
                     <div class="form-group row my-4 mx-2">
                         <div class="col-lg-6 pl-lg-0">
@@ -130,7 +136,7 @@
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Booking Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", request()->startDate) }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $startDate) }}">
                             @error("startDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -139,7 +145,7 @@
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", request()->endDate) }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $endDate) }}">
                             @error("endDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -160,7 +166,7 @@
                     </div>
                     <div class="form-group col-12 mt-3">
                         <input type="hidden" name="deposit" value="100">
-                        <label class="h6">Deposit: RM 100.00</label>
+                        <label class="h6">Deposit: RM {{ number_format(App\Models\Reservation::DEPOSIT, 2) }}</label>
                     </div>
                     <hr>
                     <label for="">Bank Information</label>
@@ -235,7 +241,16 @@
             let startDate = $("#startDate")[0].value;
             let endDate = $("#endDate")[0].value;
             if (startDate !== "" && endDate !== "") {
+                startDate = new Date(startDate);
+                endDate = new Date(endDate);
+                let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
+                $("#numDays")[0].innerHTML = numberOfDays;
+                $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $roomType->price }}).toFixed(2);
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
+            }
+            else {
+                $("#numDays").html(0);
+                $("#totalPrice").html("0.00");
             }
         }
 
@@ -265,7 +280,7 @@
         });
 
         $("#calendar").fullCalendar({
-            selectable: true,
+            selectable: false,
             unselectAuto: false,
             height: "auto",
             nowIndicator: true,
@@ -274,53 +289,54 @@
                 center: 'title',
                 right: 'next'
             },
-            eventSources: [{
-                url: "{{ route("customer.booking.json") }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "roomID": {{ $room->id }}
-                }
-            }],
-            select: function(startDate, endDate) {
-                let dateNow = moment().startOf('day');
-                if (dateNow > startDate) {
-                    updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
-                }
-                else if (dateNow > endDate) {
-                    updateAndTriggerSwal("Invalid Date", "The ending date cannot be the passed date");
-                }
-                else if (startDate >= endDate) {
-                    updateAndTriggerSwal("Invalid Date", "The starting date cannot be over than ending date")
-                }
-                else {
-                    let events = $("#calendar").fullCalendar("clientEvents");
-                    let isValid = true;
-                    endDate.subtract(1, "days");
-                    events.forEach(event => {
-                        event.end.subtract(1, "days");
-                        if (event.start <= startDate && event.end >= startDate || event.start <= endDate && event.end >= endDate || event.start >= startDate && event.end <= endDate)
-                        {
-                            isValid = false;
-                        }
-                    });
-                    endDate.add(1, "days");
-                    if (isValid) {
-                        let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
-                        endDate.subtract(1, "days");
-                        $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
-                        $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
-                        $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
-                        $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
-                        $("#numDays")[0].innerHTML = numberOfDays;
-                        $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $room->type->price }}).toFixed(2);
-                    }
-                    else {
-                        updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
-                    }
-                }
-            },
+            // eventSources: [{
+            //     url: "{{ route("customer.booking.json") }}",
+            //     type: "POST",
+            //     data: {
+            //         "_token": "{{ csrf_token() }}",
+            //         "roomID": {{ $roomType->id }}
+            //     }
+            // }],
+            // select: function(startDate, endDate) {
+            //     let dateNow = moment().startOf('day');
+            //     if (dateNow > startDate) {
+            //         updateAndTriggerSwal("Invalid Date", "The starting date cannot be the passed date");
+            //     }
+            //     else if (dateNow > endDate) {
+            //         updateAndTriggerSwal("Invalid Date", "The ending date cannot be the passed date");
+            //     }
+            //     else if (startDate >= endDate) {
+            //         updateAndTriggerSwal("Invalid Date", "The starting date cannot be over than ending date")
+            //     }
+            //     else {
+            //         let events = $("#calendar").fullCalendar("clientEvents");
+            //         let isValid = true;
+            //         endDate.subtract(1, "days");
+            //         events.forEach(event => {
+            //             event.end.subtract(1, "days");
+            //             if (event.start <= startDate && event.end >= startDate || event.start <= endDate && event.end >= endDate || event.start >= startDate && event.end <= endDate)
+            //             {
+            //                 isValid = false;
+            //             }
+            //         });
+            //         endDate.add(1, "days");
+            //         if (isValid) {
+            //             let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24);
+            //             endDate.subtract(1, "days");
+            //             $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
+            //             $("#startDate").data('prev', startDate.format("YYYY-MM-DD"));
+            //             $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
+            //             $("#endDate").data('prev', endDate.format("YYYY-MM-DD"));
+            //             $("#numDays")[0].innerHTML = numberOfDays;
+            //             $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $roomType->price }}).toFixed(2);
+            //         }
+            //         else {
+            //             updateAndTriggerSwal("Date Conflict", "The booking date has conflict with other booking");
+            //         }
+            //     }
+            // },
         });
+        $("#calendar").fullCalendar("gotoDate", "{{ $startDate }}")
         $("#startDate, #endDate").change(function() {
             changeDate();
         })

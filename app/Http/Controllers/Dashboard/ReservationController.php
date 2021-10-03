@@ -175,7 +175,7 @@ class ReservationController extends Controller
         ]);
         $validator->validate();
         $validator->after(function ($validator) use ($request) {
-            $count = Reservation::where("room_id", $request->room)
+            $count = Reservation::where("room_id", $request->room)->where("status", 1)
             ->where(function ($query) use ($request) {
                 $query->where("start_date", "<=", $request->startDate)
                     ->where("end_date", ">=", $request->startDate)
@@ -283,7 +283,7 @@ class ReservationController extends Controller
             "endDate" => "required|date"
         ]);
         $validator->after(function ($validator) use ($request, $reservation) {
-            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->room)
+            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->room)->where("status", 1)
                 ->where(function ($query) use ($request) {
                     $query->where("start_date", "<=", $request->startDate)
                         ->where("end_date", ">=", $request->startDate)

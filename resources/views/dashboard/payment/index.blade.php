@@ -37,7 +37,7 @@
                                     <td>{{ $payment->end_date->format("d M Y") }}</td>
                                     <td>{{ $payment->payment_at->format("d M Y h:ia") }}</td>
                                     <td class="text-center">{{ $payment->items->count() }}</td>
-                                    <td>RM {{ number_format($payment->totalPrices(), 2) }}</td>
+                                    <td>RM {{ number_format($payment->totalPricesWithDeposit(), 2) }}</td>
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $payment->reservation]) }}" title="View Reservation">
                                             <i class="fa fa-ticket text-white"></i>

@@ -97,8 +97,7 @@
                             <tbody>
                                 <tr>
                                     <td>Deposit</td>
-                                    <td>- RM {{ number_format($reservation->deposit, 2) }}</td>
-                                    <input type="hidden" name="deposit" value="{{ $reservation->deposit }}" readonly>
+                                    <td>- RM {{ number_format($payment->deposit, 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,7 +128,7 @@
                         <tbody>
                             <tr>
                                 <td width="80%" class="text-right">Final Total:</td>
-                                <td>RM {{ number_format($payment->totalPrices(), 2) }}</td>
+                                <td>RM {{ number_format($payment->totalPricesWithDeposit(), 2) }}</td>
                             </tr>
                         </tbody>
                     </table>

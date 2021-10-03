@@ -18,15 +18,25 @@ class HomeController extends Controller
     }
 
     public function search(Request $request) {
-        $rooms = Room::with("reservations", "type")->get();
+        $rooms = $this->roomGroups($request);
+        
+        return view("customer/components/accomodations", ["roomGroups" => $rooms, "startDate" => $request->arrival, "endDate" => $request->departure]);
+    }
+
+    /**
+     * request variable must have arrival, departure attribute
+     * optional: single, double, roomType, person
+     */
+    public function roomGroups($request) {
         $arrival = new Carbon($request->arrival);
         $departure = new Carbon($request->departure);
-        $rooms = $rooms->filter(function ($value, $key) use ($request, $arrival, $departure) {
+        $rooms = Room::with("reservations", "type")->get();
+        $rooms = $rooms->filter(function ($room) use ($request, $arrival, $departure) {
             if (!empty($arrival) && !empty($departure)) {
-                $reservations = $value->reservations->filter(function ($value2, $key) use ($arrival, $departure) {
-                    if ($value2->start_date->lte($arrival) && $value2->end_date->gte($arrival) ||
-                    $value2->start_date->lte($departure) && $value2->end_date->gte($departure) ||
-                    $value2->start_date->gte($arrival) && $value2->end_date->lte($departure)) {
+                $reservations = $room->reservations->filter(function ($reservation) use ($arrival, $departure) {
+                    if ($reservation->start_date->lte($arrival) && $reservation->end_date->gte($arrival) ||
+                    $reservation->start_date->lte($departure) && $reservation->end_date->gte($departure) ||
+                    $reservation->start_date->gte($arrival) && $reservation->end_date->lte($departure)) {
                         return true;
                     }
                     return false;
@@ -34,20 +44,21 @@ class HomeController extends Controller
                 if ($reservations->count() > 0)
                     return false;
             }
-            if (!empty($request->single) && $value->single_bed != $request->single) {
+            if (!empty($request->single) && $room->single_bed != $request->single) {
                 return false;
             }
-            if (!empty($request->double) && $value->double_bed != $request->double) {
+            if (!empty($request->double) && $room->double_bed != $request->double) {
                 return false;
             }
-            if (!empty($request->roomType) && $request->roomType != $value->type->id) {
+            if (!empty($request->roomType) && $request->roomType != $room->type->id) {
                 return false;
             }
-            if (!empty($request->person) && $request->person != $value->single_bed + $value->double_bed * 2) {
+            if (!empty($request->person) && $request->person != $room->single_bed + $room->double_bed * 2) {
                 return false;
             }
             return true;
         });
-        return view("customer/components/accomodations", ["rooms" => $rooms, "startDate" => $request->arrival, "endDate" => $request->departure]);
+        $rooms = $rooms->groupBy(["type.name", "single_bed", "double_bed"]);
+        return $rooms;
     }
 }

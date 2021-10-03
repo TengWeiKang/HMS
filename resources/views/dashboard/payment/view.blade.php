@@ -132,7 +132,7 @@
                         <tbody>
                             <tr>
                                 <td width="80%" class="text-right">Final Total:</td>
-                                <td>RM {{ number_format($payment->totalPrices(), 2) }}</td>
+                                <td>RM {{ number_format($payment->totalPricesWithDeposit(), 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
