@@ -11,9 +11,9 @@
                                 <a href="{{ route("customer.booking.create", ["roomType" => $rooms[0]->type, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}" class="btn theme_btn button_hover">Book Now</a>
                             @endauth
                         </div>
-                        <a href="{{ route("customer.room.view", ["roomType" => $rooms[0]->type, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}"><h3 class="sec_h4">{{ $roomTypeName }}</h3></a>
-                        <h4>{{ $singleBed }} single bed</h4>
-                        <h4>{{ $doubleBed }} double bed</h4>
+                        <h3 class="sec_h4"><a href="{{ route("customer.room.view", ["roomType" => $rooms[0]->type, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}">{{ $roomTypeName }}</a></h3>
+                        <h4 style="font-size: 16px; color: black">{{ $singleBed }} single bed</h4>
+                        <h4 style="font-size: 16px; color: black">{{ $doubleBed }} double bed</h4>
                         <h6>{{ $rooms->count() }} available</h6>
                         <h5>RM {{ number_format($rooms[0]->type->price, 2) }}<small>/night</small></h5>
                     </div>
