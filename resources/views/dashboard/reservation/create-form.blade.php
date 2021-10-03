@@ -83,8 +83,8 @@
                         <div class="col-lg-4 pr-0">
                             <label for="roomType">Check in now?</label>
                             <div class="icheck-material-white">
-                                <input type="checkbox" id="checkIn" onclick="return false;"/>
-                                <label for="checkIn" id="checkbox-label" class="checkbox-disable">Check In</label>
+                                <input type="checkbox" id="checkIn"/>
+                                <label for="checkIn">Check In</label>
                             </div>
                         </div>
                     </div>
@@ -118,11 +118,7 @@
                     @enderror
                     <div class="form-group row mx-2">
                         <label for="rooms">Add Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms">
-                            @if (request()->has("room_id"))
-                                <option value="{{ $room->id }}" data-room-id="{{ $room->room_id }}" data-price="{{ $room->type->price }}" selected>{{ $room->room_id }} - {{ $room->name }} ({{ $room->statusName(false) }})</option>
-                            @endif
-                        </select>
+                        <select class="form-control form-control-rounded" id="rooms"></select>
                     </div>
                     <hr style="border-width: 4px">
                     <div id="add-rooms">
@@ -293,18 +289,12 @@
             let isAvailable = $(this).data("occupied") == 1;
             let html = `
                 <div class="div-room form-group row mx-2">
-                    <div class="col-lg-8 pl-lg-0">
+                    <div class="col-lg-10 pl-lg-0">
                         <input type="text" class="form-control form-control-rounded" value="` + title + `" readonly>
                         <input type="hidden" name="room[]" value="` + id + `" readonly>
                         <div name="price" data-price="` + price + `"></div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="icheck-material-white">
-                            <input type="checkbox" value="` + id + `" id="checkbox` + id + `" name="checkIn[]"` + (isCheckIn ? " checked" : "") + (disable || !isAvailable ? " onclick=\"return false;\"" : "") + `/>
-                            <label for="checkbox` + id + `" ` + (disable || !isAvailable ? " class=\"checkbox-disable\"" : "") + `>Check In</label>
-                        </div>
-                    </div>
-                    <div class="col-lg-1">
+                    <div class="col-lg-2 text-center">
                         <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
                             <i class="zmdi zmdi-delete text-white"></i>
                         </a>
@@ -339,10 +329,7 @@
             updateCustomerInfo();
         });
 
-        // $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
-        //     resetRoomInput();
-        // });
-        $("#startDate, #endDate").on("input", function (){
+        $("#startDate, #endDate, #checkIn").on("input", function (){
             resetRoomInput();
         });
 
@@ -382,16 +369,15 @@
                 let today = new Date();
                 today.setHours(0, 0, 0, 0);
                 if (today >= d) {
-                    $("#checkIn").removeAttr("onclick");
-                    $("#checkbox-label").removeClass("checkbox-disable");
+                    $("#checkIn").prop("disabled", false);
                 }
                 else {
+                    $("#checkIn").prop("disabled", "disabled");
                     $("#checkIn").prop("checked", false);
-                    $("#checkIn").attr("onclick", "return false;")
-                    $("#checkbox-label").addClass("checkbox-disable");
                 }
             }
         }
+
         function bindListener() {
             $(".delete-room-row").unbind();
             $(".delete-room-row").on("click", function () {
@@ -415,8 +401,7 @@
             $('#calendar').fullCalendar('unselect');
             $("#startDate")[0].value = "";
             $("#endDate")[0].value = "";
-            $("#checkIn").attr("onclick", "return false;")
-            $("#checkbox-label").addClass("checkbox-disable");
+            $("#checkIn").prop("disabled", "disabled");
             Swal.fire({
                 title: title,
                 text: message,
@@ -507,7 +492,7 @@
                     icon: "error",
                 });
             }
-        })
+        });
         changeDate();
         updateCustomerInfo();
         bindListener();

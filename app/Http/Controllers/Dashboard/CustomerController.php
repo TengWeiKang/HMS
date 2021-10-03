@@ -29,7 +29,7 @@ class CustomerController extends Controller
     {
         $customer->load(["bookings" => function ($query) {
             $query->where("status", 1)->orderBy("created_at", "DESC");
-        }, "bookings.room", "bookings.payment"]);
+        }, "bookings.rooms", "bookings.payment"]);
 
         return view("dashboard.customer.view", ["customer" => $customer]);
     }

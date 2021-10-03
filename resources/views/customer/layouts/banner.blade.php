@@ -54,7 +54,7 @@
                                     </div>
                                     <div class="form-group">
                                         <div class="input-group">
-                                            <select class="wide" id="roomType">
+                                            <select class="wide niceSelect" id="roomType">
                                                 <option data-display="Room Type" value="">All</option>
                                                 <optgroup label="Room Type">
                                                     @foreach ($roomTypes as $roomType)

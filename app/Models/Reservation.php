@@ -106,8 +106,14 @@ class Reservation extends Model
         return $this->end_date->diffInDays($this->start_date) + 1;
     }
 
+    public function roomPrice() {
+        return $this->rooms->sum(function ($room) {
+            return $room->type->price;
+        });
+    }
+
     public function bookingPrice() {
-        return $this->dateDifference() * $this->room->type->price;
+        return $this->dateDifference() * $this->roomPrice();
     }
 
     /**
@@ -122,6 +128,8 @@ class Reservation extends Model
 
     public function canCheckIn() {
         $today = Carbon::today();
-        return $this->start_date <= $today && $this->end_date >= $today;
+        return $this->status() == 0 && $this->start_date <= $today && $this->end_date >= $today && $this->rooms->every(function ($room) {
+            return in_array($room->status(), [0, 1]);
+        });
     }
 }

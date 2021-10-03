@@ -49,7 +49,7 @@
                     <div class="text-danger text-center">{{ $message }}</div>
                 @enderror
                 <hr>
-                <form action="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" method="POST">
+                <form id="reservation-form" action="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" method="POST">
                     @csrf
                     @method("PUT")
                     <div class="title font-weight-bold">Filter Room</div>
@@ -90,29 +90,23 @@
                         <label class="col-lg-12 px-0">Reservation Date <span class="text-danger">*</span></label>
                         <div class="col-lg-4 pl-lg-0">
                             <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $reservation->start_date->format("Y-m-d")) }}" required>
+                            @error("startDate")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
                             <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $reservation->end_date->format("Y-m-d")) }}" required>
+                            @error("endDate")
+                            <div class="ml-2 text-sm text-danger">
+                                {{ $message }}
+                            </div>
+                            @enderror
                         </div>
                         <label class="col-lg-3 text-center my-lg-auto h6"><span id="numDays">{{ $reservation->dateDifference() }}</span> night(s)</label>
                     </div>
-                    @if ($errors->hasAny(["startDate", "endDate"]))
-                        <div class="col-lg-6 pl-lg-0">
-                            <div class="ml-2 text-sm text-danger">
-                                @error('startDate')
-                                    {{ $message }}
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="col-lg-6 pr-lg-0">
-                            <div class="ml-2 text-sm text-danger">
-                                @error('endDate')
-                                    {{ $message }}
-                                @enderror
-                            </div>
-                        </div>
-                    @endif
                     @error('dateConflict')
                         <div class="col-lg-12 pl-lg-0">
                             <div class="ml-2 text-sm text-danger">
@@ -120,18 +114,31 @@
                             </div>
                         </div>
                     @enderror
-                    <hr>
                     <div class="form-group row mx-2">
-                        <label for="rooms">Room <span class="text-danger">*</span></label>
-                        <select class="form-control form-control-rounded" id="rooms" name="room" required>
-                            <option value="{{ $reservation->room->id }}" data-room-id="{{ $reservation->room->room_id }}" data-price="{{ $reservation->room->type->price }}">{{ $reservation->room->room_id }} - {{ $reservation->room->name }} ({{ $reservation->room->statusName(false) }})</option>
-                        </select>
-                        @error("room")
-                            <div class="ml-2 text-sm text-danger">
-                                {{ $message }}
-                            </div>
-                        @enderror
+                        <label for="rooms">Add Room <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-rounded" id="rooms"></select>
                     </div>
+                    <hr style="border-width: 4px">
+                    <div id="add-rooms">
+                        <div class="form-group row mx-2">
+                            <label for="room">Added Room <span class="text-danger">*</span></label>
+                        </div>
+                        @foreach ($reservation->rooms as $room)
+                            <div class="div-room form-group row mx-2">
+                                <div class="col-lg-10 pl-lg-0">
+                                    <input type="text" class="form-control form-control-rounded" value="{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")" }}" readonly>
+                                    <input type="hidden" name="room[]" value="{{ $room->id }}" readonly>
+                                    <div name="price" data-price="{{ $room->type->price }}"></div>
+                                </div>
+                                <div class="col-lg-2 text-center">
+                                    <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
+                                        <i class="zmdi zmdi-delete text-white"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    <hr>
                     <div class="form-group row mx-2">
                         <label for="passport">NRIC / Passport (Able to custom input) <span class="text-danger">*</span></label>
                         <select class="form-control form-control-rounded" id="passport" name="passport">
@@ -196,51 +203,6 @@
                 <div id="calendar"></div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="card-title">Room Info</div>
-                <div class="row">
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <tr>
-                                <td width="10%">Room ID:</td>
-                                <td id="room-id">{{ $reservation->room->room_id }}</td>
-                            </tr>
-                            <tr>
-                                <td>Room Name:</td>
-                                <td id="room-name">{{ $reservation->room->name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Room Type:</td>
-                                <td id="room-type">{{ $reservation->room->type->name }}</td>
-                            </tr>
-                            <tr>
-                                <td>Price:</td>
-                                <td id="room-price">RM {{ number_format($reservation->room->type->price, 2) }}</td>
-                            </tr>
-                            <tr>
-                                <td>Single Bed:</td>
-                                <td id="room-single-bed">{{ $reservation->room->single_bed }}</td>
-                            </tr>
-                            <tr>
-                                <td>Double Bed:</td>
-                                <td id="room-double-bed">{{ $reservation->room->double_bed }}</td>
-                            </tr>
-                            <tr>
-                                <td>Facilities:</td>
-                                <td id="room-facilities">
-                                    @forelse ($reservation->room->type->facilities->pluck("name")->toArray() as $facility)
-                                        {{ $facility }}<br>
-                                    @empty
-                                        <span style="color: #F33">No Facilities</span>
-                                    @endforelse
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 @endsection
@@ -260,6 +222,7 @@
                 url: "{{ route("dashboard.reservation.search") }}",
                 method: "POST",
                 data: function(params) {
+                    let ignoreID = $("input[name='room[]']").map(function(){return $(this).val();}).get();
                     return {
                         "ignoreID": {{ $reservation->id }},
                         "_token": "{{ csrf_token() }}",
@@ -270,46 +233,87 @@
                         "startDate": $("#startDate").val(),
                         "endDate": $("#endDate").val(),
                         "checkIn": $("#checkIn").prop("checked"),
+                        "roomIgnoreID": ignoreID,
                     };
                 },
             },
-            templateSelection: function(container) {
-                if (container.text == "") {
-                    return container.text;
-                }
-                if (container.price === undefined) {
-                    return container.text;
-                }
-                $(container.element).data("room-id", container.room_id);
-                $(container.element).data("price", container.price);
-                $("#room-id").html(container.room_id);
-                $("#room-name").html(container.room_name);
-                $("#room-type").html(container.room_type);
-                $("#room-price").html("RM " + container.price.toFixed(2));
-                $("#room-single-bed").html(container.single_bed);
-                $("#room-double-bed").html(container.double_bed);
-                if (container.facilities.length != 0) {
-                    $("#room-facilities").html(container.facilities.join("<br>"));
+            templateResult: function(room) {
+                if (room.id == undefined)
+                    return room.text;
+                let facilities = "";
+                if (room.facilities.length != 0) {
+                    facilities = room.facilities.join(", ");
                 }
                 else {
-                    $("#room-facilities").html('<span style="color: #F33">No Facilities</span>');
+                    facilities = '<span class="select2-result-room__facilities-empty">No Facilities</span>';
                 }
-                return container.text;
-            }
+                html = `<div class="select2-result-room">
+                            <div class="select2-result-room__title">
+                                ` + room.text + `
+                            </div>`;
+                if (room.single_bed > 0) {
+                    html += `<div class="select2-result-room__description">
+                            <div class="select2-result-room__singlebed">
+                                ` + room.single_bed + ` single bed
+                            </div>`;
+                }
+                if (room.double_bed > 0) {
+                    html += `<div class="select2-result-room__doublebed">
+                                ` + room.double_bed + ` double bed
+                            </div>`;
+                }
+                html += `<div class="select2-result-room__doublebed">
+                            Facilities: ` + facilities + `
+                        </div>
+                    </div>
+                </div>`;
+                var $container = $(html);
+                return $container;
+            },
+            templateSelection: function(room) {
+                let isCheckIn = $("#checkIn").prop("checked");
+                $("select#rooms").data("id", room.id);
+                $("select#rooms").data("price", room.price);
+                $("select#rooms").data("title", room.text);
+                $("select#rooms").data("occupied", room.room_available);
+                return "Please fill in reservation date before choose a room";
+            },
         });
         $roomSelect.on("select2:select", function (e) {
             updateBookingPrice();
-            let calendar = $("#calendar");
-            let sources = {
-                url: "{{ route("dashboard.reservation.json") }}",
-                type: "POST",
-                data: {
-                    "_token": "{{ csrf_token() }}",
-                    "roomID": $("#rooms")[0].value
-                }
-            };
-            calendar.fullCalendar("removeEventSources");
-            calendar.fullCalendar("addEventSource", sources);
+            let startDate = $("#startDate").val();
+            let d = new Date(startDate);
+            let today = new Date();
+            d.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
+            let disable = true;
+            if (today >= d) {
+                disable = false;
+            }
+
+            $("#rooms").find("option").remove().trigger("change");
+            let isCheckIn = $("#checkIn").prop("checked");
+            let id = $(this).data("id");
+            let title = $(this).data("title");
+            let price = $(this).data("price");
+            let isAvailable = $(this).data("occupied") == 1;
+            let html = `
+                <div class="div-room form-group row mx-2">
+                    <div class="col-lg-10 pl-lg-0">
+                        <input type="text" class="form-control form-control-rounded" value="` + title + `" readonly>
+                        <input type="hidden" name="room[]" value="` + id + `" readonly>
+                        <div name="price" data-price="` + price + `"></div>
+                    </div>
+                    <div class="col-lg-2 text-center">
+                        <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
+                            <i class="zmdi zmdi-delete text-white"></i>
+                        </a>
+                    </div>
+                </div>
+                `;
+            $("#add-rooms").append(html);
+            updateBookingPrice();
+            bindListener();
         });
         $roomSelect.on("select2:open", function (e) {
             $("#rooms").find("option").remove().trigger("change");
@@ -336,8 +340,8 @@
         });
         $('.select2.select2-container').addClass('form-control form-control-rounded');
 
-        $("#singleBed, #doubleBed, #person, #roomType, #startDate, #endDate, #checkIn").on("input", function (){
-            resetRoomInput
+        $("#startDate, #endDate, #checkIn").on("input", function (){
+            resetRoomInput();
         });
 
         $("#singleBed, #doubleBed").on("input", function(e) {
@@ -366,17 +370,32 @@
             changeDate();
         })
 
-        $("#singleBed, #doubleBed").on("input", function(e) {
-            let value1 = $("#singleBed").val();
-            let value2 = $("#doubleBed").val();
-            $personElement = $("#person");
-            if (value1.length == 0 && value2.length == 0) {
-                $personElement.prop("disabled", false);
+        $('.select2.select2-container').addClass('form-control form-control-rounded');
+
+        function disableCheckIn() {
+            let startDate = $("#startDate").val();
+            if (startDate != "") {
+                let d = new Date(startDate);
+                d.setHours(0, 0, 0, 0);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+                if (today >= d) {
+                    $("#checkIn").prop("disabled", false);
+                }
+                else {
+                    $("#checkIn").prop("checked", false);
+                    $("#checkIn").prop("disabled", "disabled");
+                }
             }
-            else {
-                $personElement.prop("disabled", true);
-            }
-        });
+        }
+
+        function bindListener() {
+            $(".delete-room-row").unbind();
+            $(".delete-room-row").on("click", function () {
+                $(this).parents(".div-room").remove();
+                updateBookingPrice();
+            });
+        }
 
         function updateCustomerInfo() {
             let phone = $("#passport").find(":selected").data("phone") ?? "";
@@ -393,7 +412,7 @@
             $('#calendar').fullCalendar('unselect');
             $("#startDate")[0].value = "";
             $("#endDate")[0].value = "";
-
+            $("#checkIn").prop("disabled", "disabled");
             Swal.fire({
                 title: title,
                 text: message,
@@ -414,26 +433,24 @@
             let startDate = $("#startDate")[0].value;
             let endDate = $("#endDate")[0].value;
             if (startDate != "" && endDate != "") {
+                let bookingPrice = 0;
+                $data = $("div[name='price']");
+                $data.each(function (index, element) {
+                    bookingPrice += parseFloat($(element).data("price"));
+                })
                 startDate = moment(startDate);
                 endDate = moment(endDate);
-                let price = $("#rooms").find(":selected").data("price") ?? 0;
                 let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
                 $("#numDays")[0].innerHTML = numberOfDays;
-                $("#totalPrice")[0].innerHTML = (numberOfDays * price).toFixed(2);
+                $("#totalPrice")[0].innerHTML = (numberOfDays * bookingPrice).toFixed(2);
+                let deposit = $data.length * {{ App\Models\Reservation::DEPOSIT }};
+                $("#deposit").html(parseFloat(deposit).toFixed(2));
+                $("input[name='deposit']").val(deposit);
             }
         }
 
         function resetRoomInput() {
-            $("#rooms").val("").change();
-            $("#totalPrice")[0].innerHTML = (0).toFixed(2);
-            $("#room-id").html("");
-            $("#room-name").html("");
-            $("#room-type").html("");
-            $("#room-price").html("");
-            $("#room-single-bed").html("");
-            $("#room-double-bed").html("");
-            $("#room-facilities").html("");
-            $("#calendar").fullCalendar("removeEventSources");
+            $(".div-room").remove();
         }
 
         $("#calendar").fullCalendar({
@@ -465,6 +482,7 @@
                     $("#numDays").html(numberOfDays);
                     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
                     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
+                    disableCheckIn();
                     if (!isInitialize) {
                         resetRoomInput();
                     }
@@ -473,7 +491,20 @@
                 }
             },
         });
+        $("#reservation-form").on("submit", function(e) {
+            if ($("input[name='room[]']").length <= 0) {
+                e.preventDefault();
+                    Swal.fire({
+                    title: "Missing Information",
+                    text: "Please add at least one room",
+                    icon: "error",
+                });
+            }
+        });
         changeDate();
+        updateCustomerInfo();
+        disableCheckIn();
+        bindListener();
     });
 </script>
 @endpush

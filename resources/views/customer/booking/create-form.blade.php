@@ -50,7 +50,10 @@
         <div class="card">
             <div class="card-body">
                 @if (session('message'))
-                <div class="text-success text-center">{{ session('message') }}</div>
+                    <div class="text-success text-center">{{ session('message') }}</div>
+				@endif
+                @if (session('error'))
+                    <div class="text-success text-center">{{ session('error') }}</div>
 				@endif
                 <div class="row">
                     <div class="col-4">
@@ -133,10 +136,18 @@
                             </div>
                         @enderror
                     </div>
+                    <div class="form-group row mx-2">
+                        <label for="numberOfRooms">Number of Rooms</label>
+                        <select name="numberOfRooms" id="numberOfRooms" class="form-control form-control-rounded wide">
+                            @for ($i = 1; $i <= $count; $i++)
+                                <option value="{{ $i }}">{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
                     <div class="form-group row my-4 mx-2">
                         <label class="col-lg-12 px-0">Booking Date</label>
                         <div class="col-lg-4 pl-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $startDate) }}">
+                            <input type="date" class="form-control form-control-rounded @error("startDate") border-danger @enderror" id="startDate" name="startDate" data-prev="" value="{{ old("startDate", $startDate) }}" readonly>
                             @error("startDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -145,7 +156,7 @@
                         </div>
                         <label class="col-lg-1 text-center my-lg-auto">TO</label>
                         <div class="col-lg-4 pr-lg-0">
-                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $endDate) }}">
+                            <input type="date" class="form-control form-control-rounded @error("endDate") border-danger @enderror" id="endDate" name="endDate" data-prev="" value="{{ old("endDate", $endDate) }}" readonly>
                             @error("endDate")
                             <div class="ml-2 text-sm text-danger">
                                 {{ $message }}
@@ -165,8 +176,8 @@
                         <label class="h6">Booking Price: RM <span id="totalPrice">0.00</span></label>
                     </div>
                     <div class="form-group col-12 mt-3">
-                        <input type="hidden" name="deposit" value="100">
-                        <label class="h6">Deposit: RM {{ number_format(App\Models\Reservation::DEPOSIT, 2) }}</label>
+                        <input type="hidden" id="deposit" name="deposit" value="{{ App\Models\Reservation::DEPOSIT }}">
+                        <label class="h6">Deposit: RM <span id="deposit-label">{{ number_format(App\Models\Reservation::DEPOSIT, 2) }}</span></label>
                     </div>
                     <hr>
                     <label for="">Bank Information</label>
@@ -188,7 +199,7 @@
                     </div>
                     <div class="form-group row mx-2">
                         <div class="col-12">
-                            <label for="">Payment Amount: RM 100.00 (For Deposit)</label>
+                            <label for="">Payment Amount: RM <span id="deposit-payment">100.00</span> (For Deposit)</label>
                         </div>
                     </div>
                     <div class="form-group col-12 mt-4">
@@ -219,6 +230,10 @@
             $(this).data('prev', $(this).val());
         });
 
+        $("#numberOfRooms").on("change", function() {
+            changeDate();
+        });
+
         function updateAndTriggerSwal(title, message) {
             let tempStartDate = $("#startDate").data("prev");
             let tempEndDate = $("#endDate").data("prev");
@@ -246,6 +261,10 @@
                 let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
                 $("#numDays")[0].innerHTML = numberOfDays;
                 $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $roomType->price }}).toFixed(2);
+                let numberOfRooms = $("#numberOfRooms").val();
+                let totalDeposit = {{ App\Models\Reservation::DEPOSIT }} * numberOfRooms;
+                $("#deposit").val(totalDeposit)
+                $("#deposit-label, #deposit-payment").html(totalDeposit.toFixed(2))
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));
             }
             else {

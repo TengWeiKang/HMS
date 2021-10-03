@@ -17,7 +17,7 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        $payments = Payment::with("items", "charges", "reservation.customer")->get();
+        $payments = Payment::with("rooms", "items", "charges", "reservation.customer")->orderBy("payment_at", "DESC")->get();
         return view('dashboard/payment/index', ["payments" => $payments]);
     }
 
@@ -28,6 +28,7 @@ class PaymentController extends Controller
      */
     public function create(Reservation $reservation)
     {
+        $reservation->load("rooms", "rooms.type", "services");
         return view('dashboard/payment/create-form', ["reservation" => $reservation]);
     }
 
@@ -46,6 +47,16 @@ class PaymentController extends Controller
             'chargePrices' => 'array',
             'chargePrices.*' => 'required|numeric|min:0.01|regex:/^\d*(\.\d{1,2})?$/',
         ]);
+        $reservation->load("rooms", "rooms.type");
+
+        $rooms = [];
+        foreach ($reservation->rooms as $room) {
+            $rooms[] = [
+                "room_id" => $room->id,
+                "price_per_night" => $room->type->price,
+            ];
+        }
+
         $items = [];
         foreach ($reservation->services as $service) {
             $items[] = [
@@ -67,21 +78,21 @@ class PaymentController extends Controller
         }
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
-            "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-            "price_per_night" => $reservation->room->type->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,
             "discount" => $request->discount,
             "deposit" => $request->deposit
         ]);
+        $payment->rooms()->attach($rooms);
         $payment->items()->createMany($items);
         $payment->charges()->createMany($charges);
-
-        $reservation->room->status = 2;
-        $reservation->room->housekeep_by = null;
-        $reservation->room->save();
         $reservation->check_out = Carbon::now();
         $reservation->save();
+        foreach ($reservation->rooms as $room) {
+            $room->status = 2;
+            $room->housekeep_by = null;
+            $room->save();
+        }
 
         return redirect()->route('dashboard.payment.view', ["payment" => $payment]);
     }
@@ -94,7 +105,7 @@ class PaymentController extends Controller
      */
     public function show(Payment $payment)
     {
-        $payment->load("items", "charges", "reservation");
+        $payment->load("items", "charges", "reservation", "rooms");
         return view('dashboard/payment/view', ["payment" => $payment]);
     }
 }

@@ -67,17 +67,17 @@
                                     <td>{{ $reservation->id() }}</td>
                                     <td>
                                         @foreach ($reservation->rooms as $room)
-                                        <a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}">{{ $reservation->room->room_id }}</a><span style="color: {{ $reservation->room->statusColor() }}"> ({{ $reservation->room->statusName(false) }})</span></td>
+                                            <a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a><span style="color: {{ $room->statusColor() }}"> ({{ $room->statusName(false) }})</span><br>
                                         @endforeach
+                                    </td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $reservation->customer]) }}">{{ $reservation->customer->fullName() }}</td>
                                     <td>{{ $reservation->start_date->format("d M Y") }}</td>
                                     <td>{{ $reservation->end_date->format("d M Y") }}</td>
                                     <td style="color: {{ $reservation->statusColor() }}">{{ $reservation->statusName() }}</td>
                                     <td class="text-center action-col">
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            {{-- TODO validate room status --}}
-                                            @if ($reservation->status() == 0 /* && in_array($reservation->rooms->status(), [0, 1]) */ && $reservation->canCheckIn())
-                                            <a class="checkInRoom" data-id="{{ $reservation->id }}" data-rooms="{{ $reservation->rooms->pivot }}" style="cursor: pointer" title="Check In">
+                                            @if ($reservation->canCheckIn())
+                                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>
                                             @endif
@@ -91,24 +91,26 @@
                                                 <i class="zmdi zmdi-plus text-white"></i>
                                             </a>
                                             @endif
-                                            @if ($reservation->status() != 2)
-                                            <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Delete">
-                                                <i class="zmdi zmdi-delete text-white"></i>
-                                            </a>
-                                            @endif
                                         @endif
                                         <a href="{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
-                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $reservation->check_in != null && $reservation->check_out == null)
-                                        <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
-                                            <i class="zmdi zmdi-check text-white"></i>
-                                        </a>
-                                        @endif
-                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $reservation->status() == 0)
-                                            <a class="cancelReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Cancelled">
-                                                <i class="fa fa-times text-white"></i>
-                                            </a>
+                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
+                                            @if ($reservation->check_in != null && $reservation->check_out == null)
+                                                <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
+                                                    <i class="zmdi zmdi-check text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($reservation->status() == 0)
+                                                <a class="cancelReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Cancelled">
+                                                    <i class="fa fa-times text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($reservation->status() != 2)
+                                                <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Delete">
+                                                    <i class="zmdi zmdi-delete text-white"></i>
+                                                </a>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>

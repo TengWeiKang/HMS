@@ -44,11 +44,23 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach ($reservation->rooms as $room)
+                                    <tr>
+                                        <td class="align-middle">{{ $room->room_id }} - {{ $room->name }}<br>({{ $reservation->start_date->format("d M Y") }} - {{ $reservation->end_date->format("d M Y") }})</td>
+                                        <td class="align-middle">RM {{ number_format($room->type->price, 2) }}</td>
+                                        <td class="align-middle">{{ $reservation->dateDifference() }}</td>
+                                        <td class="align-middle">RM {{ number_format($room->type->price * $reservation->dateDifference(), 2) }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <tbody>
                                 <tr>
-                                    <td class="align-middle">{{ $reservation->room->room_id }} - {{ $reservation->room->name }}<br>({{ $reservation->start_date->format("d M Y") }} - {{ $reservation->end_date->format("d M Y") }})</td>
-                                    <td class="align-middle">RM {{ number_format($reservation->room->type->price, 2) }}</td>
-                                    <td class="align-middle">{{ $reservation->dateDifference() }}</td>
-                                    <td class="align-middle">RM {{ number_format($reservation->bookingPrice(), 2) }}</td>
+                                    <td width="80%" class="text-right">Booking Price:</td>
+                                    <td>RM {{ number_format($payment->bookingPrice(), 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -193,6 +205,16 @@
 @push("script")
     <script>
         $(document).ready(function () {
+            function thousandFormat(number) {
+                number = number.toFixed(2);
+                var parts = number.toString().split(".", 2);
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+                if (!parts[1]) {
+                    parts[1] = "00";
+                }
+                return parts.join(".");
+            }
             function updatePrices() {
                 let price = parseFloat("{{ $reservation->finalPrices() }}");
                 let discount = $("#discount").val();
@@ -211,7 +233,7 @@
 					}
 				}
                 let discountedPrice = price * ((100 - discount) / 100);
-                $("#price")[0].innerHTML = discountedPrice.toFixed(2);
+                $("#price")[0].innerHTML = thousandFormat(discountedPrice);
 
                 $charges = $("input[name='chargePrices[]']");
                 let deposit = $("input[name='deposit']").val();
@@ -228,7 +250,7 @@
                     chargePrices += parseFloat(chargePrice);
                 });
                 let totalPrice = discountedPrice + chargePrices - deposit;
-                $("#finalPrice, #total-payment").html(totalPrice.toFixed(2));
+                $("#finalPrice, #total-payment").html(thousandFormat(totalPrice));
             }
 
             function bindListener() {

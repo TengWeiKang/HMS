@@ -21,7 +21,7 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations = Reservation::with("rooms", "customer", "room.reservations")->orderBy("created_at", "DESC")->get();
+        $reservations = Reservation::with("rooms", "customer", "rooms.reservations")->orderBy("created_at", "DESC")->get();
         return view('dashboard/reservation/index', ["reservations" => $reservations]);
     }
 
@@ -34,12 +34,12 @@ class ReservationController extends Controller
     {
         $roomID = $request->roomID;
         $reservations = Room::find($roomID)->reservations;
-        $reservations = $reservations->filter(function ($value, $key) {
+        $reservations = $reservations->filter(function ($value) {
             return $value->status == 1;
         });
         if ($request->has("ignoreID")) {
             $ignoreID = $request->ignoreID;
-            $reservations = $reservations->filter(function ($value, $key) use ($ignoreID) {
+            $reservations = $reservations->filter(function ($value) use ($ignoreID) {
                 return $value->id != $ignoreID;
             });
         }
@@ -109,6 +109,9 @@ class ReservationController extends Controller
                     return false;
                 }
                 if ($request->checkIn == "true") {
+                    if ($room->reservedBy() != null && $request->has("ignoreID") && $room->reservedBy()->id == $request->ignoreID) {
+                        return true;
+                    }
                     if (!in_array($room->status(), [0, 1])) {
                         return false;
                     }
@@ -178,16 +181,20 @@ class ReservationController extends Controller
         ]);
         $validator->validate();
         $validator->after(function ($validator) use ($request) {
-            $count = Reservation::with("rooms")->where("room_id", $request->room)
-            ->where(function ($query) use ($request) {
-                $query->where("start_date", "<=", $request->startDate)
-                    ->where("end_date", ">=", $request->startDate)
-                    ->orWhere("start_date", "<=", $request->endDate)
-                    ->where("end_date", ">=", $request->endDate)
-                    ->orWhere("start_date", ">=", $request->startDate)
-                    ->where("end_date", "<=", $request->endDate);
+            $conflicts = Reservation::with(["rooms" => function ($query) use ($request) {
+                $query->whereIn("room.id", $request->room);
+            }])->where("status", 1)
+                ->where(function ($query) use ($request) {
+                    $query->where("start_date", "<=", $request->startDate)
+                        ->where("end_date", ">=", $request->startDate)
+                        ->orWhere("start_date", "<=", $request->endDate)
+                        ->where("end_date", ">=", $request->endDate)
+                        ->orWhere("start_date", ">=", $request->startDate)
+                        ->where("end_date", "<=", $request->endDate);
                 }
-            )->count();
+            )->get();
+            $count = $conflicts->pluck("rooms")->flatten()->count();
+
             if ($count > 0) {
                 $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
             }
@@ -217,18 +224,15 @@ class ReservationController extends Controller
             $customer->save();
         }
         $error = "";
-        $rooms = [];
-        foreach ($request->room as $roomID) {
-            $temp = ["room_id" => $roomID, "status" => in_array($roomID, $request->checkIn)];
-            array_push($rooms, $temp);
-        }
+        
         $reservation = Reservation::create([
+            "deposit" => $request->deposit,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
             "customer_id" => $customerID,
             "check_in" => ($request->checkIn ? Carbon::now() : null)
         ]);
-        $reservation->rooms->attach($rooms);
+        $reservation->rooms()->attach($request->room);
         if ($error == "") {
             return redirect()->route('dashboard.reservation.create')->with("message", "New Reservation Created Successfully");
         }
@@ -245,7 +249,7 @@ class ReservationController extends Controller
      */
     public function show(Reservation $reservation)
     {
-        $reservation->load("room", "customer", "services", "payment");
+        $reservation->load("rooms", "customer", "services", "payment", "rooms.reservations", "rooms.type");
         return view('dashboard/reservation/view', ["reservation" => $reservation]);
     }
 
@@ -257,8 +261,8 @@ class ReservationController extends Controller
      */
     public function edit(Reservation $reservation)
     {
-        $reservation->load("room", "customer");
-        $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
+        $reservation->load("rooms", "customer", "rooms.type", "rooms.reservations");
+        $roomTypes = RoomType::with("rooms")->get();
         $customers = Customer::all();
         return view('dashboard/reservation/edit-form', ["roomTypes" => $roomTypes, "customers" => $customers, "reservation" => $reservation]);
     }
@@ -273,17 +277,18 @@ class ReservationController extends Controller
     public function update(Request $request, Reservation $reservation)
     {
         $validator = Validator::make($request->all(), [
-            "room" => "required",
             "passport" => "required",
             "firstName" => "required",
             "lastName" => "required",
             "email" => "required|email",
             "phone" => "required|regex:/^(\+6)?01[0-46-9]-[0-9]{7,8}$/|max:14",
             "startDate" => "required|date",
-            "endDate" => "required|date"
+            "endDate" => "required|date|after_or_equal:startDate"
         ]);
         $validator->after(function ($validator) use ($request, $reservation) {
-            $count = Reservation::where("id", "!=", $reservation->id)->where("room_id", $request->room)->where("status", 1)
+            $conflicts = Reservation::with(["rooms" => function ($query) use ($request) {
+                $query->whereIn("room.id", $request->room);
+            }])->where("id", "!=", $reservation->id)->where("status", 1)
                 ->where(function ($query) use ($request) {
                     $query->where("start_date", "<=", $request->startDate)
                         ->where("end_date", ">=", $request->startDate)
@@ -292,15 +297,11 @@ class ReservationController extends Controller
                         ->orWhere("start_date", ">=", $request->startDate)
                         ->where("end_date", "<=", $request->endDate);
                 }
-            )->count();
+            )->get();
+            $count = $conflicts->pluck("rooms")->flatten()->count();
+
             if ($count > 0) {
                 $validator->errors()->add("dateConflict", "The booking date has conflict with others booking");
-            }
-            if ($request->checkIn) {
-                $room = Room::find($request->room);
-                if ($room->isOccupied() && $room->reservedBy()->isNot($reservation)) {
-                    $validator->errors()->add("reserved", "The room is currently reserved/booked by other customer");
-                }
             }
         });
         $validator->validate();
@@ -328,9 +329,6 @@ class ReservationController extends Controller
             $customer->phone = $request->phone;
             $customer->save();
         }
-        $customerID = (int) $customerID;
-
-        $reservation->room_id = $request->room;
         $reservation->start_date = $request->startDate;
         $reservation->end_date = $request->endDate;
         if ($reservation->check_in == null) {
@@ -341,6 +339,7 @@ class ReservationController extends Controller
         }
         $reservation->customer_id = $customerID;
         $reservation->save();
+        $reservation->rooms()->sync($request->room);
 
         return redirect()->route('dashboard.reservation.edit', ["reservation" => $reservation])->with("message", "The Reservation Updated Successfully");
     }
@@ -380,7 +379,7 @@ class ReservationController extends Controller
 
     public function checkIn(Reservation $reservation)
     {
-        if (in_array($reservation->room->status(), [0, 1])) {
+        if ($reservation->canCheckIn()) {
             $reservation->check_in = Carbon::now();
             $reservation->save();
         }

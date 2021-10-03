@@ -36,11 +36,23 @@
                             </tr>
                         </thead>
                         <tbody>
+                            @foreach ($payment->rooms as $room)
+                                <tr>
+                                    <td class="align-middle">{{ $room->room_id }} - {{ $room->name }}<br>({{ $payment->start_date->format("d M Y") }} - {{ $payment->end_date->format("d M Y") }})</td>
+                                    <td class="align-middle">RM {{ number_format($room->pivot->price_per_night, 2) }}</td>
+                                    <td class="align-middle">{{ $payment->dateDifference() }}</td>
+                                    <td class="align-middle">RM {{ number_format($room->pivot->price_per_night * $payment->dateDifference(), 2) }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <tbody>
                             <tr>
-                                <td class="align-middle">{{ $payment->room_name }}<br>({{ $payment->start_date->format("d M Y") }} - {{ $payment->end_date->format("d M Y") }})</td>
-                                <td class="align-middle">RM {{ number_format($payment->price_per_night, 2) }}</td>
-                                <td class="align-middle">{{ $payment->dateDifference() }}</td>
-                                <td class="align-middle">RM {{ number_format($payment->bookingPrice(), 2) }}</td>
+                                <td width="80%" class="text-right">Booking Price:</td>
+                                <td>RM {{ number_format($payment->bookingPrice(), 2) }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -89,23 +101,23 @@
                     </table>
                 </div>
                 <div class="card-title mt-5">Deposit</div>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th width="80%">Description</th>
-                                    <th>Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Deposit</td>
-                                    <td>- RM {{ number_format($payment->deposit, 2) }}</td>
-                                    <input type="hidden" name="deposit" value="{{ $payment->deposit }}" readonly>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="80%">Description</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Deposit</td>
+                                <td>- RM {{ number_format($payment->deposit, 2) }}</td>
+                                <input type="hidden" name="deposit" value="{{ $payment->deposit }}" readonly>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 @if ($payment->charges->count())
                 <div class="card-title mt-5">Additional Charges</div>
                 <div class="table-responsive">

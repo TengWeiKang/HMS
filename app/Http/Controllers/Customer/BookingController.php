@@ -25,7 +25,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-        Auth::user()->load("bookings", "bookings.room", "bookings.room.type", "bookings.services");
+        Auth::user()->load("bookings", "bookings.rooms", "bookings.services");
         Auth::user()->bookings = Auth::user()->bookings->filter(function ($value){
             return in_array($value->status(), [0, 1]);
         })->sortByDesc("id");
@@ -38,7 +38,7 @@ class BookingController extends Controller
      */
     public function history()
     {
-        Auth::user()->load("bookings", "bookings.room", "bookings.room.type", "bookings.services", "bookings.payment");
+        Auth::user()->load("bookings", "bookings.rooms", "bookings.services", "bookings.payment");
         Auth::user()->bookings = Auth::user()->bookings->filter(function ($value){
             return $value->status() == 2;
         })->sortByDesc("id");
@@ -59,17 +59,22 @@ class BookingController extends Controller
      */
     public function create(RoomType $roomType, $singleBed, $doubleBed)
     {
+        $roomType->load("facilities");
         if (request()->has(["startDate", "endDate"])) {
             $startDate = request()->startDate;
             $endDate = request()->endDate;
             $rooms = $this->roomFilterAvailable($roomType, $singleBed, $doubleBed, $startDate, $endDate);
+            $count = $rooms->count();
+            if ($count <= 0) {
+                return redirect()->back();
+            }
             return view("customer.booking.create-form", [
                 "roomType" => $roomType,
                 "singleBed" => $singleBed,
                 "doubleBed" => $doubleBed,
                 "startDate" => $startDate,
                 "endDate" => $endDate,
-                "count" => $rooms->count()
+                "count" => $count
             ]);
         }
         return abort(404);
@@ -121,19 +126,29 @@ class BookingController extends Controller
         $startDate = $request->startDate;
         $endDate = $request->endDate;
         $rooms = $this->roomFilterAvailable($roomType, $singleBed, $doubleBed, $startDate, $endDate);
-        $room = $rooms[0];
+        $numberOfRooms = $request->numberOfRooms;
+        if ($request->numberOfRooms > $rooms->count()) {
+            return redirect()->route("customer.booking.create", [
+                "roomType" => $roomType,
+                "singleBed" => $singleBed,
+                "doubleBed" => $doubleBed,
+                "startDate" => $startDate,
+                "endDate" => $endDate]
+            )->withInput()->with("error", "The number of room is not enough");
+        }
+        $rooms->take($numberOfRooms);
         $user = Auth::user();
         $user->first_name = $request->firstName;
         $user->last_name = $request->lastName;
         $user->phone = $request->phone;
         $user->save();
         $booking = Reservation::create([
-            "room_id" => $room->id,
             "deposit" => $request->deposit,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
             "customer_id" => $user->id,
         ]);
+        $booking->rooms()->attach($rooms->pluck("id"));
         return redirect()->route('customer.booking.view', ["booking" => $booking]);
     }
 
@@ -145,7 +160,7 @@ class BookingController extends Controller
      */
     public function show(Reservation $booking)
     {
-        $booking->load("room", "services", "payment");
+        $booking->load("rooms", "services", "payment");
         return view("customer.booking.view", ["booking" => $booking]);
     }
 
@@ -157,7 +172,7 @@ class BookingController extends Controller
      */
     public function edit(Reservation $booking)
     {
-        $booking->load("room", "room.type", "room.type.facilities");
+        $booking->load("rooms", "room.type", "room.type.facilities");
         return view("customer.booking.edit-form", ["booking" => $booking]);
     }
 

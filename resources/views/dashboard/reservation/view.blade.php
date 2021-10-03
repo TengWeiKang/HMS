@@ -31,8 +31,12 @@
                                 <table class="table table-hover">
                                     <tbody>
                                         <tr>
-                                            <td width="20%">Room:</td>
-                                            <td><a href="{{ route("dashboard.room.view", ["room" => $reservation->room]) }}" style="color:blue; text-decoration: underline">{{ $reservation->room->room_id . " - " . $reservation->room->name}}</a> <span style="color: {{ $reservation->room->statusColor() }}">({{ $reservation->room->statusName(false) }})</span></td>
+                                            <td width="20%" style="vertical-align: middle">Room:</td>
+                                            <td>
+                                                @foreach ($reservation->rooms as $room)
+                                                    <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" style="color:blue; text-decoration: underline">{{ $room->room_id . " - " . $room->name}}</a> <span style="color: {{ $room->statusColor() }}">({{ $room->statusName(false) }})</span><br>
+                                                @endforeach
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Customer:</td>
@@ -81,6 +85,10 @@
                                         </tr>
                                         @endif
                                         <tr>
+                                            <td>Deposit:</td>
+                                            <td>RM {{ number_format($reservation->deposit, 2) }}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Total Payment:</td>
                                             <td>RM {{ number_format($reservation->finalPrices(), 2) }}
                                                 @if ($reservation->payment != null)
@@ -126,7 +134,7 @@
                                     <tfoot>
                                         <tr>
                                             <td colspan="4" class="text-right">Total Price:</td>
-                                            <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
+                                            <td colspan="2">RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
                                         </tr>
                                     </tfoot>
                                     @endif
@@ -143,40 +151,40 @@
         <div class="card">
             <div class="card-body">
                 <div class="row">
-                    @if ($reservation->status() == 0 && in_array($reservation->room->status(), [0, 1]) && $reservation->canCheckIn())
-                    <div class="col-2">
-                        <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                            Check in
-                        </a>
-                    </div>
+                    @if ($reservation->canCheckIn())
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Check in
+                            </a>
+                        </div>
                     @endif
                     @if (in_array($reservation->status(), [0, 1]))
-                    <div class="col-2">
-                        <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                            Edit
-                        </a>
-                    </div>
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.edit", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Edit
+                            </a>
+                        </div>
                     @endif
                     @if ($reservation->status() == 1)
-                    <div class="col-2">
-                        <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
-                            Add Service
-                        </a>
-                    </div>
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.reservation.service", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Add Service
+                            </a>
+                        </div>
                     @endif
                     @if ($reservation->status() != 2)
-                    <div class="col-2">
-                        <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
-                            Delete
-                        </a>
-                    </div>
+                        <div class="col-2">
+                            <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
+                                Delete
+                            </a>
+                        </div>
                     @endif
                     @if ($reservation->status() == 0)
-                    <div class="col-2">
-                        <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
-                            Cancel
-                        </a>
-                    </div>
+                        <div class="col-2">
+                            <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
+                                Cancel
+                            </a>
+                        </div>
                     @endif
                 </div>
             </div>
@@ -189,7 +197,6 @@
 @push('script')
     <script>
         $(document).ready(function () {
-            $("#table").DataTable();
             $(".deleteReservation").on("click", function () {
                 Swal.fire({
                     title: "Delete Room",

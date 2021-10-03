@@ -16,8 +16,6 @@ class CreatePaymentTable extends Migration
         Schema::create('payment', function (Blueprint $table) {
             $table->id();
             $table->integer("reservation_id")->index();
-            $table->string("room_name");
-            $table->double("price_per_night");
             $table->date("start_date");
             $table->date("end_date");
             $table->double("discount");

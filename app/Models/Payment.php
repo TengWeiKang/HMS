@@ -19,8 +19,6 @@ class Payment extends Model
 
     protected $fillable = [
         'reservation_id',
-        'room_name',
-        'price_per_night',
         'start_date',
         'end_date',
         'discount',
@@ -43,6 +41,16 @@ class Payment extends Model
     }
 
     /**
+     * The rooms that belong to the Payment
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function rooms()
+    {
+        return $this->belongsToMany(Room::class, "payment_room", "payment_id", "room_id")->withPivot("price_per_night");
+    }
+
+    /**
      * Get all of the items for the Payment
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -62,7 +70,9 @@ class Payment extends Model
     }
 
     public function bookingPrice() {
-        return $this->dateDifference() * $this->price_per_night;
+        return $this->dateDifference() * $this->rooms->sum(function ($room) {
+            return $room->pivot->price_per_night;
+        });
     }
 
     public function totalChargesPrice() {

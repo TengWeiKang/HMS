@@ -37,8 +37,8 @@
                                 <table class="table table-hover">
                                     <tbody>
                                         <tr>
-                                            <td width="20%">Room Type:</td>
-                                            <td><a href="{{ route("customer.room.view", ["roomType" => $booking->room->type, "singleBed" => $booking->room->single_bed, "doubleBed" => $booking->room->double_bed]) }}" style="color:blue; text-decoration: underline">{{ $booking->room->type->name}}</a></td>
+                                            <td width="20%"># of Rooms:</td>
+                                            <td>{{ $booking->rooms->count() }}</td>
                                         </tr>
                                         <tr>
                                             <td>Arrival Date:</td>
@@ -132,7 +132,7 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="4" class="text-right">Total Price:</td>
-                                                <td>RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
+                                                <td colspan="2">RM {{ number_format($booking->totalServicePrices(), 2) }}</td>
                                             </tr>
                                         </tfoot>
                                     @endif
