@@ -34,8 +34,8 @@ class AnalysisController extends Controller
 
     public function json(Request $request) {
         $json = [];
-        $payments = Payment::with("items", "charges", "reservation", "reservation.room", "items.service")->get();
-        $paymentItems = PaymentItem::with(["payment:id,discount,payment_at,reservation_id", "payment.reservation:id,room_id", "payment.reservation.room:id,room_type", "service:id,name"])->get();
+        $payments = Payment::with("items", "charges", "reservation", "rooms", "items.service")->get();
+        $paymentItems = PaymentItem::with(["payment", "payment.reservation", "payment.rooms", "service"])->get();
         $reservations = Reservation::with("rooms")->where("status", 1)->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
@@ -50,7 +50,10 @@ class AnalysisController extends Controller
         $json["bookings"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["services"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["charges"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        $reservations = Reservation::with("room")->get()->groupBy(function($reservation) {
+        $reservations = Reservation::with("rooms")->where("status", 0)->get()
+            ->filter(function ($reservation) use ($year) {
+                return $reservation->created_at->format("Y") == $year;
+            })->groupBy(function($reservation) {
             return $reservation->created_at->format("Y-m");
         });
         $payments = $this->paymentsFilterByYear($payments, $year);
