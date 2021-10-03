@@ -60,7 +60,7 @@
                             <tbody>
                                 <tr>
                                     <td width="80%" class="text-right">Booking Price:</td>
-                                    <td>RM {{ number_format($payment->bookingPrice(), 2) }}</td>
+                                    <td>RM {{ number_format($reservation->bookingPrice(), 2) }}</td>
                                 </tr>
                             </tbody>
                         </table>
