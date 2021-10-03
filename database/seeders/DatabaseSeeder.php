@@ -156,9 +156,27 @@ class DatabaseSeeder extends Seeder
             "room_id" => "R105",
             "name" => "Room Name 5",
             "room_type" => $roomType1->id,
-            "single_bed" => 0,
-            "double_bed" => 2,
+            "single_bed" => 1,
+            "double_bed" => 1,
             "status" => 2
+        ]);
+
+        Room::create([
+            "room_id" => "R106",
+            "name" => "Room Name 6",
+            "room_type" => $roomType1->id,
+            "single_bed" => 1,
+            "double_bed" => 2,
+            "status" => 0
+        ]);
+
+        Room::create([
+            "room_id" => "R107",
+            "name" => "Room Name 7",
+            "room_type" => $roomType1->id,
+            "single_bed" => 1,
+            "double_bed" => 2,
+            "status" => 0
         ]);
 
         $service1 = Service::create([
@@ -176,112 +194,135 @@ class DatabaseSeeder extends Seeder
             "price" => 9
         ]);
 
-        // Reservation::create([
-        //     "room_id" => 1,
-        //     "start_date" => Carbon::now()->today()->addDays(3),
-        //     "end_date" => Carbon::now()->today()->addDays(5),
-        //     "customer_id" => 1,
-        // ]);
+        Reservation::create([
+            "start_date" => Carbon::now()->today()->addDays(3),
+            "end_date" => Carbon::now()->today()->addDays(5),
+            "customer_id" => 1,
+            "deposit" => 300,
+        ])->rooms()->attach([1,3,5]);
 
-        // Reservation::create([
-        //     "room_id" => 2,
-        //     "start_date" => Carbon::now()->today(),
-        //     "end_date" => Carbon::now()->today()->addDays(3),
-        //     "customer_id" => 2,
-        // ]);
+        Reservation::create([
+            "start_date" => Carbon::now()->today(),
+            "end_date" => Carbon::now()->today()->addDays(3),
+            "customer_id" => 2,
+            "deposit" => 300,
+        ])->rooms()->attach([2,6,7]);
 
-        // Reservation::create([
-        //     "room_id" => 2,
-        //     "start_date" => Carbon::now()->today(),
-        //     "end_date" => Carbon::now()->today()->addDays(3),
-        //     "customer_id" => 1,
-        //     "status" => 0
-        // ]);
+        Reservation::create([
+            "start_date" => Carbon::now()->today(),
+            "end_date" => Carbon::now()->today()->addDays(3),
+            "customer_id" => 1,
+            "status" => 0,
+            "deposit" => 400,
+        ])->rooms()->attach([1,2,6,7]);
 
-        // Reservation::create([
-        //     "room_id" => 4,
-        //     "start_date" => Carbon::now()->today()->subDay(2),
-        //     "end_date" => Carbon::now()->today()->subDay(),
-        //     "customer_id" => 2,
-        //     "check_in" => Carbon::now()
-        // ]);
+        Reservation::create([
+            "start_date" => Carbon::now()->today()->subDay(2),
+            "end_date" => Carbon::now()->today()->subDay(),
+            "customer_id" => 1,
+            "check_in" => Carbon::now(),
+            "deposit" => 300,
+        ])->rooms()->attach([1,3,5]);
 
-        // Reservation::create([
-        //     "room_id" => 2,
-        //     "start_date" => Carbon::now()->today()->subDay(2),
-        //     "end_date" => Carbon::now()->today()->subDay(),
-        //     "customer_id" => 2,
-        //     "check_in" => Carbon::now()
-        // ])->services()->attach([
-        //     ["service_id" => 2, "quantity" => 3],
-        //     ["service_id" => 3, "quantity" => 2],
-        // ]);
+        $reservation = Reservation::create([
+            "start_date" => Carbon::now()->today()->subDay(2),
+            "end_date" => Carbon::now()->today()->subDay(),
+            "customer_id" => 2,
+            "check_in" => Carbon::now()->today()->subDay(2),
+            "check_out" => Carbon::now()->today(),
+            "deposit" => 100,
+        ]);
+        $reservation->rooms()->attach([4]);
+        $reservation->services()->attach([
+            ["service_id" => $service2->id, "quantity" => 3, "created_at" => Carbon::now()->subDay(2)],
+            ["service_id" => $service3->id, "quantity" => 2, "created_at" => Carbon::now()->subDay(2)],
+        ]);
 
-        // $reservation = Reservation::create([
-        //     "room_id" => 1,
-        //     "start_date" => Carbon::now()->today()->subDays(5),
-        //     "end_date" => Carbon::now()->today()->subDays(2),
-        //     "customer_id" => 1,
-        //     "check_in" => Carbon::now()->subDays(7),
-        //     "check_out" => Carbon::now()
-        // ]);
-        // $reservation->services()->attach([
-        //     ["service_id" => 1, "quantity" => 5, "created_at" => Carbon::now()->subDay()],
-        //     ["service_id" => 3, "quantity" => 10, "created_at" => Carbon::now()->subDay()],
-        //     ["service_id" => 1, "quantity" => 5],
-        //     ["service_id" => 2, "quantity" => 7],
-        // ]);
+        $payment = Payment::create([
+            "reservation_id" => $reservation->id,
+            "start_date" => $reservation->start_date,
+            "end_date" => $reservation->end_date,
+            "payment_at" => $reservation->end_date->addDays(),
+            "discount" => 20,
+            "deposit" => $reservation->deposit,
+        ]);
+        $payment->rooms()->attach($reservation->rooms->mapWithKeys(function ($room) {
+            return [$room->id => ["price_per_night" => $room->type->price]];
+        }));
+        $payment->items()->createMany($reservation->services->map(function ($service) {
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+        }));
+        $payment->charges()->createMany([
+            ["description" => "late charge", "price" => 20.5],
+            ["description" => "another charges", "price" => 40],
+        ]);
+        
+        $reservation2 = Reservation::create([
+            "start_date" => Carbon::now()->today()->subDays(5),
+            "end_date" => Carbon::now()->today()->subDays(2),
+            "customer_id" => 1,
+            "check_in" => Carbon::now()->subDays(5),
+            "check_out" => Carbon::now()->subDays(1),
+            "deposit" => 300,
+        ]);
+        $reservation2->rooms()->attach([2,6,7]);
+        $reservation2->services()->attach([
+            ["service_id" => $service1->id, "quantity" => 5, "created_at" => Carbon::now()->subDay(4)],
+            ["service_id" => $service3->id, "quantity" => 10, "created_at" => Carbon::now()->subDay(4)],
+            ["service_id" => $service1->id, "quantity" => 5, "created_at" => Carbon::now()->subDay(2)],
+            ["service_id" => $service2->id, "quantity" => 7, "created_at" => Carbon::now()->subDay(2)],
+        ]);
 
-        // $payment = Payment::create([
-        //     "reservation_id" => $reservation->id,
-        //     "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
-        //     "price_per_night" => $reservation->room->type->price,
-        //     "start_date" => $reservation->start_date,
-        //     "end_date" => $reservation->end_date,
-        //     "payment_at" => Carbon::now()->subDays(5),
-        //     "discount" => 20,
-        // ]);
-        // $payment->items()->createMany([
-        //     ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price, "purchase_at" => Carbon::now()->subDay()],
-        //     ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 10, "unit_price" => $service3->price, "purchase_at" => Carbon::now()->subDay()],
-        //     ["service_id" => $service1->id, "service_name" => $service1->name, "quantity" => 5, "unit_price" => $service1->price, "purchase_at" => Carbon::now()],
-        //     ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 7, "unit_price" => $service2->price, "purchase_at" => Carbon::now()],
-        // ]);
-        // $payment->charges()->createMany([
-        //     ["description" => "late charge", "price" => 20.5],
-        //     ["description" => "another charges", "price" => 40],
-        // ]);
+        $payment2 = Payment::create([
+            "reservation_id" => $reservation2->id,
+            "start_date" => $reservation2->start_date,
+            "end_date" => $reservation2->end_date,
+            "payment_at" => $reservation2->end_date->addDays(),
+            "discount" => 20,
+            "deposit" => $reservation2->deposit,
+        ]);
+        $payment2->rooms()->attach($reservation2->rooms->mapWithKeys(function ($room) {
+            return [$room->id => ["price_per_night" => $room->type->price]];
+        }));
+        $payment2->items()->createMany($reservation2->services->map(function ($service) {
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+        }));
+        $payment2->charges()->createMany([
+            ["description" => "late charge", "price" => 20.5],
+            ["description" => "another charges", "price" => 30],
+        ]);
 
-        // $reservation2 = Reservation::create([
-        //     "room_id" => 2,
-        //     "start_date" => Carbon::now()->today()->subDay(34),
-        //     "end_date" => Carbon::now()->today()->subDay(31),
-        //     "customer_id" => 1,
-        //     "check_in" => Carbon::now()->subDay(34),
-        //     "check_out" => Carbon::now()->subDay(31)
-        // ]);
+        $reservation3 = Reservation::create([
+            "start_date" => Carbon::now()->today()->subDay(34),
+            "end_date" => Carbon::now()->today()->subDay(31),
+            "customer_id" => 1,
+            "check_in" => Carbon::now()->subDay(34),
+            "check_out" => Carbon::now()->subDay(30),
+            "deposit" => 400
+        ]);
+        $reservation3->rooms()->attach([1,3,4,5]);
+        $reservation3->services()->attach([
+            ["service_id" => $service2->id, "quantity" => 3, "created_at" => Carbon::now()->subDay(34)],
+            ["service_id" => $service3->id, "quantity" => 2, "created_at" => Carbon::now()->subDay(33)],
+        ]);
 
-        // $reservation2->services()->attach([
-        //     ["service_id" => 2, "quantity" => 3, "created_at" => Carbon::now()->subDay(34)],
-        //     ["service_id" => 3, "quantity" => 2, "created_at" => Carbon::now()->subDay(33)],
-        // ]);
-
-        // $payment2 = Payment::create([
-        //     "reservation_id" => $reservation2->id,
-        //     "room_name" => $reservation2->room->room_id . " - " . $reservation2->room->name,
-        //     "price_per_night" => $reservation2->room->type->price,
-        //     "start_date" => $reservation2->start_date,
-        //     "end_date" => $reservation2->end_date,
-        //     "payment_at" => Carbon::now()->subDays(31),
-        //     "discount" => 20,
-        // ]);
-        // $payment2->items()->createMany([
-        //     ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 3, "unit_price" => $service2->price, "purchase_at" => Carbon::now()->subDay(34)],
-        //     ["service_id" => $service3->id, "service_name" => $service3->name, "quantity" => 5, "unit_price" => $service3->price, "purchase_at" => Carbon::now()->subDay(33)],
-        // ]);
-        // $payment2->charges()->createMany([
-        //     ["description" => "late charge", "price" => 20.5],
-        //     ["description" => "another charges", "price" => 40],
-        // ]);
+        $payment3 = Payment::create([
+            "reservation_id" => $reservation3->id,
+            "start_date" => $reservation3->start_date,
+            "end_date" => $reservation3->end_date,
+            "payment_at" => $reservation3->end_date->addDays(),
+            "discount" => 20,
+            "deposit" => $reservation3->deposit,
+        ]);
+        $payment3->rooms()->attach($reservation3->rooms->mapWithKeys(function ($room) {
+            return [$room->id => ["price_per_night" => $room->type->price]];
+        }));
+        $payment3->items()->createMany($reservation3->services->map(function ($service) {
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+        }));
+        $payment3->charges()->createMany([
+            ["description" => "late charge", "price" => 20.5],
+            ["description" => "another charges", "price" => 30],
+        ]);
     }
 }

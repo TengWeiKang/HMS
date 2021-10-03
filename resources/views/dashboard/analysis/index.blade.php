@@ -21,7 +21,7 @@
 <div class="row mt-3">
     <div class="col-12">
         <div class="card">
-            <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-header"><span class="mr-2">Revenue</span><span class="badge badge-primary mx-1">Year</span></div>
             <div class="card-body">
                 <div class="revenueYearChart">
                     <canvas id="revenueYearChart"></canvas>
@@ -59,7 +59,7 @@
 <div class="row">
     <div class="col-6">
         <div class="card">
-            <div class="card-header"><span class="mr-2">Room Service Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span><span class="badge badge-primary mx-1">Room Type</span></div>
+            <div class="card-header"><span class="mr-2">Room Service Revenue</span><span class="badge badge-primary mx-1">Year</span><span class="badge badge-primary mx-1">Month</span></div>
             <div class="card-body">
                 <div class="roomServiceChart">
                     <canvas id="roomServiceChart"></canvas>
@@ -772,7 +772,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "POST",
+                type: "GET",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
@@ -793,14 +793,14 @@
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
                         generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         generateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        generateAverageRoomRateChart(bookings, occupiedRooms, year, roomType);
+                        generateAverageRoomRateChart(response["averageRoomRateChart"]["roomRevenue"], occupiedRooms, year, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
                         updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         updateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        updateAverageRoomRateChart(bookings, occupiedRooms, year, roomType);
+                        updateAverageRoomRateChart(response["averageRoomRateChart"]["roomRevenue"], occupiedRooms, year, roomType);
                     }
                 }
             });

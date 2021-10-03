@@ -34,7 +34,7 @@ class AnalysisController extends Controller
 
     public function json(Request $request) {
         $json = [];
-        $payments = Payment::with("items", "charges", "reservation", "rooms", "items.service")->get();
+        $payments = Payment::with("items", "charges", "reservation", "rooms", "items.service", "rooms.type")->get();
         $paymentItems = PaymentItem::with(["payment", "payment.reservation", "payment.rooms", "service"])->get();
         $reservations = Reservation::with("rooms")->where("status", 1)->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
@@ -43,6 +43,7 @@ class AnalysisController extends Controller
         $json["roomStatusChart"] = $this->roomStatusChart($rooms, $request->roomType);
         $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month, $request->roomType);
         $json["occupancyRateChart"] = $this->occupancyRateChart($reservations, $rooms, $request->year, $request->roomType);
+        $json["averageRoomRateChart"] = $this->roomRateChart($payments, $request->year, $request->roomType);
         return $json;
     }
 
@@ -57,7 +58,7 @@ class AnalysisController extends Controller
             return $reservation->created_at->format("Y-m");
         });
         $payments = $this->paymentsFilterByYear($payments, $year);
-        $payments = $this->paymentsFilterByRoomType($payments, $roomType);
+        // $payments = $this->paymentsFilterByRoomType($payments, $roomType);
         $bookingRevenues = $this->paymentsGroupByMonth($payments);
         foreach ($bookingRevenues as $key => $value) {
             $month = (int) explode("-", $key)[1] - 1;
@@ -100,7 +101,7 @@ class AnalysisController extends Controller
         $json["labels"] = $services;
         $json["items"] = [];
         $paymentItems = $this->paymentItemsFilterByYear($paymentItems, $year);
-        $paymentItems = $this->paymentItemsFilterByRoomType($paymentItems, $roomType);
+        // $paymentItems = $this->paymentItemsFilterByRoomType($paymentItems, $roomType);
         $paymentItems = $this->paymentItemsGroupByMonthAndItem($paymentItems);
         foreach ($services as $service) {
             $key = $year . "-" . $month;
@@ -125,19 +126,35 @@ class AnalysisController extends Controller
                     continue;
                 }
                 if ($reservation->start_date->lt($monthStart) && $reservation->end_date->gt($monthEnd)) {
-                    $json["occupied"][$month - 1] += $daysInMonth;
+                    $json["occupied"][$month - 1] += $daysInMonth * $reservation->rooms->count();
                 }
                 else if ($reservation->start_date->lt($monthStart)) {
-                    $json["occupied"][$month - 1] += $reservation->end_date->day;
+                    $json["occupied"][$month - 1] += $reservation->end_date->day * $reservation->rooms->count();
                 }
                 else if ($reservation->end_date->gt($monthEnd)) {
-                    $json["occupied"][$month - 1] += $monthEnd->diffInDays($reservation->start_date) + 1;
+                    $json["occupied"][$month - 1] += ($monthEnd->diffInDays($reservation->start_date) + 1) * $reservation->rooms->count();
                 }
                 else {
-                    $json["occupied"][$month - 1] += $reservation->dateDifference();
+                    $json["occupied"][$month - 1] += $reservation->dateDifference() * $reservation->rooms->count();
                 }
             }
         });
+        return $json;
+    }
+
+    private function roomRateChart($payments, $year, $roomType) {
+        $payments = $this->paymentsFilterByYear($payments, $year);
+        $payments = $this->paymentsFilterByRoomType($payments, $roomType);
+        $payments = $this->paymentsGroupByMonth($payments);
+        $json["roomRevenue"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        foreach ($payments as $key => $items) {
+            $month = (int) explode("-", $key)[1] - 1;
+            $json["roomRevenue"][$month] = $items->sum(function ($payment) {
+                return $payment->rooms->sum(function ($room) use ($payment) {
+                    return $room->pivot->price_per_night * (100 - $payment->discount) / 100 * $payment->dateDifference();
+                });
+            });
+        }
         return $json;
     }
 
@@ -155,8 +172,11 @@ class AnalysisController extends Controller
 
     private function paymentsFilterByRoomType($payments, $roomType) {
         if (!empty($roomType)) {
-            $payments = $payments->filter(function ($value) use ($roomType) {
-                return $value->reservation->room->room_type == $roomType;
+            $payments = $payments->filter(function ($payment) use ($roomType) {
+                $payment->rooms = $payment->rooms->filter(function ($room) use ($roomType) {
+                    return $room->room_type == $roomType;
+                });
+                return $payment->rooms->count();
             });
         }
         return $payments;
@@ -201,7 +221,10 @@ class AnalysisController extends Controller
     private function reservationsFilterByRoomType($reservations, $roomType) {
         if (!empty($roomType)) {
             $reservations = $reservations->filter(function ($reservation) use ($roomType) {
-                return $reservation->room->room_type == $roomType;
+                $reservation->rooms = $reservation->rooms->filter(function ($room) use ($roomType) {
+                    return $room->room_type == $roomType;
+                });
+                return $reservation->rooms->count() >= 0;
             });
         }
         return $reservations;

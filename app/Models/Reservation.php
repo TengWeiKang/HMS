@@ -43,6 +43,10 @@ class Reservation extends Model
         3 => ["status" => "Cancelled", "color" => "darkgray"],
     ];
 
+    public function id() {
+        return "#" . sprintf("%06d", $this->id);
+    }
+
     /**
      * The rooms that belong to the Reservation
      *
@@ -67,8 +71,14 @@ class Reservation extends Model
         return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity", "created_at");
     }
 
-    public function id() {
-        return "#" . sprintf("%06d", $this->id);
+    /**
+     * Get the payment associated with the Reservation
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function payment()
+    {
+        return $this->hasOne(Payment::class, 'reservation_id');
     }
 
     public function totalServicePrices()
@@ -114,16 +124,6 @@ class Reservation extends Model
 
     public function bookingPrice() {
         return $this->dateDifference() * $this->roomPrice();
-    }
-
-    /**
-     * Get the payment associated with the Reservation
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function payment()
-    {
-        return $this->hasOne(Payment::class, 'reservation_id');
     }
 
     public function canCheckIn() {

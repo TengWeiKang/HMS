@@ -19,7 +19,7 @@ class CreateReservationTable extends Migration
             $table->integer("status")->default(1); // 0 - cancelled, 1 - available
             $table->date("start_date");
             $table->date("end_date");
-            $table->double("deposit")->default(0);
+            $table->double("deposit");
             $table->timestamp("check_in")->nullable();
             $table->timestamp("check_out")->nullable();
             $table->timestamp('created_at')->nullable();

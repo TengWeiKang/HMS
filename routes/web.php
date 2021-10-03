@@ -180,7 +180,7 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
     //data analysis controller
     Route::group(["prefix" => "analysis"], function() {
         Route::get("/", [AnalysisController::class, "index"])->name("dashboard.analysis");
-        Route::post("/json", [AnalysisController::class, "json"])->name("dashboard.analysis.json");
+        Route::get("/json", [AnalysisController::class, "json"])->name("dashboard.analysis.json");
     });
 });
 
