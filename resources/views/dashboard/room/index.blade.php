@@ -87,14 +87,6 @@
                                                 <i class="ti ti-brush text-white"></i>
                                             </a>
                                         @endif
-                                        @if (Auth::guard("employee")->user()->isAccessible("admin"))
-                                            <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
-                                                <i class="zmdi zmdi-edit text-white"></i>
-                                            </a>
-                                            <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer" title="Delete">
-                                                <i class="zmdi zmdi-delete text-white"></i>
-                                            </a>
-                                        @endif
                                         <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
@@ -103,14 +95,22 @@
                                                 <i class="fa fa-user-plus text-white"></i>
                                             </a>
                                         @endif
-                                        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
-                                            <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
-                                                <i class="icon-settings text-white"></i>
-                                            </a>
-                                        @endif
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->reservedBy() != null)
                                             <a href="{{ route("dashboard.payment.create", ["reservation" => $room->reservedBy()]) }}" title="Check Out">
                                                 <i class="zmdi zmdi-check text-white"></i>
+                                            </a>
+                                        @endif
+                                        @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                            <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
+                                                <i class="zmdi zmdi-edit text-white"></i>
+                                            </a>
+                                            <a class="deleteRoom" data-id="{{ $room->id }}" data-name="{{ $room->room_id }}" style="cursor: pointer" title="Delete">
+                                                <i class="zmdi zmdi-delete text-white"></i>
+                                            </a>
+                                        @endif
+                                        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
+                                            <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                <i class="icon-settings text-white"></i>
                                             </a>
                                         @endif
                                     </td>
