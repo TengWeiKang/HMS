@@ -71,7 +71,8 @@ class PaymentController extends Controller
             "price_per_night" => $reservation->room->type->price,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,
-            "discount" => $request->discount
+            "discount" => $request->discount,
+            "deposit" => $request->deposit
         ]);
         $payment->items()->createMany($items);
         $payment->charges()->createMany($charges);

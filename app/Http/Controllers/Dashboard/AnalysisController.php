@@ -50,7 +50,7 @@ class AnalysisController extends Controller
         $json["bookings"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["services"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["charges"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        $reservations = Reservation::with("room")->where("status", 0)->get()->groupBy(function($reservation) {
+        $reservations = Reservation::with("room")->get()->groupBy(function($reservation) {
             return $reservation->created_at->format("Y-m");
         });
         $payments = $this->paymentsFilterByYear($payments, $year);

@@ -223,6 +223,7 @@ class ReservationController extends Controller
         }
         Reservation::create([
             "room_id" => $request->room,
+            "deposit" => $request->deposit,
             "start_date" => $request->startDate,
             "end_date" => $request->endDate,
             "customer_id" => $customerID,

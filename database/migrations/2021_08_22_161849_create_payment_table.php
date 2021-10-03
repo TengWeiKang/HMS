@@ -21,6 +21,7 @@ class CreatePaymentTable extends Migration
             $table->date("start_date");
             $table->date("end_date");
             $table->double("discount");
+            $table->double("deposit");
             $table->timestamp("payment_at");
         });
     }

@@ -92,7 +92,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Deluxe Room",
             "single_bed" => 2,
             "double_bed" => 1,
-            "price" => 50.5,
+            "price" => 300,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room1.jpg"),
             "image_type" => "image/jpg",
         ]);
@@ -102,7 +102,7 @@ class DatabaseSeeder extends Seeder
             "name" => "Superior Room",
             "single_bed" => 1,
             "double_bed" => 2,
-            "price" => 30,
+            "price" => 250,
             "room_image" => file_get_contents("public\\asset\\dashboard\\images\\room2.jpg"),
             "image_type" => "image/jpg",
         ]);
@@ -222,6 +222,7 @@ class DatabaseSeeder extends Seeder
             "start_date" => Carbon::now()->today()->subDays(5),
             "end_date" => Carbon::now()->today()->subDays(2),
             "customer_id" => 1,
+            "deposit" => 100,
             "check_in" => Carbon::now()->subDays(7),
             "check_out" => Carbon::now()
         ]);
@@ -236,6 +237,7 @@ class DatabaseSeeder extends Seeder
             "reservation_id" => $reservation->id,
             "room_name" => $reservation->room->room_id . " - " . $reservation->room->name,
             "price_per_night" => $reservation->room->type->price,
+            "deposit" => $reservation->deposit,
             "start_date" => $reservation->start_date,
             "end_date" => $reservation->end_date,
             "payment_at" => Carbon::now()->subDays(5),
@@ -257,6 +259,7 @@ class DatabaseSeeder extends Seeder
             "start_date" => Carbon::now()->today()->subDay(34),
             "end_date" => Carbon::now()->today()->subDay(31),
             "customer_id" => 1,
+            "deposit" => 100,
             "check_in" => Carbon::now()->subDay(34),
             "check_out" => Carbon::now()->subDay(31)
         ]);
@@ -274,6 +277,7 @@ class DatabaseSeeder extends Seeder
             "end_date" => $reservation2->end_date,
             "payment_at" => Carbon::now()->subDays(31),
             "discount" => 20,
+            "deposit" => $reservation2->deposit,
         ]);
         $payment2->items()->createMany([
             ["service_id" => $service2->id, "service_name" => $service2->name, "quantity" => 3, "unit_price" => $service2->price, "purchase_at" => Carbon::now()->subDay(34)],

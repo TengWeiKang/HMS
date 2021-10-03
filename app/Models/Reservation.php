@@ -36,6 +36,8 @@ class Reservation extends Model
         'deleted_at' => 'datetime',
     ];
 
+    const DEPOSIT = 100;
+
     const STATUS = [
         0 => ["status" => "Waiting for Check-in", "color" => "mediumvioletred"],
         1 => ["status" => "Checked-in", "color" => "orangered"],

@@ -179,6 +179,10 @@
                     <div class="form-group col-12 mt-5">
                         <label class="h5">Booking Price: RM <span id="totalPrice">0.00</span></label>
                     </div>
+                    <div class="form-group col-12 mt-5">
+                        <label class="h5">Booking Price: RM {{ number_format(App\Models\Reservation::DEPOSIT, 2) }}</label>
+                        <input type="hidden" name="deposit" value="{{ App\Models\Reservation::DEPOSIT }}">
+                    </div>
                     <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-light btn-round px-5"><i class="icon-plus"></i> Create</button>
                     </div>
