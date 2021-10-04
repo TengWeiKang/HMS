@@ -125,7 +125,7 @@
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>
                                             @endif
-                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("frontdesk", "admin")))
+                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
                                                 <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                                     <i class="icon-settings text-white"></i>
                                                 </a>
@@ -164,7 +164,7 @@
                                 @forelse ($departures as $room)
                                     <tr>
                                         <td>{{ $loop->index + 1 }}</td>
-                                        <td><a class="hyperlink" href="{{ route("dashboard.room.view", ["room" => $room]) }}">{{ $room->room_id }}</a></td>
+                                        <td>{{ $room->room_id }}</td>
                                         <td>{{ $room->name }}</td>
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
