@@ -250,7 +250,7 @@ class DatabaseSeeder extends Seeder
             return [$room->id => ["price_per_night" => $room->type->price]];
         }));
         $payment->items()->createMany($reservation->services->map(function ($service) {
-            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => $service->pivot->quantity, "unit_price" => $service->price, "purchase_at" => $service->created_at];
         }));
         $payment->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],
@@ -285,7 +285,7 @@ class DatabaseSeeder extends Seeder
             return [$room->id => ["price_per_night" => $room->type->price]];
         }));
         $payment2->items()->createMany($reservation2->services->map(function ($service) {
-            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => $service->pivot->quantity, "unit_price" => $service->price, "purchase_at" => $service->created_at];
         }));
         $payment2->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],
@@ -318,7 +318,7 @@ class DatabaseSeeder extends Seeder
             return [$room->id => ["price_per_night" => $room->type->price]];
         }));
         $payment3->items()->createMany($reservation3->services->map(function ($service) {
-            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => 5, "unit_price" => $service->price, "purchase_at" => $service->created_at];
+            return ["service_id" => $service->id, "service_name" => $service->name, "quantity" => $service->pivot->quantity, "unit_price" => $service->price, "purchase_at" => $service->created_at];
         }));
         $payment3->charges()->createMany([
             ["description" => "late charge", "price" => 20.5],

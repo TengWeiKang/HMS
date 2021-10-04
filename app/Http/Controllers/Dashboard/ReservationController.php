@@ -158,7 +158,7 @@ class ReservationController extends Controller
         $roomTypes = RoomType::with("rooms", "rooms.reservations")->get();
         $customers = Customer::all();
         if (request()->has("room_id"))
-            $room = Room::with("type")->findOrFail(request()->room_id);
+            $room = Room::with("type")->find(request()->room_id);
         return view('dashboard/reservation/create-form', ["roomTypes" => $roomTypes, "customers" => $customers, "room" => $room ?? null]);
     }
 
@@ -352,6 +352,8 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
+        $reservation->rooms()->detach();
+        $reservation->services()->detach();
         $reservation->delete();
         return response()->json(['success' => "The reservation has been removed"]);
     }

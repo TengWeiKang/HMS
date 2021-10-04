@@ -172,17 +172,17 @@
                             </a>
                         </div>
                     @endif
-                    @if ($reservation->status() != 2)
-                        <div class="col-2">
-                            <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
-                                Delete
-                            </a>
-                        </div>
-                    @endif
                     @if ($reservation->status() == 0)
                         <div class="col-2">
                             <a class="cancelReservation btn btn-primary w-100" style="cursor: pointer">
                                 Cancel
+                            </a>
+                        </div>
+                    @endif
+                    @if ($reservation->status() != 2 || Auth::guard("employee")->user()->isAccessible("admin"))
+                        <div class="col-2">
+                            <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
+                                Delete
                             </a>
                         </div>
                     @endif

@@ -125,6 +125,20 @@
                         <div class="form-group row mx-2">
                             <label for="room">Added Room <span class="text-danger">*</span></label>
                         </div>
+                        @isset($room)
+                            <div class="div-room form-group row mx-2">
+                                <div class="col-lg-10 pl-lg-0">
+                                    <input type="text" class="form-control form-control-rounded" value="{{ $room->room_id . " - " . $room->name . " (" . $room->statusName(false) . ")" }}" readonly>
+                                    <input type="hidden" name="room[]" value="{{ $room->id }}" readonly>
+                                    <div name="price" data-price="{{ $room->type->price }}"></div>
+                                </div>
+                                <div class="col-lg-2 text-center">
+                                    <a class="delete-room-row" style="cursor: pointer; font-size: 20px">
+                                        <i class="zmdi zmdi-delete text-white"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endisset
                     </div>
                     <hr style="border-width: 2px">
                     <div class="form-group row mx-2">
@@ -204,6 +218,7 @@
 <script src="{{ asset("dashboard/plugins/fullcalendar/js/fullcalendar.min.js") }}"></script>
 <script>
     $(document).ready(function() {
+        var initialize = true;
         $('select.form-control#roomType').select2();
         $roomSelect = $('select.form-control#rooms');
         $roomSelect.select2({
@@ -478,7 +493,9 @@
                     $("#startDate")[0].value = startDate.format("YYYY-MM-DD");
                     $("#endDate")[0].value = endDate.format("YYYY-MM-DD");
                     disableCheckIn();
-                    resetRoomInput();
+                    if (!initialize)
+                        resetRoomInput();
+                    initialize = false;
                     $("#calendar").fullCalendar("removeEventSources");
                 }
             },
