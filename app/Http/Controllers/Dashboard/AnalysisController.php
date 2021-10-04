@@ -147,6 +147,7 @@ class AnalysisController extends Controller
         $payments = $this->paymentsFilterByRoomType($payments, $roomType);
         $payments = $this->paymentsGroupByMonth($payments);
         $json["roomRevenue"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $json["roomSold"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         foreach ($payments as $key => $items) {
             $month = (int) explode("-", $key)[1] - 1;
             $json["roomRevenue"][$month] = $items->sum(function ($payment) {
@@ -154,6 +155,29 @@ class AnalysisController extends Controller
                     return $room->pivot->price_per_night * (100 - $payment->discount) / 100 * $payment->dateDifference();
                 });
             });
+            foreach ($items as $payment) {
+                $reservation = $payment->reservation;
+                for ($month = 1; $month <= 12; $month++) {
+                    $daysInMonth = (new Carbon($year . "-" . $month))->daysInMonth;
+                    $monthStart = new Carbon($year . "-" . $month . "-01");
+                    $monthEnd = new Carbon($year . "-" . $month . "-" . $daysInMonth);
+                    if ($reservation->end_date->lt($monthStart) || ($reservation->start_date->gt($monthEnd))) {
+                        continue;
+                    }
+                    if ($reservation->start_date->lt($monthStart) && $reservation->end_date->gt($monthEnd)) {
+                        $json["roomSold"][$month - 1] += $daysInMonth * $payment->rooms->count();
+                    }
+                    else if ($reservation->start_date->lt($monthStart)) {
+                        $json["roomSold"][$month - 1] += $reservation->end_date->day * $payment->rooms->count();
+                    }
+                    else if ($reservation->end_date->gt($monthEnd)) {
+                        $json["roomSold"][$month - 1] += ($monthEnd->diffInDays($reservation->start_date) + 1) * $payment->rooms->count();
+                    }
+                    else {
+                        $json["roomSold"][$month - 1] += $reservation->dateDifference() * $payment->rooms->count();
+                    }
+                }
+            }
         }
         return $json;
     }

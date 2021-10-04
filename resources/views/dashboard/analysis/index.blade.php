@@ -599,8 +599,10 @@
             });
         }
 
-        function generateAverageRoomRateChart(revenues, occupiedRooms, year, roomType) {
-            let averageRoomRate = revenues.map((value, index) => value / occupiedRooms[index] || 0);
+        function generateAverageRoomRateChart(data, year, roomType) {
+            let roomRevenues = data["roomRevenue"];
+            let roomSold = data["roomSold"];
+            let averageRoomRate = roomRevenues.map((value, index) => value / roomSold[index] || 0);
 
             let averageRoomRateCanvas = document.getElementById("averageRoomRateChart").getContext("2d");
             averageRoomRateChart = new Chart(averageRoomRateCanvas, {
@@ -611,8 +613,8 @@
                         {
                             label: 'Average Room Rate',
                             data: averageRoomRate,
-                            revenues: revenues,
-                            occupiedRooms: occupiedRooms,
+                            roomRevenues: roomRevenues,
+                            roomSold: roomSold,
                             backgroundColor: "yellow",
                             borderColor: "yellow",
                             borderWidth: 0,
@@ -643,8 +645,8 @@
                                 let datasetIndex = context.datasetIndex;
                                 let index = context.index;
                                 return [
-                                    "Room Revenues: RM " + constant.datasets[datasetIndex].revenues[index].toFixed(2),
-                                    "Occupied Rooms: " + constant.datasets[datasetIndex].occupiedRooms[index],
+                                    "Room Revenues: RM " + constant.datasets[datasetIndex].roomRevenues[index].toFixed(2),
+                                    "Room Sold: " + constant.datasets[datasetIndex].roomSold[index],
                                     "Average Room Rate: RM " + context.yLabel.toFixed(2)
                                 ]
                             }
@@ -755,12 +757,14 @@
             occupancyRateChart.update();
         }
 
-        function updateAverageRoomRateChart(revenues, occupiedRooms, year, roomType) {
-            let averageRoomRate = revenues.map((value, index) => value / occupiedRooms[index] || 0);
+        function updateAverageRoomRateChart(data, year, roomType) {
+            let roomRevenues = data["roomRevenue"];
+            let roomSold = data["roomSold"];
+            let averageRoomRate = roomRevenues.map((value, index) => value / roomSold[index] || 0);
 
             averageRoomRateChart.data.datasets[0].data = averageRoomRate;
-            averageRoomRateChart.data.datasets[0].occupiedRooms = occupiedRooms;
-            averageRoomRateChart.data.datasets[0].revenues = revenues;
+            averageRoomRateChart.data.datasets[0].roomSold = roomSold;
+            averageRoomRateChart.data.datasets[0].roomRevenues = roomRevenues;
             averageRoomRateChart.options.title.text = "Average Room Rate (ARR) in Year " + year + " (" + roomType + ")",
             averageRoomRateChart.update();
         }
@@ -793,14 +797,14 @@
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
                         generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         generateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        generateAverageRoomRateChart(response["averageRoomRateChart"]["roomRevenue"], occupiedRooms, year, roomType);
+                        generateAverageRoomRateChart(response["averageRoomRateChart"], year, roomType);
                     }
                     else {
                         updateRevenueYearChart(response["revenueYearChart"], year, roomType);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
                         updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
                         updateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
-                        updateAverageRoomRateChart(response["averageRoomRateChart"]["roomRevenue"], occupiedRooms, year, roomType);
+                        updateAverageRoomRateChart(response["averageRoomRateChart"], year, roomType);
                     }
                 }
             });
