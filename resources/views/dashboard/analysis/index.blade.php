@@ -776,7 +776,7 @@
             let roomType = $("#roomType").children("option:selected").html();
             roomType = roomType != "" ? roomType : "All Room Type";
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "{{ route("dashboard.analysis.json") }}",
                 data: {
                     "_token": "{{ csrf_token() }}",
