@@ -9,8 +9,6 @@
 <script src="{{ asset("dashboard/plugins/simplebar/js/simplebar.js") }}"></script>
 <!-- sidebar-menu js -->
 <script src="{{ asset("dashboard/js/sidebar-menu.min.js") }}"></script>
-{{-- <!-- loader scripts -->
-<script src="{{ asset("dashboard/js/jquery.loading-indicator.js") }}"></script> --}}
 <!-- Custom scripts -->
 <script src="{{ asset("dashboard/js/app-script.min.js") }}"></script>
 <!-- Chart js -->

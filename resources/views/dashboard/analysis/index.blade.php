@@ -177,7 +177,6 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 @push("script")
@@ -219,7 +218,7 @@
             return "rgb(" + r + "," + g + "," + b + ")";
         };
 
-        function generateRevenueYearChart(info, year, roomType) {
+        function generateRevenueYearChart(info, year) {
             let bookings = info["bookings"];
             let services = info["services"];
             let charges = info["charges"];
@@ -286,7 +285,7 @@
                     },
                     title: {
                         display: true,
-                        text: "Revenue Chart in Year " + year + " (" + roomType + ")",
+                        text: "Revenue Chart in Year " + year,
                         fontColor: "white",
                     },
                     tooltips: {
@@ -415,7 +414,7 @@
             });
         }
 
-        function generateRoomServiceChart(info, year, month, roomType) {
+        function generateRoomServiceChart(info, year, month) {
             let labels = info["labels"];
             let data = info["items"];
             let colors = []
@@ -445,7 +444,7 @@
                     },
                     title: {
                         display: true,
-                        text: "Room Service Revenue in " + MONTH[month] + " " + year + " (" + roomType + ")",
+                        text: "Room Service Revenue in " + MONTH[month] + " " + year,
                         fontColor: "white",
                     },
                     tooltips: {
@@ -696,7 +695,7 @@
             });
         }
 
-        function updateRevenueYearChart(info, year, roomType) {
+        function updateRevenueYearChart(info, year) {
             let bookings = info["bookings"];
             let services = info["services"];
             let charges = info["charges"];
@@ -713,7 +712,7 @@
             revenueYearChart.data.datasets[1].data = bookings;
             revenueYearChart.data.datasets[2].data = services;
             revenueYearChart.data.datasets[3].data = charges;
-            revenueYearChart.options.title.text = "Revenue Chart in Year " + year + " (" + roomType + ")";
+            revenueYearChart.options.title.text = "Revenue Chart in Year " + year;
             revenueYearChart.update();
         }
 
@@ -723,12 +722,12 @@
             roomStatusChart.update();
         }
 
-        function updateRoomServiceChart(info, year, month, roomType) {
+        function updateRoomServiceChart(info, year, month) {
             let labels = info["labels"];
             let data = info["items"];
             roomServiceChart.data.labels = labels;
             roomServiceChart.data.datasets[0].data = data;
-            roomServiceChart.options.title.text = "Room Service Revenue in " + MONTH[month] + " " + year + " (" + roomType + ")";
+            roomServiceChart.options.title.text = "Room Service Revenue in " + MONTH[month] + " " + year;
             roomServiceChart.options.legend.display = (data.length > 10) ? false: true;
             roomServiceChart.options.plugins.datalabels.display = (data.length > 10 && data.reduce(sum, 0) != 0) ? false: true;
             roomServiceChart.update();
@@ -760,8 +759,7 @@
         function updateAverageRoomRateChart(data, year, roomType) {
             let roomRevenues = data["roomRevenue"];
             let roomSold = data["roomSold"];
-            let averageRoomRate = roomRevenues.map((value, index) => value / roomSold[index] || 0);
-
+            let averageRoomRate = roomRevenues.map((value, index) => value / (roomSold[index] || 1));
             averageRoomRateChart.data.datasets[0].data = averageRoomRate;
             averageRoomRateChart.data.datasets[0].roomSold = roomSold;
             averageRoomRateChart.data.datasets[0].roomRevenues = roomRevenues;
@@ -793,16 +791,16 @@
                     let revenues = bookings.map((value, index) => value + services[index] + charges[index]);
                     let occupiedRooms = response["occupancyRateChart"]["occupied"];
                     if (isInitialize) {
-                        generateRevenueYearChart(response["revenueYearChart"], year, roomType);
+                        generateRevenueYearChart(response["revenueYearChart"], year);
                         generateRoomStatusChart(response["roomStatusChart"], roomType);
-                        generateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
+                        generateRoomServiceChart(response["roomServiceChart"], year, month);
                         generateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
                         generateAverageRoomRateChart(response["averageRoomRateChart"], year, roomType);
                     }
                     else {
-                        updateRevenueYearChart(response["revenueYearChart"], year, roomType);
+                        updateRevenueYearChart(response["revenueYearChart"], year);
                         updateRoomStatusChart(response["roomStatusChart"], roomType);
-                        updateRoomServiceChart(response["roomServiceChart"], year, month, roomType);
+                        updateRoomServiceChart(response["roomServiceChart"], year, month);
                         updateOccupancyRateChart(response["occupancyRateChart"], year, roomType);
                         updateAverageRoomRateChart(response["averageRoomRateChart"], year, roomType);
                     }

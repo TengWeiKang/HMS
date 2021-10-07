@@ -8,5 +8,6 @@
 <script src="{{ asset("customer/vendors/nice-select/js/jquery.nice-select.js") }}"></script>
 <script src="{{ asset("customer/js/stellar.js") }}"></script>
 <script src="{{ asset("customer/vendors/lightbox/simpleLightbox.min.js") }}"></script>
+<script src="{{ asset("customer/vendors/Chart.js/Chart.min.js") }}"></script>
 <script src="{{ asset("customer/js/custom.js") }}"></script>
 @stack('script')

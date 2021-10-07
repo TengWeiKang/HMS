@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Customer\AnalysisController as CustomerAnalysisController;
 use App\Http\Controllers\Customer\BookingController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Customer\HomeController;
@@ -66,6 +67,12 @@ Route::group(["prefix" => 'customer'], function () {
         Route::put("/{booking}/edit", [BookingController::class, "update"]);
         Route::get("/{payment}/payment", [BookingController::class, "payment"])->name("customer.booking.payment");
         Route::delete("/{booking}", [BookingController::class, "destroy"])->name("customer.booking.destroy");
+    });
+
+    //statistics
+    Route::group(["prefix" => "statistics"], function() {
+        Route::get("/", [CustomerAnalysisController::class, "index"])->name("customer.analysis");
+        Route::post("/json", [CustomerAnalysisController::class, "json"])->name("customer.analysis.json");
     });
 });
 

@@ -39,15 +39,15 @@ class AnalysisController extends Controller
         $reservations = Reservation::with("rooms")->where("status", 1)->get();
         $servicesArray = Service::select("name")->pluck("name")->toArray();
         $rooms = Room::with("reservations")->get();
-        $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year, $request->roomType);
+        $json["revenueYearChart"] = $this->revenueYearChart($payments, $request->year);
         $json["roomStatusChart"] = $this->roomStatusChart($rooms, $request->roomType);
-        $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month, $request->roomType);
+        $json["roomServiceChart"] = $this->roomServiceChart($paymentItems, $servicesArray, $request->year, $request->month);
         $json["occupancyRateChart"] = $this->occupancyRateChart($reservations, $rooms, $request->year, $request->roomType);
         $json["averageRoomRateChart"] = $this->roomRateChart($payments, $request->year, $request->roomType);
         return $json;
     }
 
-    private function revenueYearChart($payments, $year, $roomType) {
+    private function revenueYearChart($payments, $year) {
         $json["bookings"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["services"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $json["charges"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -58,7 +58,6 @@ class AnalysisController extends Controller
             return $reservation->created_at->format("Y-m");
         });
         $payments = $this->paymentsFilterByYear($payments, $year);
-        // $payments = $this->paymentsFilterByRoomType($payments, $roomType);
         $bookingRevenues = $this->paymentsGroupByMonth($payments);
         foreach ($bookingRevenues as $key => $value) {
             $month = (int) explode("-", $key)[1] - 1;
@@ -97,7 +96,7 @@ class AnalysisController extends Controller
         return $json;
     }
 
-    private function roomServiceChart($paymentItems, $services, $year, $month, $roomType) {
+    private function roomServiceChart($paymentItems, $services, $year, $month) {
         $json["labels"] = $services;
         $json["items"] = [];
         $paymentItems = $this->paymentItemsFilterByYear($paymentItems, $year);
