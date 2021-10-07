@@ -107,7 +107,7 @@
                                                 </a>
                                             @endif
                                         @endif
-                                        @if ($reservation->status() != 2 || Auth::guard("employee")->user()->isAccessible("admin"))
+                                        @if ($reservation->status() != 2 && Auth::guard("employee")->user()->isAccessible("admin"))
                                             <a class="deleteReservation" data-id="{{ $reservation->id }}" data-number="{{ $reservation->id() }}" style="cursor: pointer" title="Delete">
                                                 <i class="zmdi zmdi-delete text-white"></i>
                                             </a>

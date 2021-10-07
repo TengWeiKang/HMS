@@ -27,10 +27,8 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        $customer->load(["bookings" => function ($query) {
-            $query->where("status", 1)->orderBy("created_at", "DESC");
-        }, "bookings.rooms", "bookings.payment"]);
-
+        $customer->load(["bookings", "bookings.rooms", "bookings.payment", "bookings.payment.rooms", "bookings.payment.items", "bookings.payment.charges"]);
+        // dd($customer->bookings);
         return view("dashboard.customer.view", ["customer" => $customer]);
     }
 }

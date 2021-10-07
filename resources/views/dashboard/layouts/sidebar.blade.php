@@ -30,6 +30,11 @@
                 <i class="fa fa-ticket"></i><span style="margin-left: 9px">Reservation</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route("dashboard.room") }}">
+                <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
+            </a>
+        </li>
         @if(Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
         <li>
             <a href="{{ route("dashboard.payment") }}">
@@ -58,11 +63,6 @@
             </a>
         </li>
         @endif
-        <li>
-            <a href="{{ route("dashboard.room") }}">
-                <i class="fa fa-hotel"></i><span style="margin-left: 11px">Rooms</span>
-            </a>
-        </li>
         @if(Auth::guard("employee")->user()->isAccessible("admin"))
         <li>
             <a href="{{ route("dashboard.facility") }}">

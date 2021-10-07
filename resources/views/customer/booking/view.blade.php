@@ -114,18 +114,18 @@
                                     </thead>
                                     <tbody>
                                         @forelse ($booking->services as $service)
-                                        <tr>
-                                            <td>{{ $loop->index + 1 }}</td>
-                                            <td>{{ $service->name }}</td>
-                                            <td>RM {{ number_format($service->price, 2) }}</td>
-                                            <td>{{ $service->pivot->quantity }}</td>
-                                            <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                            <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
-                                        </tr>
+                                            <tr>
+                                                <td>{{ $loop->index + 1 }}</td>
+                                                <td>{{ $service->name }}</td>
+                                                <td>RM {{ number_format($service->price, 2) }}</td>
+                                                <td>{{ $service->pivot->quantity }}</td>
+                                                <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                                <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
+                                            </tr>
                                         @empty
-                                        <tr>
-                                            <th colspan="6" class="text-center">No Room Service Found</th>
-                                        </tr>
+                                            <tr>
+                                                <th colspan="6" class="text-center">No Room Service Found</th>
+                                            </tr>
                                         @endforelse
                                     </tbody>
                                     @if (count($booking->services) > 0)

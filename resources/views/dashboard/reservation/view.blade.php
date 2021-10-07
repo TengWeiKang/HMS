@@ -119,16 +119,20 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($reservation->services as $service)
-                                        <tr>
-                                            <td>{{ $loop->index + 1 }}</td>
-                                            <td>{{ $service->name }}</td>
-                                            <td>RM {{ number_format($service->price, 2) }}</td>
-                                            <td>{{ $service->pivot->quantity }}</td>
-                                            <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                            <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
-                                        </tr>
-                                        @endforeach
+                                        @forelse ($reservation->services as $service)
+                                            <tr>
+                                                <td>{{ $loop->index + 1 }}</td>
+                                                <td>{{ $service->name }}</td>
+                                                <td>RM {{ number_format($service->price, 2) }}</td>
+                                                <td>{{ $service->pivot->quantity }}</td>
+                                                <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                                <td>{{ $service->pivot->created_at->format("d F Y h:ia") }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <th colspan="6" class="text-center">No Room Service Found</th>
+                                            </tr>
+                                        @endforelse
                                     </tbody>
                                     @if (count($reservation->services) > 0)
                                     <tfoot>
@@ -171,6 +175,11 @@
                                 Add Service
                             </a>
                         </div>
+                        <div class="col-2">
+                            <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" class="btn btn-primary w-100">
+                                Check Out
+                            </a>
+                        </div>
                     @endif
                     @if ($reservation->status() == 0)
                         <div class="col-2">
@@ -179,7 +188,7 @@
                             </a>
                         </div>
                     @endif
-                    @if ($reservation->status() != 2 || Auth::guard("employee")->user()->isAccessible("admin"))
+                    @if ($reservation->status() != 2 && Auth::guard("employee")->user()->isAccessible("admin"))
                         <div class="col-2">
                             <a class="deleteReservation btn btn-primary w-100" style="cursor: pointer">
                                 Delete

@@ -224,7 +224,7 @@ class ReservationController extends Controller
             $customer->save();
         }
         $error = "";
-        
+
         $reservation = Reservation::create([
             "deposit" => $request->deposit,
             "start_date" => $request->startDate,

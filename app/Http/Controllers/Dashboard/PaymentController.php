@@ -49,24 +49,44 @@ class PaymentController extends Controller
         ]);
         $reservation->load("rooms", "rooms.type");
 
-        $rooms = [];
-        foreach ($reservation->rooms as $room) {
-            $rooms[] = [
-                "room_id" => $room->id,
-                "price_per_night" => $room->type->price,
-            ];
-        }
+        // $rooms = [];
+        // foreach ($reservation->rooms as $room) {
+        //     $rooms[] = [
+        //         "room_id" => $room->id,
+        //         "price_per_night" => $room->type->price,
+        //     ];
+        // }
 
-        $items = [];
-        foreach ($reservation->services as $service) {
-            $items[] = [
+        // $items = [];
+        // foreach ($reservation->services as $service) {
+        //     $items[] = [
+        //         "service_id" => $service->id,
+        //         "service_name" => $service->name,
+        //         "quantity" => $service->pivot->quantity,
+        //         "unit_price" => $service->price,
+        //         "purchase_at" => $service->pivot->created_at
+        //     ];
+        // }
+        $payment = Payment::create([
+            "reservation_id" => $reservation->id,
+            "start_date" => $reservation->start_date,
+            "end_date" => $reservation->end_date,
+            "discount" => $request->discount,
+            "deposit" => $request->deposit
+        ]);
+        $payment->rooms()->attach($reservation->rooms->mapWithKeys(function ($room) {
+            return [$room->id => ["price_per_night" => $room->type->price]];
+        }));
+        $payment->items()->createMany($reservation->services->map(function ($service) {
+            return [
                 "service_id" => $service->id,
                 "service_name" => $service->name,
                 "quantity" => $service->pivot->quantity,
                 "unit_price" => $service->price,
-                "purchase_at" => $service->pivot->created_at
+                "purchase_at" > $service->pivot->created_at
             ];
-        }
+        }));
+
         $charges = [];
         if (!is_null($request->description)) {
             for ($i = 0; $i < count($request->description); $i++) {
@@ -76,15 +96,6 @@ class PaymentController extends Controller
                 ];
             }
         }
-        $payment = Payment::create([
-            "reservation_id" => $reservation->id,
-            "start_date" => $reservation->start_date,
-            "end_date" => $reservation->end_date,
-            "discount" => $request->discount,
-            "deposit" => $request->deposit
-        ]);
-        $payment->rooms()->attach($rooms);
-        $payment->items()->createMany($items);
         $payment->charges()->createMany($charges);
         $reservation->check_out = Carbon::now();
         $reservation->save();

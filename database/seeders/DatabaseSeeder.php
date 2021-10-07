@@ -63,7 +63,15 @@ class DatabaseSeeder extends Seeder
         Employee::create([
             "username" => "lili",
             "email" => "weikangteng@gmail.com",
-            "phone" => "012-3456789",
+            "phone" => "014-6000816",
+            "password" => Hash::make("123456789"),
+            "role" => 2
+        ]);
+
+        Employee::create([
+            "username" => "Marry",
+            "email" => "testing@gmail.com",
+            "phone" => "014-6000816",
             "password" => Hash::make("123456789"),
             "role" => 2
         ]);
@@ -148,7 +156,6 @@ class DatabaseSeeder extends Seeder
             "room_type" => $roomType1->id,
             "single_bed" => 1,
             "double_bed" => 1,
-            "housekeep_by" => 3,
             "status" => 2
         ]);
 
@@ -195,41 +202,46 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Reservation::create([
-            "start_date" => Carbon::now()->today()->addDays(3),
-            "end_date" => Carbon::now()->today()->addDays(5),
+            "start_date" => Carbon::now()->addDays(3),
+            "end_date" => Carbon::now()->addDays(5),
             "customer_id" => 1,
             "deposit" => 300,
         ])->rooms()->attach([1,3,5]);
 
         Reservation::create([
-            "start_date" => Carbon::now()->today(),
-            "end_date" => Carbon::now()->today()->addDays(3),
+            "start_date" => Carbon::now(),
+            "end_date" => Carbon::now()->addDays(3),
             "customer_id" => 2,
             "deposit" => 300,
-        ])->rooms()->attach([2,6,7]);
+        ])->rooms()->attach([2,6]);
 
         Reservation::create([
-            "start_date" => Carbon::now()->today(),
-            "end_date" => Carbon::now()->today()->addDays(3),
+            "start_date" => Carbon::now(),
+            "end_date" => Carbon::now()->addDays(3),
             "customer_id" => 1,
             "status" => 0,
             "deposit" => 400,
         ])->rooms()->attach([1,2,6,7]);
 
-        Reservation::create([
-            "start_date" => Carbon::now()->today()->subDay(2),
-            "end_date" => Carbon::now()->today()->subDay(),
+        $checkInReservation = Reservation::create([
+            "start_date" => Carbon::now()->subDay(2),
+            "end_date" => Carbon::now()->subDay(),
             "customer_id" => 1,
             "check_in" => Carbon::now(),
             "deposit" => 300,
-        ])->rooms()->attach([1,3,5]);
+        ]);
+        $checkInReservation->rooms()->attach([1,3,5]);
+        $checkInReservation->services()->attach([
+            ["service_id" => $service1->id, "quantity" => 5, "created_at" => Carbon::now()->subDay(2)],
+            ["service_id" => $service2->id, "quantity" => 4, "created_at" => Carbon::now()->subDay()],
+        ]);
 
         $reservation = Reservation::create([
-            "start_date" => Carbon::now()->today()->subDay(2),
-            "end_date" => Carbon::now()->today()->subDay(),
+            "start_date" => Carbon::now()->subDay(2),
+            "end_date" => Carbon::now()->subDay(),
             "customer_id" => 2,
-            "check_in" => Carbon::now()->today()->subDay(2),
-            "check_out" => Carbon::now()->today(),
+            "check_in" => Carbon::now()->subDay(2),
+            "check_out" => Carbon::now(),
             "deposit" => 100,
         ]);
         $reservation->rooms()->attach([4]);
@@ -256,10 +268,10 @@ class DatabaseSeeder extends Seeder
             ["description" => "late charge", "price" => 20.5],
             ["description" => "another charges", "price" => 40],
         ]);
-        
+
         $reservation2 = Reservation::create([
-            "start_date" => Carbon::now()->today()->subDays(5),
-            "end_date" => Carbon::now()->today()->subDays(2),
+            "start_date" => Carbon::now()->subDays(5),
+            "end_date" => Carbon::now()->subDays(2),
             "customer_id" => 1,
             "check_in" => Carbon::now()->subDays(5),
             "check_out" => Carbon::now()->subDays(1),

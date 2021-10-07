@@ -105,16 +105,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($reservation->services as $service)
-                                <tr>
-                                    <th>{{ $loop->index + 1 }}</th>
-                                    <td>{{ $service->name }}</td>
-                                    <td>RM {{ number_format($service->price, 2) }}</td>
-                                    <td>{{ $service->pivot->quantity }}</td>
-                                    <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                    <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
-                                </tr>
-                                @endforeach
+                                @forelse ($reservation->services as $service)
+                                    <tr>
+                                        <th>{{ $loop->index + 1 }}</th>
+                                        <td>{{ $service->name }}</td>
+                                        <td>RM {{ number_format($service->price, 2) }}</td>
+                                        <td>{{ $service->pivot->quantity }}</td>
+                                        <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                        <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <th colspan="6" class="text-center">No Room Service Found</th>
+                                    </tr>
+                                @endforelse
                             </tbody>
                             <tfoot>
                                 <tr>

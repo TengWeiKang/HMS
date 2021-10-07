@@ -77,7 +77,7 @@
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
-                                        @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->canCheckIn())
                                             <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
                                                 <i class="fa fa-download text-white"></i>
                                             </a>
@@ -135,7 +135,7 @@
                                             <label for="housekeeper">Housekeeper</label>
                                             <select class="form-control" id="housekeeper" name="housekeeper">
                                                 @foreach ($housekeepers as $housekeeper)
-                                                    <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }} ({{ $housekeeper->housekeepRooms->count() }} {{ Str::plural("room", $housekeeper->housekeepRooms->count()) }})</option>
+                                                    <option value="{{ $housekeeper->id }}">{{ $housekeeper->username }} ({{ $housekeeper->housekeepRooms->count() }} {{ Str::plural("room", $housekeeper->housekeepRooms->count()) }}) assigned</option>
                                                 @endforeach
                                             </select>
                                         </div>

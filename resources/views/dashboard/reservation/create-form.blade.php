@@ -83,7 +83,7 @@
                         <div class="col-lg-4 pr-0">
                             <label for="roomType">Check in now?</label>
                             <div class="icheck-material-white">
-                                <input type="checkbox" id="checkIn"/>
+                                <input type="checkbox" id="checkIn" name="checkIn"/>
                                 <label for="checkIn">Check In</label>
                             </div>
                         </div>
