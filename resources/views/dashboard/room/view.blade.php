@@ -81,7 +81,7 @@
                                     <tr>
                                         <td>Room Type:</td>
                                         <td>
-                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk, admin"))
+                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
                                                 <a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a>
                                             @else
                                                 {{ $room->type->name }}
