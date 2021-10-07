@@ -71,7 +71,7 @@
                 var serviceName = $(this).data("name");
                 var url = DELETE_URL.replace(":id", serviceID);
                 Swal.fire({
-                    title: "Delete Room",
+                    title: "Delete Room Service",
                     text: "Are you sure you want to remove " + serviceName + "?",
                     icon: "warning",
                     showCancelButton: true,

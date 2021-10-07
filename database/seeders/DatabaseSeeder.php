@@ -127,7 +127,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R101",
-            "name" => "Room Name 1",
+            "name" => "Deluxe Room 1",
             "room_type" => $roomType1->id,
             "single_bed" => 2,
             "double_bed" => 1,
@@ -135,7 +135,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R102",
-            "name" => "Room Name 2",
+            "name" => "Deluxe Room 2",
             "room_type" => $roomType2->id,
             "single_bed" => 1,
             "double_bed" => 2,
@@ -143,7 +143,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R103",
-            "name" => "Room Name 3",
+            "name" => "Superior Room 1",
             "room_type" => $roomType2->id,
             "single_bed" => 2,
             "double_bed" => 2,
@@ -152,7 +152,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R104",
-            "name" => "Room Name 4",
+            "name" => "Superior Room 2",
             "room_type" => $roomType1->id,
             "single_bed" => 1,
             "double_bed" => 1,
@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R105",
-            "name" => "Room Name 5",
+            "name" => "Deluxe Room 3",
             "room_type" => $roomType1->id,
             "single_bed" => 1,
             "double_bed" => 1,
@@ -170,7 +170,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R106",
-            "name" => "Room Name 6",
+            "name" => "Deluxe Room 4",
             "room_type" => $roomType1->id,
             "single_bed" => 1,
             "double_bed" => 2,
@@ -179,7 +179,7 @@ class DatabaseSeeder extends Seeder
 
         Room::create([
             "room_id" => "R107",
-            "name" => "Room Name 7",
+            "name" => "Deluxe Room 5",
             "room_type" => $roomType1->id,
             "single_bed" => 1,
             "double_bed" => 2,
@@ -187,17 +187,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $service1 = Service::create([
-            "name" => "food",
+            "name" => "SPA",
             "price" => 7
         ]);
 
         $service2 = Service::create([
-            "name" => "drink",
+            "name" => "Meal",
             "price" => 5
         ]);
 
         $service3 = Service::create([
-            "name" => "food 2",
+            "name" => "Mineral Water",
             "price" => 9
         ]);
 
@@ -212,7 +212,7 @@ class DatabaseSeeder extends Seeder
             "start_date" => Carbon::now(),
             "end_date" => Carbon::now()->addDays(3),
             "customer_id" => 2,
-            "deposit" => 300,
+            "deposit" => 200,
         ])->rooms()->attach([2,6]);
 
         Reservation::create([

@@ -23,9 +23,11 @@
                     <li class="nav-item">
                         <a href="javascript:void();" data-target="#booking" data-toggle="pill" class="nav-link active"><span class="hidden-xs">Booking</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><span class="hidden-xs">Room Service</span></a>
-                    </li>
+                    @if (in_array($booking->status(), [2,4]))
+                        <li class="nav-item">
+                            <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><span class="hidden-xs">Room Service</span></a>
+                        </li>
+                    @endif
                 </ul>
             </div>
             <div class="tab-content p-3">
@@ -146,42 +148,3 @@
     </div>
 </div>
 @endsection
-
-{{-- @push('script')
-    <script>
-        $(document).ready(function () {
-            $(".deleteReservation").on("click", function () {
-                Swal.fire({
-                    title: "Delete Room",
-                    text: "Are you sure you want to remove this booking?",
-                    icon: "warning",
-                    showCancelButton: true,
-                    cancelButtonColor: "#E00",
-                    confirmButtonColor: "#00E",
-                    confirmButtonText: "Yes"
-                }).then((result) => {
-                    if (result.value) {
-                        $.ajax({
-                            type: "DELETE",
-                            url: "{{ route('customer.booking.destroy', ["booking" => $booking]) }}",
-                            data: {
-                                "_token": "{{ csrf_token() }}"
-                            },
-                            success: function (response){
-                                Swal.fire({
-                                    title: "Deleted!",
-                                    text: response["success"],
-                                    icon: 'success',
-                                    showConfirmButton: false,
-                                    timer: 1000,
-                                }).then(() => {
-                                    window.location.href = "{{ route("dashboard.reservation.view", ["reservation" => $reservation]) }}";
-                                });
-                            }
-                        });
-                    }
-                })
-            });
-        });
-    </script>
-@endpush --}}

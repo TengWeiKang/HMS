@@ -129,18 +129,10 @@
 
                 let spentChartCanvas = document.getElementById("spent-chart").getContext("2d");
                 spentChart = new Chart(spentChartCanvas, {
-                    type: 'line',
+                    type: 'bar',
                     data: {
                         labels: Object.values(MONTH),
                         datasets: [
-                            {
-                                label: 'Total Spents',
-                                data: spents,
-                                backgroundColor: "darkgray",
-                                borderColor: "darkgray",
-                                borderWidth: 0,
-                                fill: false,
-                            },
                             {
                                 label: 'Booking Spents',
                                 data: bookings,
@@ -205,7 +197,8 @@
                                     display: true,
                                     labelString: 'Month',
                                     fontColor: "black",
-                                }
+                                },
+                                stacked: true,
                             }],
                             yAxes: [{
                                 ticks: {
@@ -223,7 +216,8 @@
                                     display: true,
                                     labelString: 'Spending',
                                     fontColor: "black",
-                                }
+                                },
+                                stacked: true,
                             }]
                         },
                         plugins: {
@@ -335,10 +329,9 @@
                 $("#room-service-spent").html(totalRoomService.toFixed(2));
                 $("#charge-spent").html(totalCharge.toFixed(2));
                 $("#total-spent").html(totalRevenue.toFixed(2));
-                spentChart.data.datasets[0].data = spents;
-                spentChart.data.datasets[1].data = bookings;
-                spentChart.data.datasets[2].data = services;
-                spentChart.data.datasets[3].data = charges;
+                spentChart.data.datasets[0].data = bookings;
+                spentChart.data.datasets[1].data = services;
+                spentChart.data.datasets[2].data = charges;
                 spentChart.options.title.text = "Revenue Chart in Year " + year;
                 spentChart.update();
             }

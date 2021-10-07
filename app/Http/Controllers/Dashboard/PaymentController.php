@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AssignHousekeeperMail;
+use App\Models\Employee;
 use App\Models\Payment;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
@@ -49,24 +52,6 @@ class PaymentController extends Controller
         ]);
         $reservation->load("rooms", "rooms.type");
 
-        // $rooms = [];
-        // foreach ($reservation->rooms as $room) {
-        //     $rooms[] = [
-        //         "room_id" => $room->id,
-        //         "price_per_night" => $room->type->price,
-        //     ];
-        // }
-
-        // $items = [];
-        // foreach ($reservation->services as $service) {
-        //     $items[] = [
-        //         "service_id" => $service->id,
-        //         "service_name" => $service->name,
-        //         "quantity" => $service->pivot->quantity,
-        //         "unit_price" => $service->price,
-        //         "purchase_at" => $service->pivot->created_at
-        //     ];
-        // }
         $payment = Payment::create([
             "reservation_id" => $reservation->id,
             "start_date" => $reservation->start_date,
@@ -99,9 +84,20 @@ class PaymentController extends Controller
         $payment->charges()->createMany($charges);
         $reservation->check_out = Carbon::now();
         $reservation->save();
+
+        $housekeepers = Employee::where("role", 2)->get();
         foreach ($reservation->rooms as $room) {
+            $housekeepers->load("housekeepRooms");
+            $min = $housekeepers->min(function ($housekeeper) {
+                return $housekeeper->housekeepRooms->count();
+            });
+            $housekeepers = $housekeepers->filter(function ($housekeeper) use ($min) {
+                return $housekeeper->housekeepRooms->count() == $min;
+            });
+            $housekeeper = $housekeepers->random();
             $room->status = 2;
-            $room->housekeep_by = null;
+            $room->housekeep_by = $housekeeper->id;
+            Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
             $room->save();
         }
 

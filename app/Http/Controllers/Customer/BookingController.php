@@ -133,10 +133,10 @@ class BookingController extends Controller
                 "singleBed" => $singleBed,
                 "doubleBed" => $doubleBed,
                 "startDate" => $startDate,
-                "endDate" => $endDate]
-            )->withInput()->with("error", "The number of room is not enough");
+                "endDate" => $endDate
+            ])->withInput()->with("error", "The number of room is not enough");
         }
-        $rooms->take($numberOfRooms);
+        $rooms = $rooms->random($numberOfRooms);
         $user = Auth::user();
         $user->first_name = $request->firstName;
         $user->last_name = $request->lastName;

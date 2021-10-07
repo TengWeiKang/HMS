@@ -63,8 +63,13 @@
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>
                                             @endif
-                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
+                                            @if ($room->status() != 4 && Auth::guard("employee")->user()->isAccessible("admin"))
                                                 <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($room->status() == 5 && $room->housekeeper == Auth::guard("employee")->user())
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status2-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                                     <i class="icon-settings text-white"></i>
                                                 </a>
                                             @endif
@@ -125,8 +130,13 @@
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>
                                             @endif
-                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
+                                            @if ($room->status() != 4 && Auth::guard("employee")->user()->isAccessible("admin"))
                                                 <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($room->status() == 5 && $room->housekeeper == Auth::guard("employee")->user())
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status2-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                                     <i class="icon-settings text-white"></i>
                                                 </a>
                                             @endif
@@ -182,8 +192,13 @@
                                                     <i class="fa fa-user-plus text-white"></i>
                                                 </a>
                                             @endif
-                                            @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
+                                            @if ($room->status() != 4 && Auth::guard("employee")->user()->isAccessible("admin"))
                                                 <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
+                                                    <i class="icon-settings text-white"></i>
+                                                </a>
+                                            @endif
+                                            @if ($room->status() == 5 && $room->housekeeper == Auth::guard("employee")->user())
+                                                <a class="update-status" style="cursor: pointer" data-toggle="modal" data-target="#status2-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" data-note="{{ $room->note }}" data-status="{{ $room->status }}" title="Update Status">
                                                     <i class="icon-settings text-white"></i>
                                                 </a>
                                             @endif
@@ -279,7 +294,9 @@
                         <label for="status">Room Status</label>
                         <select class="form-control" id="status" name="status">
                             <option value="0">Available</option>
-                            <option value="2">Dirty</option>
+                            @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                <option value="2">Dirty</option>
+                            @endif
                             <option value="3">Repairing</option>
                         </select>
                     </div>
@@ -292,6 +309,34 @@
                     <input type="hidden" name="id">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" value="Submit">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- Update Status From Housekeeper Modal -->
+<form action="{{ route("dashboard.room.status2") }}" method="POST">
+    @csrf
+    <div class="modal fade overflow-hidden" id="status2-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Please provided any note for Room <span id="status2-room-id"></span> if necessary</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row mx-2">
+                        <label for="note">Note for the room (Optional)</label>
+                        <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="id" value="{{ $room->id }}">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <input type="submit" class="btn btn-primary" name="action" value="Repair">
+                    <input type="submit" class="btn btn-primary" name="action" value="Done Cleaning">
                 </div>
             </div>
         </div>
@@ -336,6 +381,20 @@
                 modal.find('textarea[name="note"]').val(note);
                 modal.find('select[name="status"]').val(status).change();
             });
+
+            $('#status2-modal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('id');
+                var room_id = button.data('room');
+                var note = button.data('note');
+                var status = button.data('status');
+                var modal = $(this);
+                modal.find('#status2-room-id')[0].innerHTML = room_id;
+                modal.find('input[name="id"]').val(id);
+                modal.find('textarea[name="note"]').val(note);
+                modal.find('select[name="status"]').val(status).change();
+            });
+
         });
     </script>
 @endpush

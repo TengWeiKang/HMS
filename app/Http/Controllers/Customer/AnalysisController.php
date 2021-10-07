@@ -88,11 +88,4 @@ class AnalysisController extends Controller
         }
         return $json;
     }
-
-    public function testInput() {
-        $request = new Request();
-        $request->setMethod("POST");
-        $request->request->add(["year" => 2021]);
-        dd($this->json($request));
-    }
 }

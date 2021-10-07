@@ -33,8 +33,11 @@
         @if (!$room->isOccupied() && $room->status() == 2 && $room->housekeeper == null && Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
             <button type="button" class="btn btn-secondary w-100 mb-3" data-toggle="modal" data-target="#assign-modal">Assign Housekeeper</button>
         @endif
-        @if ($room->status() != 4 && ($room->housekeeper == Auth::guard("employee")->user() || Auth::guard("employee")->user()->isAccessible("admin")))
+        @if ($room->status() != 4 && Auth::guard("employee")->user()->isAccessible("admin"))
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status-modal">Update Status</button>
+        @endif
+        @if ($room->status() == 5 && $room->housekeeper == Auth::guard("employee")->user())
+            <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#status2-modal">Update Status</button>
         @endif
         @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
             <button type="button" class="btn btn-primary w-100 mb-3" data-toggle="modal" data-target="#self-assign-modal">Self Assign Housekeeper</button>
@@ -48,6 +51,9 @@
     <div class="col-lg-9">
         <div class="card">
             <div class="card-body">
+                @if (session('message'))
+                    <div class="text-success text-center">{{ session('message') }}</div>
+                @endif
                 <ul class="nav nav-tabs nav-tabs-primary top-icon nav-justified">
                     <li class="nav-item">
                         <a href="javascript:void();" data-target="#room" data-toggle="pill" class="nav-link active"><i class="icon-home"></i> <span class="hidden-xs">Room Info</span></a>
@@ -74,7 +80,13 @@
                                     </tr>
                                     <tr>
                                         <td>Room Type:</td>
-                                        <td><a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a> (RM {{ number_format($room->type->price, 2) }})</td>
+                                        <td>
+                                            @if (Auth::guard("employee")->user()->isAccessible("frontdesk, admin"))
+                                                <a class="hyperlink" href="{{ route("dashboard.room-type.view", ["roomType" => $room->type]) }}">{{ $room->type->name }}</a>
+                                            @else
+                                                {{ $room->type->name }}
+                                            @endif
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>Single Bed:</td>
@@ -208,7 +220,9 @@
                             <label for="status">Room Status</label>
                             <select class="form-control" id="status" name="status">
                                 <option value="0" @if ($room->status() == 0) selected @endif>Available</option>
-                                <option value="2" @if ($room->status() == 2) selected @endif>Dirty</option>
+                                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                    <option value="2" @if ($room->status() == 2) selected @endif>Dirty</option>
+                                @endif
                                 <option value="3" @if ($room->status() == 3) selected @endif>Repairing</option>
                             </select>
                         </div>
@@ -221,6 +235,34 @@
                         <input type="hidden" name="id" value="{{ $room->id }}">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <input type="submit" class="btn btn-primary" value="Submit">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- Update Status From Housekeeper Modal -->
+    <form action="{{ route("dashboard.room.status2") }}" method="POST">
+        @csrf
+        <div class="modal fade overflow-hidden" id="status2-modal" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Please provided any note for Room {{ $room->room_id }} if necessary</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group row mx-2">
+                            <label for="note">Note for the room (Optional)</label>
+                            <textarea name="note" id="note" class="form-control" style="border: 1px solid #aaa; height:150px; color:black !important">{{ $room->note }}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" name="id" value="{{ $room->id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <input type="submit" class="btn btn-primary" name="action" value="Repair">
+                        <input type="submit" class="btn btn-primary" name="action" value="Done Cleaning">
                     </div>
                 </div>
             </div>

@@ -82,7 +82,7 @@
                 var bookingNumber = $(this).data("number");
                 var url = DELETE_URL.replace(":id", bookingID);
                 Swal.fire({
-                    title: "Delete Room",
+                    title: "Cancel Booking",
                     text: "Are you sure you want to cancel booking #" + bookingNumber + "?",
                     icon: "warning",
                     showCancelButton: true,

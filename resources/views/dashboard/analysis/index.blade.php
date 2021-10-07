@@ -234,18 +234,10 @@
 
             let revenueYearCanvas = document.getElementById("revenueYearChart").getContext("2d");
             revenueYearChart = new Chart(revenueYearCanvas, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: Object.values(MONTH),
                     datasets: [
-                        {
-                            label: 'Total Revenues',
-                            data: revenues,
-                            backgroundColor: "darkgray",
-                            borderColor: "darkgray",
-                            borderWidth: 0,
-                            fill: false,
-                        },
                         {
                             label: 'Room Revenues',
                             data: bookings,
@@ -310,7 +302,8 @@
                                 display: true,
                                 labelString: 'Month',
                                 fontColor: "white",
-                            }
+                            },
+                            stacked: true,
                         }],
                         yAxes: [{
                             ticks: {
@@ -328,7 +321,8 @@
                                 display: true,
                                 labelString: 'Revenue',
                                 fontColor: "white",
-                            }
+                            },
+                            stacked: true,
                         }]
                     },
                     plugins: {
@@ -708,10 +702,9 @@
             $("#room-service-revenue").html(totalRoomService.toFixed(2));
             $("#charge-revenue").html(totalCharge.toFixed(2));
             $("#total-revenue").html(totalRevenue.toFixed(2));
-            revenueYearChart.data.datasets[0].data = revenues;
-            revenueYearChart.data.datasets[1].data = bookings;
-            revenueYearChart.data.datasets[2].data = services;
-            revenueYearChart.data.datasets[3].data = charges;
+            revenueYearChart.data.datasets[0].data = bookings;
+            revenueYearChart.data.datasets[1].data = services;
+            revenueYearChart.data.datasets[2].data = charges;
             revenueYearChart.options.title.text = "Revenue Chart in Year " + year;
             revenueYearChart.update();
         }

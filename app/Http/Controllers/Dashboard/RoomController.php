@@ -140,7 +140,7 @@ class RoomController extends Controller
         $room = Room::findOrFail($request->id);
         if ($room->housekeep_by == null) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
-            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
+            // $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $request->housekeeper;
             $room->save();
@@ -153,7 +153,7 @@ class RoomController extends Controller
         $housekeeper = Auth::guard('employee')->user();
         if ($room->housekeep_by == null && $room->status() == 2) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
-            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
+            // $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $housekeeper->id;
             $room->save();
@@ -169,5 +169,34 @@ class RoomController extends Controller
         $room->note = $request->note;
         $room->save();
         return redirect()->back();
+    }
+
+    public function updateStatus2(Request $request) {
+        $room = Room::findOrFail($request->id);
+        dd($request["action"]);
+        switch ($request["action"]) {
+            case "Repair":
+                $room->status = 3;
+            case "Done Cleaning":
+                $room->status = 0;
+        }
+        $room->housekeep_by = null;
+        $room->note = $request->note;
+        $room->save();
+        return redirect()->back();
+    }
+
+    public function updateAvailable(Room $room) {
+        $room->housekeep_by = null;
+        $room->status = 0;
+        $room->save();
+        return redirect()->route("dashboard.room.view", ["room" => $room])->with("status", "The room has been updated to available");
+    }
+
+    public function updateRepairing(Room $room) {
+        $room->housekeep_by = null;
+        $room->status = 3;
+        $room->save();
+        return redirect()->route("dashboard.room.view", ["room" => $room])->with("status", "The room has been updated to repairing");
     }
 }

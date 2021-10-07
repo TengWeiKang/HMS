@@ -376,7 +376,20 @@ class ReservationController extends Controller
 
         $reservation->services()->attach($arr);
         $services = Service::all();
-        return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation, "services" => $services])->with("message", "The Room Services Added Successfully");
+        return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation])->with("message", "The Room Services Added Successfully");
+    }
+
+    public function updateService(Request $request, Reservation $reservation) {
+        $arr = array_combine($request->serviceID, $request->quantity);
+        foreach ($arr as $serviceID => $quantity) {
+            $reservation->services()->updateExistingPivot($serviceID, ["quantity" => $quantity]);
+        }
+        return redirect()->route('dashboard.reservation.service', ["reservation" => $reservation])->with("message", "The Room Services Updated Successfully");
+    }
+
+    public function destroyService(Request $request, Reservation $reservation) {
+        $reservation->services()->detach($request->serviceID);
+        return response()->json(['success' => "The room service has been remove from the reservation"]);
     }
 
     public function checkIn(Reservation $reservation)

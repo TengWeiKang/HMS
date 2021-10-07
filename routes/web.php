@@ -118,9 +118,12 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::post("/assign", [RoomController::class, "assign"])->name("dashboard.room.assign");
         Route::post("/self-assign", [RoomController::class, "selfAssign"])->name("dashboard.room.self-assign");
         Route::post("/status", [RoomController::class, "updateStatus"])->name("dashboard.room.status");
+        Route::post("/status2", [RoomController::class, "updateStatus2"])->name("dashboard.room.status2");
         Route::get("/create", [RoomController::class, "create"])->name("dashboard.room.create");
         Route::post("/create", [RoomController::class, "store"]);
         Route::get("/{room}", [RoomController::class, "show"])->name("dashboard.room.view");
+        Route::get("/{room}/update-available", [RoomController::class, "updateAvailable"])->name("dashboard.room.update-available");
+        Route::get("/{room}/update-repairing", [RoomController::class, "updateRepairing"])->name("dashboard.room.update-cleaning");
         Route::get("/{room}/edit", [RoomController::class, "edit"])->name("dashboard.room.edit");
         Route::put("/{room}/edit", [RoomController::class, "update"]);
         Route::delete("/{room}", [RoomController::class, "destroy"])->name("dashboard.room.destroy");
@@ -151,6 +154,8 @@ Route::group(["prefix" => 'dashboard', "middleware" => ["employee"]], function (
         Route::delete("/{reservation}", [ReservationController::class, "destroy"])->name("dashboard.reservation.destroy");
         Route::get("/{reservation}/service", [ReservationController::class, "createService"])->name("dashboard.reservation.service");
         Route::post("/{reservation}/service", [ReservationController::class, "storeService"]);
+        Route::post("/{reservation}/update-service", [ReservationController::class, "updateService"])->name("dashboard.reservation.service.update");
+        Route::delete("/{reservation}/delete-service", [ReservationController::class, "destroyService"])->name("dashboard.reservation.service.destroy");
     });
 
     //payment management

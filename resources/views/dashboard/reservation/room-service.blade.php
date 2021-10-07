@@ -22,6 +22,12 @@
 .select2-container--default .select2-selection--single .select2-selection__placeholder {
     color:#fff;
 }
+.table-input {
+    padding: 0 .75rem;
+    width: 80px;
+    height: 1.75rem;
+    display: inherit;
+}
 </style>
 @endpush
 
@@ -91,44 +97,62 @@
                     </form>
                 </div>
                 <div class="tab-pane" id="existing-services">
-                    <h5 class="mb-5 ml-2 font-weight-bold">Existing Services</h5>
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Service Name</th>
-                                    <th>Unit Price</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Purchased On</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($reservation->services as $service)
+                    <form action="{{ route("dashboard.reservation.service.update", ["reservation" => $reservation]) }}" method="POST">
+                        @csrf
+                        <h5 class="ml-2 font-weight-bold">Existing Services</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
                                     <tr>
-                                        <th>{{ $loop->index + 1 }}</th>
-                                        <td>{{ $service->name }}</td>
-                                        <td>RM {{ number_format($service->price, 2) }}</td>
-                                        <td>{{ $service->pivot->quantity }}</td>
-                                        <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
-                                        <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
+                                        <th>#</th>
+                                        <th>Service Name</th>
+                                        <th>Unit Price</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Purchased On</th>
+                                        <th>Action</th>
                                     </tr>
-                                @empty
+                                </thead>
+                                <tbody>
+                                    @forelse ($reservation->services as $service)
+                                        <tr>
+                                            <th>{{ $loop->index + 1 }}</th>
+                                            <td>{{ $service->name }}</td>
+                                            <td>RM {{ number_format($service->price, 2) }}</td>
+                                            <td>
+                                                <input type="hidden" name="serviceID[]" value="{{ $service->id }}">
+                                                <input type="number" id="quantity" name="quantity[]" class="form-control form-control-rounded table-input" min="1" step="1" value="{{ $service->pivot->quantity }}" required>
+                                            </td>
+                                            <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
+                                            <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
+                                            <td class="text-center">
+                                                <a class="deleteService" style="cursor: pointer; font-size: 20px" data-number="{{ $loop->index + 1 }}" data-id="{{ $service->id }}" data-name="{{ $service->name }}">
+                                                    <i class="zmdi zmdi-delete text-white"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <th colspan="7" class="text-center">No Room Service Found</th>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                                <tfoot>
                                     <tr>
-                                        <th colspan="6" class="text-center">No Room Service Found</th>
+                                        <td colspan="4"></td>
+                                        <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
+                                        <td colspan="2"></td>
                                     </tr>
-                                @endforelse
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td colspan="4"></td>
-                                    <td>RM {{ number_format($reservation->totalServicePrices(), 2) }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
+                                </tfoot>
+                            </table>
+                        </div>
+                        @if ($reservation->services->count() > 0)
+                            <div class="form-group row mt-3 mx-2 float-right">
+                                <input type="reset" class="btn btn-primary mx-2">
+                                <button type="submit" class="btn btn-primary mx-2"><i class="icon-pencil"></i> Update</button>
+                            </div>
+                        @endif
+                    </form>
                 </div>
             </div>
         </div>
@@ -178,19 +202,7 @@
                 event.preventDefault();
                 let length = $("form#service-form input").length;
                 if (length > 1) { // ignore token input
-                    Swal.fire({
-                        title: "Confirmation",
-                        text: "Are you sure you want to add these services?\nThis process cannot be undo after submit",
-                        icon: "warning",
-                        showCancelButton: true,
-                        cancelButtonColor: "#E00",
-                        confirmButtonColor: "#00E",
-                        confirmButtonText: "Yes"
-                    }).then((result) => {
-                        if (result.value) {
-                            $(this).unbind("submit").submit();
-                        }
-                    });
+                    $(this).unbind("submit").submit();
                 }
                 else {
                     Swal.fire({
@@ -237,6 +249,43 @@
                 });
                 $("#totalPrice")[0].innerHTML = totalPrice.toFixed(2);
             }
+            $(".deleteService").on("click", function () {
+                const DELETE_URL = "{{ route('dashboard.reservation.service.destroy', ["reservation" => $reservation->id]) }}";
+                var serviceNumber = $(this).data("number");
+                var serviceID = $(this).data("id");
+                var serviceName = $(this).data("name");
+                Swal.fire({
+                    title: "Delete Room Service",
+                    text: "Are you sure you want to remove #" + serviceNumber + " " + serviceName + "?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    cancelButtonColor: "#E00",
+                    confirmButtonColor: "#00E",
+                    confirmButtonText: "Yes"
+                }).then((result) => {
+                    if (result.value) {
+                        $.ajax({
+                            type: "DELETE",
+                            url: DELETE_URL,
+                            data: {
+                                "_token": "{{ csrf_token() }}",
+                                "serviceID": serviceID
+                            },
+                            success: function (response){
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: response["success"],
+                                    icon: 'success',
+                                    showConfirmButton: false,
+                                    timer: 1000,
+                                }).then(() => {
+                                    window.location.href = "{{ route("dashboard.reservation.service", ["reservation" => $reservation->id]) }}";
+                                });
+                            }
+                        });
+                    }
+                })
+            });
         });
     </script>
 @endpush
