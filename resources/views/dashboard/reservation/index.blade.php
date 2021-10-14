@@ -96,7 +96,7 @@
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
                                         @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin"))
-                                            @if ($reservation->check_in != null && $reservation->check_out == null)
+                                            @if ($reservation->status() == 1)
                                                 <a href="{{ route("dashboard.payment.create", ["reservation" => $reservation]) }}" title="Check Out">
                                                     <i class="zmdi zmdi-check text-white"></i>
                                                 </a>

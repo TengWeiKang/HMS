@@ -44,13 +44,15 @@
                                         <a href="{{ route("dashboard.room-type.view", ["roomType" => $roomType]) }}" title="View">
                                             <i class="zmdi zmdi-eye text-white"></i>
                                         </a>
-                                        <a href="{{ route("dashboard.room-type.edit", ["roomType" => $roomType]) }}" title="Edit">
-                                            <i class="zmdi zmdi-edit text-white"></i>
-                                        </a>
-                                        @if ($roomType->rooms->count() == 0)
-                                        <a class="deleteRoomType" data-id="{{ $roomType->id }}" data-room-type="{{ $roomType->name }}" style="cursor: pointer" title="Delete">
-                                            <i class="zmdi zmdi-delete text-white"></i>
-                                        </a>
+                                        @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                            <a href="{{ route("dashboard.room-type.edit", ["roomType" => $roomType]) }}" title="Edit">
+                                                <i class="zmdi zmdi-edit text-white"></i>
+                                            </a>
+                                            @if ($roomType->rooms->count() == 0)
+                                            <a class="deleteRoomType" data-id="{{ $roomType->id }}" data-room-type="{{ $roomType->name }}" style="cursor: pointer" title="Delete">
+                                                <i class="zmdi zmdi-delete text-white"></i>
+                                            </a>
+                                            @endif
                                         @endif
                                     </td>
                                 </tr>
@@ -70,7 +72,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 6,
+                    "targets": 7,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false

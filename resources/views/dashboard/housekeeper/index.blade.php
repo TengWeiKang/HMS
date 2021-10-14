@@ -50,11 +50,11 @@
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                         <td class="text-center action-col">
-                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                            {{-- @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
                                                 <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
                                                     <i class="fa fa-download text-white"></i>
                                                 </a>
-                                            @endif
+                                            @endif --}}
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
@@ -90,7 +90,7 @@
                     </div>
                 </div>
                 <div class="row col-12 mb-5">
-                    <div class="card-title">Arrival Today (The rooms where customers will be arriving on today)</div>
+                    <div class="card-title">Arrivals (The rooms where customers will be arriving on today)</div>
                     <div class="table-responsive">
                         <table class="table table-hover" width="100%">
                             <thead>
@@ -112,11 +112,11 @@
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                         <td class="text-center action-col">
-                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                            {{-- @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
                                                 <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
                                                     <i class="fa fa-download text-white"></i>
                                                 </a>
-                                            @endif
+                                            @endif --}}
                                             @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
                                                 <a class="self-assign" style="cursor: pointer" data-toggle="modal" data-target="#self-assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Self Assign">
                                                     <i class="ti ti-brush text-white"></i>
@@ -179,11 +179,11 @@
                                         <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                         <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                         <td class="text-center action-col">
-                                            @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
+                                            {{-- @if (Auth::guard("employee")->user()->isAccessible("housekeeper", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->status() == 0 && in_array($room->status(), [0, 1]))
                                                 <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
                                                     <i class="fa fa-download text-white"></i>
                                                 </a>
-                                            @endif
+                                            @endif --}}
                                             <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                 <i class="zmdi zmdi-eye text-white"></i>
                                             </a>
@@ -333,7 +333,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <input type="hidden" name="id" value="{{ $room->id }}">
+                    <input type="hidden" name="id">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     <input type="submit" class="btn btn-primary" name="action" value="Repair">
                     <input type="submit" class="btn btn-primary" name="action" value="Done Cleaning">

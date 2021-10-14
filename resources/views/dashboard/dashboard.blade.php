@@ -451,7 +451,7 @@
                         let roomStatuses = sameEvents.map(event => event.getResources()[0].extendedProps.status);
                         let date = new Date();
                         let today = new Date(date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate())
-                        if (!roomStatuses.every(status => status == 0 || status == 1) || event.start > today) {
+                        if (!roomStatuses.every(status => status == 0 || status == 1) || event.start > today && event.end < today) {
                             $("button[name='check-in']").css({"opacity": 0.7, "cursor": "no-drop"});
                         }
                         else {
@@ -508,11 +508,11 @@
             eventDrop: function(eventDropInfo) {
                 let oldEvent = eventDropInfo.oldEvent;
                 let event = eventDropInfo.event;
-                
+
                 let eventID = event.groupId;
                 let allEvents = calendar.getEvents();
                 let sameEvents = allEvents.filter(event => event.groupId == eventID);
-                
+
                 let oldEventEnd = new Date(oldEvent.end.setDate(oldEvent.end.getDate() - 1));
                 let eventEnd = new Date(event.end.setDate(event.end.getDate() - 1));
 

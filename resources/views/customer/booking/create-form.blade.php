@@ -201,6 +201,9 @@
                         <div class="col-12">
                             <label for="">Payment Amount: RM <span id="deposit-payment">100.00</span> (For Deposit)</label>
                         </div>
+                        <div class="col-12">
+                            <label for="" style="font-style: italic">Notes: Deposit is not refundable</label>
+                        </div>
                     </div>
                     <div class="form-group col-12 mt-4">
                         <button type="submit" class="btn btn-primary btn-round w-100"><i class="icon-plus"></i> Book Now</button>

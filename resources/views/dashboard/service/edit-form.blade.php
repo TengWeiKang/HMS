@@ -22,7 +22,7 @@
                     @csrf
                     @method("PUT")
                     <div class="form-group">
-                        <label for="name">Service Name</label>
+                        <label for="name">Service Name <span class="text-danger">*</span></label>
                         <input type="text" class="form-control form-control-rounded @error("name") border-danger @enderror" name="name" placeholder="Room Service Name" value="{{ old("name", $service->name) }}">
                         @error("name")
                             <div class="ml-2 text-sm text-danger">
@@ -31,7 +31,7 @@
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="price">Service Price</label>
+                        <label for="price">Service Price (RM) <span class="text-danger">*</span></label>
                         <input type="number" class="form-control form-control-rounded @error("price") border-danger @enderror" name="price" placeholder="Service Price" value="{{ old("price", $service->price) }}" step="0.01" min="0.01">
                         @error("price")
                             <div class="ml-2 text-sm text-danger">

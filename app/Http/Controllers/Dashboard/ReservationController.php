@@ -388,7 +388,7 @@ class ReservationController extends Controller
     }
 
     public function destroyService(Request $request, Reservation $reservation) {
-        $reservation->services()->detach($request->serviceID);
+        $reservation->services()->newPivotStatement()->where("id", $request->serviceID)->delete();
         return response()->json(['success' => "The room service has been remove from the reservation"]);
     }
 

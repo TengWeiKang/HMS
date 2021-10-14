@@ -88,9 +88,11 @@
                                                 <td>{{ $room->name }}</td>
                                                 <td style="color: {{ $room->statusColor() }}">{!! $room->statusName(true) !!}</td>
                                                 <td class="text-center">
-                                                    <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
-                                                        <i class="zmdi zmdi-edit text-white" style="font-size: 18px"></i>
-                                                    </a>
+                                                    @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                                        <a href="{{ route("dashboard.room.edit", ["room" => $room]) }}" title="Edit">
+                                                            <i class="zmdi zmdi-edit text-white" style="font-size: 18px"></i>
+                                                        </a>
+                                                    @endif
                                                     <a href="{{ route("dashboard.room.view", ["room" => $room]) }}" title="View">
                                                         <i class="zmdi zmdi-eye text-white" style="font-size: 18px"></i>
                                                     </a>

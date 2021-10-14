@@ -68,7 +68,7 @@ class Reservation extends Model
      */
     public function services()
     {
-        return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("quantity", "created_at");
+        return $this->belongsToMany(Service::class, 'room_service', 'reservation_id', 'service_id')->withPivot("id", "quantity", "created_at");
     }
 
     /**

@@ -126,7 +126,7 @@
                                             <td>RM {{ number_format($service->price * $service->pivot->quantity, 2) }}</td>
                                             <td>{{ $service->pivot->created_at->format("d F Y  h:ia") }}</td>
                                             <td class="text-center">
-                                                <a class="deleteService" style="cursor: pointer; font-size: 20px" data-number="{{ $loop->index + 1 }}" data-id="{{ $service->id }}" data-name="{{ $service->name }}">
+                                                <a class="deleteService" style="cursor: pointer; font-size: 20px" data-number="{{ $loop->index + 1 }}" data-id="{{ $service->pivot->id }}" data-name="{{ $service->name }}">
                                                     <i class="zmdi zmdi-delete text-white"></i>
                                                 </a>
                                             </td>

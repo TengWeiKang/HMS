@@ -53,11 +53,11 @@
                         @enderror
                     </div>
                     <div class="form-group mt-5">
-                        <button type="submit" class="btn btn-light btn-round px-5 w-100"> Reset Password</button>
+                        <button type="submit" class="btn btn-primary btn-round px-5 w-100"> Reset Password</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</div><!--End Row--
+</div>
 @endsection

@@ -77,11 +77,6 @@
                                     <td style="color: {{ $room->statusColor() }};">{!! nl2br($room->statusName(true)) !!}</td>
                                     <td style="white-space:break-spaces">{!! $room->note !!}</td>
                                     <td class="text-center action-col">
-                                        @if (Auth::guard("employee")->user()->isAccessible("frontdesk", "admin") && $room->arrival()->count() > 0 && $room->arrival()[0]->canCheckIn())
-                                            <a href="{{ route("dashboard.reservation.check-in", ["reservation" => $room->arrival()[0]]) }}" title="Check In">
-                                                <i class="fa fa-download text-white"></i>
-                                            </a>
-                                        @endif
                                         @if (Auth::guard("employee")->user()->isAccessible("housekeeper") && $room->status() == 2 && $room->housekeeper == null)
                                             <a class="self-assign" style="cursor: pointer" data-toggle="modal" data-target="#self-assign-modal" data-id="{{ $room->id }}" data-room="{{ $room->room_id }}" title="Self Assign">
                                                 <i class="ti ti-brush text-white"></i>
