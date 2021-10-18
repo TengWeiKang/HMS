@@ -19,8 +19,8 @@
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Reserved By</th>
-                                <th># of Rooms</th>
+                                <th>Reservation #</th>
+                                <th>Customer</th>
                                 <th>Starting Date</th>
                                 <th>Ending Date</th>
                                 <th>Payment At</th>
@@ -32,8 +32,8 @@
                             @foreach ($payments as $payment)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
+                                    <td>{{ $payment->reservation->id() }}</td>
                                     <td><a class="hyperlink" href="{{ route("dashboard.customer.view", ["customer" => $payment->reservation->customer]) }}">{{ $payment->reservation->customer->fullName() }}</a></td>
-                                    <td class="text-center">{{ $payment->rooms->count() }}</td>
                                     <td>{{ $payment->start_date->format("d M Y") }}</td>
                                     <td>{{ $payment->end_date->format("d M Y") }}</td>
                                     <td>{{ $payment->payment_at->format("d M Y h:ia") }}</td>

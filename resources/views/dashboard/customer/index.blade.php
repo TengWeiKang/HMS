@@ -24,6 +24,7 @@
                         </thead>
                         <tbody>
                             @foreach ($customers as $customer)
+                                @continue($customer->phone == null)
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $customer->fullName() }}</td>
@@ -51,7 +52,7 @@
             $("#table").DataTable({
                 "columnDefs": [
                 {
-                    "targets": 3,
+                    "targets": 4,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false

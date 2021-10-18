@@ -23,7 +23,7 @@
                     <li class="nav-item">
                         <a href="javascript:void();" data-target="#booking" data-toggle="pill" class="nav-link active"><span class="hidden-xs">Booking</span></a>
                     </li>
-                    @if (in_array($booking->status(), [2,4]))
+                    @if (in_array($booking->status(), [1, 2]))
                         <li class="nav-item">
                             <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><span class="hidden-xs">Room Service</span></a>
                         </li>

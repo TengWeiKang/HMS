@@ -179,7 +179,6 @@ class ReservationController extends Controller
             "startDate" => "required|date|after_or_equal:today",
             "endDate" => "required|date|after_or_equal:startDate",
         ]);
-        $validator->validate();
         $validator->after(function ($validator) use ($request) {
             $conflicts = Reservation::with(["rooms" => function ($query) use ($request) {
                 $query->whereIn("room.id", $request->room);

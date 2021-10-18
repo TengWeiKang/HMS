@@ -137,7 +137,8 @@
                                 <table id="table" class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Customer Full Name</th>
+                                            <th>#</th>
+                                            <th>Customer</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
                                             <th>Status</th>
@@ -147,6 +148,7 @@
                                     <tbody>
                                         @foreach ($room->reservations as $history)
                                             <tr>
+                                                <td>{{ $history->id() }}</td>
                                                 <td><a class="hyperlink" href="{{ route("dashboard.customer.view", $history->customer) }}">{{ $history->customer->fullName()}}</a></td>
                                                 <td>{{ $history->start_date->format("d F Y") }}</td>
                                                 <td>{{ $history->end_date->format("d F Y") }}</td>

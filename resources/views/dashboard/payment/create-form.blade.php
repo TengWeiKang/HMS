@@ -283,7 +283,7 @@
                 let cardNumber = $("#cardNumber")[0];
                 if (cvv.value.length != 3) {
                     cvv.setCustomValidity("CVV must be exact 3 character");
-                    cardNumber.reportValidity();
+                    cvv.reportValidity();
                     e.preventDefault();
                 }
                 if (cardNumber.value.length != 16) {
@@ -291,7 +291,7 @@
                     cardNumber.reportValidity();
                     e.preventDefault();
                 }
-            })
+            });
 
             $(".add-charge-row").on("click", function () {
                 let chargeInput = `<tr>

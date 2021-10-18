@@ -40,7 +40,7 @@ class BookingController extends Controller
     {
         Auth::user()->load("bookings", "bookings.rooms", "bookings.services", "bookings.payment");
         Auth::user()->bookings = Auth::user()->bookings->filter(function ($value){
-            return $value->status() == 2;
+            return in_array($value->status(), [2, 3]);
         })->sortByDesc("id");
         return view("customer.booking.history");
     }

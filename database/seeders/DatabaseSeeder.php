@@ -155,6 +155,8 @@ class DatabaseSeeder extends Seeder
             "room_type" => $roomType2->id,
             "single_bed" => 1,
             "double_bed" => 1,
+            "status" => 2,
+            "housekeep_by" => 3
         ]);
 
         Room::create([
@@ -190,7 +192,7 @@ class DatabaseSeeder extends Seeder
             "single_bed" => 1,
             "double_bed" => 1,
             "status" => 2,
-            "housekeep_by" => 3
+            // "housekeep_by" => 3
         ]);
 
         $service1 = Service::create([
@@ -231,7 +233,7 @@ class DatabaseSeeder extends Seeder
         ])->rooms()->attach([1,2,6,7]);
 
         $checkInReservation = Reservation::create([
-            "start_date" => Carbon::now()->subDay(2),
+            "start_date" => Carbon::now()->subDay(5),
             "end_date" => Carbon::now()->subDay(),
             "customer_id" => 1,
             "check_in" => Carbon::now(),

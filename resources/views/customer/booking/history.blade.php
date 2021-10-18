@@ -48,9 +48,11 @@
                                         <a href="{{ route("customer.booking.view", ["booking" => $booking]) }}" title="View">
                                             <i class="lnr lnr-eye"></i>
                                         </a>
-                                        <a href="{{ route("customer.booking.payment", ["payment" => $booking->payment]) }}" title="Payment">
-                                            <i class="lnr lnr-checkmark-circle"></i>
-                                        </a>
+                                        @isset($booking->payment)
+                                            <a href="{{ route("customer.booking.payment", ["payment" => $booking->payment]) }}" title="Payment">
+                                                <i class="lnr lnr-checkmark-circle"></i>
+                                            </a>
+                                        @endisset
                                     </td>
                                 </tr>
                                 @endforeach

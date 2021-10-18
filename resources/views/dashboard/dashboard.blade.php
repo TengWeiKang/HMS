@@ -54,7 +54,7 @@
 
 @section('content')
 <div class="card mt-3">
-    <div class="card-header" style="font-size: 20px">Calendar
+    <div class="card-header" style="font-size: 20px">Reservation Calendar
         @foreach (App\Models\Reservation::STATUS as $key => $status)
             @continue($key == 3) {{-- ignore cancelled status --}}
             <span class="badge" style="background-color: {{ $status["color"] }}; color: black;">{{ $status["status"] }}</span>
@@ -390,7 +390,7 @@
                 if (startDate < today || endDate < today) {
                     Swal.fire({
                         title: "Invalid Date",
-                        text: "The date cannot be pass date",
+                        text: "The date cannot be past date",
                         icon: "error",
                     });
                 }

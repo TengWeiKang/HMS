@@ -29,6 +29,10 @@
         padding-left: .5rem;
         padding-right: .5rem;
     }
+
+    .select2-container--default .select2-results>.select2-results__options {
+        max-height: 350px;
+    }
 </style>
 @endpush
 

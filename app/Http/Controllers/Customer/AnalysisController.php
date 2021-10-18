@@ -74,12 +74,14 @@ class AnalysisController extends Controller
 
         // booking chart
         $json["bookingChart"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-        $bookings = $payments->groupBy(function ($value) {
-            return $value->start_date->format("Y-m");
+        $reservations = Reservation::with("rooms")->where("status", 1)->where("customer_id", Auth::id())->get()
+            ->filter(function ($reservation) use ($year) {
+                return $reservation->created_at->format("Y") == $year;
+            })->groupBy(function($reservation) {
+            return $reservation->created_at->format("Y-m");
         });
-        $bookings = $bookings->map(function($payments) {
-            return $payments->count();
+        $bookings = $reservations->map(function($reservations) {
+            return $reservations->count();
         });
 
         foreach ($bookings as $key => $value) {

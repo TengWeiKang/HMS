@@ -32,6 +32,9 @@
         padding-left: .5rem;
         padding-right: .5rem;
     }
+    .select2-container--default .select2-results>.select2-results__options {
+        max-height: 350px;
+    }
 </style>
 @endpush
 
@@ -285,23 +288,10 @@
             },
         });
         $roomSelect.on("select2:select", function (e) {
-            updateBookingPrice();
-            let startDate = $("#startDate").val();
-            let d = new Date(startDate);
-            let today = new Date();
-            d.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
-            let disable = true;
-            if (today >= d) {
-                disable = false;
-            }
-
             $("#rooms").find("option").remove().trigger("change");
-            let isCheckIn = $("#checkIn").prop("checked");
             let id = $(this).data("id");
             let title = $(this).data("title");
             let price = $(this).data("price");
-            let isAvailable = $(this).data("occupied") == 1;
             let html = `
                 <div class="div-room form-group row mx-2">
                     <div class="col-lg-10 pl-lg-0">
@@ -417,6 +407,7 @@
             $("#startDate")[0].value = "";
             $("#endDate")[0].value = "";
             $("#checkIn").prop("disabled", "disabled");
+            resetRoomInput();
             Swal.fire({
                 title: title,
                 text: message,

@@ -2,12 +2,10 @@
 <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
     <div class="brand-logo">
         <a href="{{ route("dashboard.home") }}">
-            {{-- <img src="{{ asset("dashboard/images/logo-icon.png") }}" class="logo-icon" alt="logo icon"> --}}
             <h5 class="logo-text">Hotel Management</h5>
         </a>
     </div>
     <ul class="sidebar-menu do-nicescrol">
-        {{-- <li class="sidebar-header">MAIN NAVIGATION</li> --}}
         <li>
             <a href="{{ route("dashboard.home") }}">
                 <i class="zmdi zmdi-view-dashboard"></i> <span style="margin-left: 10px">Dashboard</span>

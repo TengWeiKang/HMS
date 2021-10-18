@@ -17,7 +17,7 @@
                     <li class="nav-item">
                         <a href="javascript:void();" data-target="#reservation" data-toggle="pill" class="nav-link active"><i class="fa fa-ticket"></i> <span class="hidden-xs">Reservation</span></a>
                     </li>
-                    @if (in_array($reservation->status(), [2,4]))
+                    @if (in_array($reservation->status(), [1, 2]))
                         <li class="nav-item">
                             <a href="javascript:void();" data-target="#services" data-toggle="pill" class="nav-link"><i class="zmdi zmdi-drink"></i> <span class="hidden-xs">Room Service</span></a>
                         </li>
