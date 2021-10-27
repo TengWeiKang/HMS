@@ -1,7 +1,6 @@
 @isset($roomGroups)
     @forelse ($roomGroups as $roomTypeName => $singleBeds)
         @foreach ($singleBeds as $singleBed => $doubleBeds)
-            
             @foreach ($doubleBeds as $doubleBed => $rooms)
                 <div class="col-lg-3 col-sm-6">
                     <div class="accomodation_item text-center">

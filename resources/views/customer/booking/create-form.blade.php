@@ -263,9 +263,9 @@
                 endDate = new Date(endDate);
                 let numberOfDays = (endDate - startDate) / (1000 * 3600 * 24) + 1;
                 $("#numDays")[0].innerHTML = numberOfDays;
-                $("#totalPrice")[0].innerHTML = (numberOfDays * {{ $roomType->price }}).toFixed(2);
                 let numberOfRooms = $("#numberOfRooms").val();
                 let totalDeposit = {{ App\Models\Reservation::DEPOSIT }} * numberOfRooms;
+                $("#totalPrice")[0].innerHTML = (numberOfDays * numberOfRooms * {{ $roomType->price }}).toFixed(2);
                 $("#deposit").val(totalDeposit)
                 $("#deposit-label, #deposit-payment").html(totalDeposit.toFixed(2))
                 $('#calendar').fullCalendar('select', moment(startDate), moment(endDate).add(1, "days"));

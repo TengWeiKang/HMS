@@ -28,7 +28,9 @@
         </div>
         @auth("customer")
             @isset($startDate, $endDate)
-                <a href="{{ route("customer.booking.create", ["roomType" => $roomType, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}" class="btn btn-primary mt-4 w-100">Book Now</a>
+                @if ($count > 0)
+                    <a href="{{ route("customer.booking.create", ["roomType" => $roomType, "singleBed" => $singleBed, "doubleBed" => $doubleBed, "startDate" => $startDate, "endDate" => $endDate]) }}" class="btn btn-primary mt-4 w-100">Book Now</a>
+                @endif
             @endisset
         @endauth
     </div>

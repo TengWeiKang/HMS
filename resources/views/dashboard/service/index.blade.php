@@ -13,9 +13,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Room Services
-                <div class="card-action">
-                    <a href="{{ route("dashboard.service.create") }}"><u><span>Create New Service</span></u></a>
-                </div>
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                    <div class="card-action">
+                        <a href="{{ route("dashboard.service.create") }}"><u><span>Create New Service</span></u></a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -25,7 +27,9 @@
                                 <th>#</th>
                                 <th>Service Name</th>
                                 <th>Service Price</th>
-                                <th class="text-center">Action</th>
+                                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                    <th class="text-center">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -34,14 +38,16 @@
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $service->name }}</td>
                                     <td>RM {{ number_format($service->price, 2) }}</td>
-                                    <td class="text-center action-col">
-                                        <a href="{{ route("dashboard.service.edit", ["service" => $service]) }}" title="Edit">
-                                            <i class="zmdi zmdi-edit text-white"></i>
-                                        </a>
-                                        <a class="deleteRoomService" data-id="{{ $service->id }}" data-name="{{ $service->name }}" style="cursor: pointer" title="Delete">
-                                            <i class="zmdi zmdi-delete text-white"></i>
-                                        </a>
-                                    </td>
+                                    @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                        <td class="text-center action-col">
+                                            <a href="{{ route("dashboard.service.edit", ["service" => $service]) }}" title="Edit">
+                                                <i class="zmdi zmdi-edit text-white"></i>
+                                            </a>
+                                            <a class="deleteRoomService" data-id="{{ $service->id }}" data-name="{{ $service->name }}" style="cursor: pointer" title="Delete">
+                                                <i class="zmdi zmdi-delete text-white"></i>
+                                            </a>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -57,6 +63,7 @@
     <script>
         $(document).ready(function () {
             $("#table").DataTable({
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
                 "columnDefs": [
                 {
                     "targets": 3,
@@ -64,6 +71,7 @@
                     "orderable": false,
                     "searchable": false
                 }]
+                @endif
             });
             $(".deleteRoomService").on("click", function () {
                 const DELETE_URL = "{{ route('dashboard.service.destroy', ':id') }}";

@@ -18,16 +18,6 @@ class HomeController extends Controller
     }
 
     public function search(Request $request) {
-        $rooms = $this->roomGroups($request);
-        
-        return view("customer/components/accomodations", ["roomGroups" => $rooms, "startDate" => $request->arrival, "endDate" => $request->departure]);
-    }
-
-    /**
-     * request variable must have arrival, departure attribute
-     * optional: single, double, roomType, person
-     */
-    public function roomGroups($request) {
         $arrival = new Carbon($request->arrival);
         $departure = new Carbon($request->departure);
         $rooms = Room::with("reservations", "type")->get();
@@ -59,6 +49,6 @@ class HomeController extends Controller
             return true;
         });
         $rooms = $rooms->groupBy(["type.name", "single_bed", "double_bed"]);
-        return $rooms;
+        return view("customer/components/accomodations", ["roomGroups" => $rooms, "startDate" => $request->arrival, "endDate" => $request->departure]);
     }
 }

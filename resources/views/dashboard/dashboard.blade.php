@@ -671,8 +671,8 @@
                 });
             },
             resourceLabelContent: function(arg, createElement) {
-                const REDIRECT_ROOM_TYPE_URL = "{{ route("dashboard.room-type.view", ":id") }}";
                 const REDIRECT_ROOM_URL = "{{ route("dashboard.room.view", ":id") }}";
+                const REDIRECT_ROOM_TYPE_URL = "{{ route("dashboard.room-type.view", ":id") }}";
                 if (arg.resource.id > 0) {
                     redirectURL = REDIRECT_ROOM_URL.replace(":id", arg.resource.id);
                     let status = arg.resource.extendedProps.status;

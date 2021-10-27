@@ -9,9 +9,11 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-header">All Facilities
-                <div class="card-action">
-                    <a href="{{ route("dashboard.facility.create") }}"><u><span>Create New Facility</span></u></a>
-                </div>
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                    <div class="card-action">
+                        <a href="{{ route("dashboard.facility.create") }}"><u><span>Create New Facility</span></u></a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="table-responsive">
@@ -20,7 +22,9 @@
                             <tr>
                                 <th>#</th>
                                 <th>Facility</th>
-                                <th class="text-center">Action</th>
+                                @if (Auth::guard("employee")->user()->isAccessible("admin"))
+                                    <th class="text-center">Action</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
@@ -28,6 +32,7 @@
                                 <tr>
                                     <td>{{ $loop->index + 1 }}</td>
                                     <td>{{ $facility->name }}</td>
+                                    @if (Auth::guard("employee")->user()->isAccessible("admin"))
                                     <td class="text-center action-col">
                                         <a href="{{ route("dashboard.facility.edit", ["facility" => $facility]) }}">
                                             <i class="zmdi zmdi-edit text-white"></i>
@@ -36,6 +41,7 @@
                                             <i class="zmdi zmdi-delete text-white"></i>
                                         </a>
                                     </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         </tbody>
@@ -55,12 +61,15 @@
                     "targets": 0,
                     "width": "7%",
                 },
+                @if (Auth::guard("employee")->user()->isAccessible("admin"))
                 {
                     "targets": 2,
                     "width": "15%",
                     "orderable": false,
                     "searchable": false
-                }]
+                }
+                @endif
+                ]
             });
             $(".deleteFacility").on("click", function () {
                 var facilityId = $(this).data("id");

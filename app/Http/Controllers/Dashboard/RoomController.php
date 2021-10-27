@@ -140,7 +140,7 @@ class RoomController extends Controller
         $room = Room::findOrFail($request->id);
         if ($room->housekeep_by == null) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
-            // $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
+            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $request->housekeeper;
             $room->save();
@@ -153,7 +153,7 @@ class RoomController extends Controller
         $housekeeper = Auth::guard('employee')->user();
         if ($room->housekeep_by == null && $room->status() == 2) {
             Mail::to($housekeeper)->send(new AssignHousekeeperMail($housekeeper, $room));
-            // $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
+            $housekeeper->notify(new HousekeeperSmsNotification($housekeeper, $room));
             $room->status = 2;
             $room->housekeep_by = $housekeeper->id;
             $room->save();

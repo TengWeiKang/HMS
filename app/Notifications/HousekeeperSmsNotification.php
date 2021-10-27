@@ -5,7 +5,6 @@ namespace App\Notifications;
 use App\Models\Employee;
 use App\Models\Room;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\NexmoMessage;
 use Illuminate\Notifications\Notification;
 
@@ -45,7 +44,7 @@ class HousekeeperSmsNotification extends Notification
     public function toNexmo($notifiable)
     {
         return (new NexmoMessage)
-                    ->from(env('NEXMO_FROM', '63001'))
+                    ->from(env('NEXMO_FROM', '80000'))
                     ->content('Dear ' . $this->housekeeper->username . ',
 You have been assign to housekeep for Room ' . $this->room->room_id . " " . $this->room->name ."
 Click on url below to update the room status

@@ -11,7 +11,7 @@
                 <i class="zmdi zmdi-view-dashboard"></i> <span style="margin-left: 10px">Dashboard</span>
             </a>
         </li>
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.analysis") }}">
                 <i class="fa fa-line-chart"></i><span style="margin-left: 9px">Statistic</span>
@@ -61,14 +61,14 @@
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.facility") }}">
                 <i class="fa fa-wifi"></i><span style="margin-left: 11px">Facilities</span>
             </a>
         </li>
         @endif
-        @if(Auth::guard("employee")->user()->isAccessible("admin"))
+        @if(Auth::guard("employee")->user()->isAccessible("admin", "frontdesk"))
         <li>
             <a href="{{ route("dashboard.service") }}">
                 <i class="zmdi zmdi-drink"></i><span style="margin-left: 17px">Room Services</span>

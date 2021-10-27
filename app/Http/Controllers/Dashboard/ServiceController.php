@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class ServiceController extends Controller
 {
     public function __construct() {
-        $this->middleware("employee:admin");
+        $this->middleware("employee:admin,frontdesk");
     }
 
     /**
